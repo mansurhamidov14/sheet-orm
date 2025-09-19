@@ -1,0 +1,19 @@
+{
+  "name": "twelver313/sheetmap",
+  "description": "Convert spreadsheets into PHP objects with simple annotations and mapping.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Twelver313\\Sheetmap\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Mansur Hamidov",
+      "email": "mansur.hamidov.19@gmail.com"
+    }
+  ],
+  "minimum-stability": "beta",
+  "require": {}
+}
