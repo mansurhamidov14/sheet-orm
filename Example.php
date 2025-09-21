@@ -7,12 +7,13 @@ use Twelver313\Sheetmap\SpreadsheetMapper;
 
 class Example
 {
-    #[Column(type: "string")]
+    #[Column(type: "string", letter: "A")]
     public $name;
 
-    #[Column(type: "date")]
+    #[Column(type: "date", letter: "B")]
     public $birthdate;
 }
 
 $mapper = new SpreadsheetMapper;
-$mapper->init(Example::class);
+$res = $mapper->load(Example::class)->fromFile(__DIR__ . '/example.xlsx');
+var_dump($res);die;
