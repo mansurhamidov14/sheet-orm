@@ -5,11 +5,11 @@ namespace Twelver313\Sheetmap;
 use \ReflectionClass;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\Sheetmap\ClassMapping;
 use Twelver313\Sheetmap\Column;
 use Twelver313\Sheetmap\Sheet;
+use Twelver313\Sheetmap\ValueFormatter;
 
 class SpreadsheetMapper
 {
@@ -30,9 +30,15 @@ class SpreadsheetMapper
    */
   private $sheet;
 
+  /**
+   * @var ValueFormatter
+   */
+  public $valueFormatter;
+
   public function __construct()
   {
     $this->classMappings = [];
+    $this->valueFormatter = new ValueFormatter();
   }
 
   public function load($className): self
@@ -64,7 +70,7 @@ class SpreadsheetMapper
       foreach ($row->getCellIterator() as $cell) {
         $column = $cell->getColumn();
         if (isset($propertiesMap[$column])) {
-          $object->{$propertiesMap[$column]->property} = ValueFormatter::formatValue($cell, $propertiesMap[$column]->type);
+          $object->{$propertiesMap[$column]->property} = $this->valueFormatter->format($cell, $propertiesMap[$column]->type);
         }
       }
 

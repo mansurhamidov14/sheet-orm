@@ -3,6 +3,7 @@
 namespace Twelver313\Sheetmap;
 
 use \DateTime;
+use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -17,31 +18,56 @@ class ValueFormatter
   const TYPE_DATETIME = 'datetime';
   const TYPE_TIME = 'time';
   const TYPE_PERCENT = 'percent';
+
+  public $formatters = [];
   
-  public static function formatValue(Cell $cell, mixed $type)
+  public function __construct()
   {
-    $value = $cell->getCalculatedValue();
-    
-    switch ($type) {
-      case self::TYPE_STRING:
-        return self::formatString($cell);
-      case self::TYPE_INT:
-      case self::TYPE_FLOAT:
-        return self::getNumericValueFormatter($type)($cell);
-      case self::TYPE_DATE:
-      case self::TYPE_TIME:
-      case self::TYPE_DATETIME:
-        return self::formatDateTime($cell);
-      case self::TYPE_BOOLEAN:
-      case self::TYPE_BOOL:
-        return self::formatBool($cell);
-      case self::TYPE_PERCENT:
-        return self::formatPercent($cell);
-      default: return $value;
+    $this->register(self::TYPE_INT, $this->getNumericValueFormatter(self::TYPE_INT));
+    $this->register(self::TYPE_FLOAT, $this->getNumericValueFormatter(self::TYPE_FLOAT));
+
+    $this->register(self::TYPE_STRING, function (Cell $cell) {
+      return $this->formatString($cell);
+    });
+
+    $this->register([self::TYPE_BOOL, self::TYPE_BOOLEAN], function (Cell $cell) {
+      return $this->formatBool($cell);
+    });
+
+    $this->register([self::TYPE_DATE, self::TYPE_DATETIME, self::TYPE_TIME], function (Cell $cell) {
+      return $this->formatDateTime($cell);
+    });
+
+    return $this->register(self::TYPE_PERCENT, function (Cell $cell) {
+      return $this->formatPercent($cell);
+    });
+  }
+
+  public function format(Cell $cell, mixed $type)
+  {
+    try {
+      return $this->formatters[$type]($cell);
+    } catch (Exception $e) {
+      throw new Exception("Type {$type} doesn't have registered formatter. Please ensure that you have already registered formatter for this type");
     }
   }
 
-  private static function getNumericValueFormatter(string $type)
+  public function register(string|array $typeOrTypes, callable $callback)
+  {
+    if (is_string($typeOrTypes)) {
+      return $this->formatters[$typeOrTypes] = $callback;
+    } 
+    
+    foreach ($typeOrTypes as $type) {
+      if (is_string($type)) {
+        $this->formatters[$type] = $callback;
+      } else {
+        throw new Exception("Type name should be a string");
+      }
+    }
+  }
+
+  private function getNumericValueFormatter(string $type)
   {
     return function (Cell $cell) use ($type) {
       $value = $cell->getCalculatedValue();
@@ -53,13 +79,13 @@ class ValueFormatter
     };
   }
 
-  private static function formatString(Cell $cell)
+  public function formatString(Cell $cell): string|null
   {
     $value = trim((string)$cell->getCalculatedValue());
     return $value == '' ? null : $value;
   }
 
-  private static function formatDateTime(Cell $cell)
+  public function formatDateTime(Cell $cell): DateTime|null
   {
     $value = $cell->getValue();
     if (!is_int($value) && !is_float($value) && empty($value)) {
@@ -75,7 +101,7 @@ class ValueFormatter
     return $dateTime;
   }
 
-  private static function formatBool(Cell $cell)
+  public function formatBool(Cell $cell): bool
   {
     $value = $cell->getCalculatedValue();
     if (empty($value)) {
@@ -106,7 +132,7 @@ class ValueFormatter
     return (bool)$value;
   }
 
-  private static function formatPercent(Cell $cell)
+  public function formatPercent(Cell $cell): string
   {
     $value = floatval($cell->getCalculatedValue()) * 100;
     return "{$value}%";
