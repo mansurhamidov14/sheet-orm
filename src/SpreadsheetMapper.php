@@ -5,6 +5,7 @@ namespace Twelver313\Sheetmap;
 use \ReflectionClass;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\Sheetmap\ClassMapping;
 use Twelver313\Sheetmap\Column;
@@ -34,14 +35,14 @@ class SpreadsheetMapper
     $this->classMappings = [];
   }
 
-  public function load($className)
+  public function load($className): self
   {
     $this->loadedClass = $className;
     $this->refClass = new ReflectionClass($className);
     return $this;
   }
 
-  public function fromFile($filePath)
+  public function fromFile($filePath): array
   {
     $document = IOFactory::load($filePath);
     $sheetData = $this->refClass->getAttributes(Sheet::class);
@@ -57,13 +58,13 @@ class SpreadsheetMapper
     $propertiesMap = $this->mapAllProperties();
 
     $result = [];
-    foreach ($this->sheet->getRowIterator(1) as $row)
+    foreach ($this->sheet->getRowIterator(2) as $row)
     {
       $object = new $this->loadedClass();
       foreach ($row->getCellIterator() as $cell) {
         $column = $cell->getColumn();
         if (isset($propertiesMap[$column])) {
-          $object->{$propertiesMap[$column]->property} = strval($cell->getValue());
+          $object->{$propertiesMap[$column]->property} = ValueFormatter::formatValue($cell, $propertiesMap[$column]->type);
         }
       }
 
@@ -150,7 +151,7 @@ class SpreadsheetMapper
     if (!isset($propertyMapping->columnLetter) && isset($defaultColumnProperties->letter)) {
       $propertyMapping->columnLetter($defaultColumnProperties->letter);
     } elseif (!isset($propertyMapping->columnLetter)) {
-      $propertyMapping->columnLetter($headerColumns[$propertyMapping->column] ?? "A");
+      $propertyMapping->columnLetter($headerColumns['columns'][$propertyMapping->column] ?? "A");
     }
 
     if (!isset($propertyMapping->type) && isset($defaultColumnProperties->type)) {
