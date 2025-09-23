@@ -69,8 +69,12 @@ class SpreadsheetMapper
       $object = new $this->loadedClass();
       foreach ($row->getCellIterator() as $cell) {
         $column = $cell->getColumn();
-        if (isset($propertiesMap[$column])) {
-          $object->{$propertiesMap[$column]->property} = $this->valueFormatter->format($cell, $propertiesMap[$column]->type);
+        if (!isset($propertiesMap[$column])) {
+          continue;
+        }
+
+        foreach ($propertiesMap[$column] as $mapping) {
+          $object->{$mapping->property} = $this->valueFormatter->format($cell, $mapping->type);
         }
       }
 
@@ -125,7 +129,7 @@ class SpreadsheetMapper
     $result = [];
     foreach ($this->refClass->getProperties() as $property) {
       $propertyMapping = $this->resolvePropertyMapping($property->name, $headerColumns);
-      $result[$propertyMapping->columnLetter] = $propertyMapping;
+      $result[$propertyMapping->columnLetter][] = $propertyMapping;
     }
 
     return $result;

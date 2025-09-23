@@ -7,7 +7,7 @@ class Column
 {
   public function __construct(
     public ?string $title = null,
-    public ?string $type = null,
+    public ?string $type = ValueFormatter::TYPE_AUTO,
     public ?string $letter = null
   ) {}
 }

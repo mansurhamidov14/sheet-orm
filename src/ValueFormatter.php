@@ -9,6 +9,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ValueFormatter
 {
+  const TYPE_AUTO = 'auto';
   const TYPE_STRING = 'string';
   const TYPE_BOOL = 'bool';
   const TYPE_BOOLEAN = 'boolean';
@@ -26,6 +27,10 @@ class ValueFormatter
     $this->register(self::TYPE_INT, $this->getNumericValueFormatter(self::TYPE_INT));
     $this->register(self::TYPE_FLOAT, $this->getNumericValueFormatter(self::TYPE_FLOAT));
 
+    $this->register(self::TYPE_AUTO, function (Cell $cell) {
+      return $cell->getCalculatedValue();
+    });
+
     $this->register(self::TYPE_STRING, function (Cell $cell) {
       return $this->formatString($cell);
     });
@@ -38,7 +43,7 @@ class ValueFormatter
       return $this->formatDateTime($cell);
     });
 
-    return $this->register(self::TYPE_PERCENT, function (Cell $cell) {
+    $this->register(self::TYPE_PERCENT, function (Cell $cell) {
       return $this->formatPercent($cell);
     });
   }
