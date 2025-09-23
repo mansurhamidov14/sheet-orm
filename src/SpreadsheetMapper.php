@@ -3,20 +3,16 @@
 namespace Twelver313\Sheetmap;
 
 use \ReflectionClass;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\ClassMapping;
-use Twelver313\Sheetmap\Column;
 use Twelver313\Sheetmap\Sheet;
 use Twelver313\Sheetmap\ValueFormatter;
 
 class SpreadsheetMapper
 {
   /**
-   * @var array
+   * @var MappingRegistry
    */
-  private $classMappings;
+  private $mappingRegistry;
   /**
    * @var string
    */
@@ -35,10 +31,16 @@ class SpreadsheetMapper
    */
   public $valueFormatter;
 
+  /**
+   * @var SpreadsheetEngine
+   */
+  private $spreadsheetEngine;
+
   public function __construct()
   {
-    $this->classMappings = [];
+    $this->mappingRegistry = new MappingRegistry();
     $this->valueFormatter = new ValueFormatter();
+    $this->spreadsheetEngine = new SpreadsheetEngine();
   }
 
   public function load($className): self
@@ -48,32 +50,25 @@ class SpreadsheetMapper
     return $this;
   }
 
-  public function fromFile($filePath): array
+  public function fromFile(string $filePath): array
   {
-    $document = IOFactory::load($filePath);
-    $sheetData = $this->refClass->getAttributes(Sheet::class);
-    if (count($sheetData)) {
-      $sheetData = $sheetData[0]->newInstance();
-      $sheetName = $sheetData->sheet;
-      $sheetName
-        ? $document->setActiveSheetIndexByName($sheetName)
-        : $document->setActiveSheetIndex($sheetData->sheetIndex);
-    }
-
-    $this->sheet = $document->getActiveSheet();
-    $propertiesMap = $this->mapAllProperties();
+    $this->spreadsheetEngine = new SpreadsheetEngine();
+    $this->spreadsheetEngine->loadFile($filePath, $this->getLoadOptions());
+    $groupedColumns = $this->mappingRegistry
+      ->fulfillMissingProperties($this->refClass, $this->spreadsheetEngine->getSheetHeader())
+      ->getGroupedProperties($this->refClass->getName());
 
     $result = [];
-    foreach ($this->sheet->getRowIterator(2) as $row)
+    foreach ($this->spreadsheetEngine->fetchRows() as $row)
     {
       $object = new $this->loadedClass();
       foreach ($row->getCellIterator() as $cell) {
         $column = $cell->getColumn();
-        if (!isset($propertiesMap[$column])) {
+        if (!isset($groupedColumns[$column])) {
           continue;
         }
 
-        foreach ($propertiesMap[$column] as $mapping) {
+        foreach ($groupedColumns[$column] as $mapping) {
           $object->{$mapping->property} = $this->valueFormatter->format($cell, $mapping->type);
         }
       }
@@ -86,9 +81,8 @@ class SpreadsheetMapper
 
   public function map(string $className, callable $callback)
   {
-    $mapping = new ClassMapping();
+    $mapping = $this->mappingRegistry->registerNew($className);
     $callback($mapping);
-    $this->classMappings[$className] = $mapping;
   }
 
   public function getSheet(): Worksheet
@@ -100,74 +94,19 @@ class SpreadsheetMapper
     return $this->sheet;
   }
 
-  private function getSheetHeader()
+  private function getLoadOptions()
   {
-    $highestColumn = $this->getSheet()->getHighestColumn();
-    $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
-    $currentColumn = 'A';
-    $titleToColumnMapping = [];
-    $lastFilledColumn = $currentColumn;
-    for ($col = 0; $col < $highestColumnIndex; $col++) {
-      $cell = $this->sheet->getCell("{$currentColumn}1");
-      $value = $cell->getValue();
-      if ($value !== null && $value !== '') {
-        $value = strval($value);
-        $titleToColumnMapping[$value] = $currentColumn;
-        $lastFilledColumn = $currentColumn;
-        $currentColumn++;
-      }
+    $sheetData = $this->refClass->getAttributes(Sheet::class);
+    if (count($sheetData)) {
+      $sheetData = $sheetData[0]->newInstance();
+      return [
+        'name' => $sheetData->name,
+        'index' => $sheetData->index,
+        'startRow' => $sheetData->startRow,
+        'endRow' => $sheetData->endRow
+      ];
     }
 
-    return [
-      'highestColumn' => $lastFilledColumn,
-      'columns' => $titleToColumnMapping
-    ];
-  }
-
-  private function mapAllProperties() {
-    $headerColumns = $this->getSheetHeader();
-    $result = [];
-    foreach ($this->refClass->getProperties() as $property) {
-      $propertyMapping = $this->resolvePropertyMapping($property->name, $headerColumns);
-      $result[$propertyMapping->columnLetter][] = $propertyMapping;
-    }
-
-    return $result;
-  }
-
-  private function resolvePropertyMapping(string $property, array $headerColumns): PropertyMapping
-  {
-    $classMapping = $this->classMappings[$this->loadedClass] ?? null;
-
-    if (isset($classMapping) && isset($classMapping->getMappings()[$property])) {
-      /** @var PropertyMapping $propertyMapping */
-      $propertyMapping = $classMapping->getMapping()[$property];
-    } else {
-      $propertyMapping = new PropertyMapping($property);
-      $this->classMappings[$this->loadedClass] = new ClassMapping();
-      $this->classMappings[$this->loadedClass]->setMappings($property, $propertyMapping);
-    }
-
-    $defaultColumnProperties = ReflectionUtils::findAttributeInstanceOnProperty($this->refClass, $property, Column::class);
-
-    if (!isset($defaultColumnProperties)) {
-      return $propertyMapping;
-    }
-
-    if (!isset($propertyMapping->column) && isset($defaultColumnProperties->title)) {
-      $propertyMapping->column($defaultColumnProperties->title);
-    }
-
-    if (!isset($propertyMapping->columnLetter) && isset($defaultColumnProperties->letter)) {
-      $propertyMapping->columnLetter($defaultColumnProperties->letter);
-    } elseif (!isset($propertyMapping->columnLetter)) {
-      $propertyMapping->columnLetter($headerColumns['columns'][$propertyMapping->column] ?? "A");
-    }
-
-    if (!isset($propertyMapping->type) && isset($defaultColumnProperties->type)) {
-      $propertyMapping->type($defaultColumnProperties->type);
-    }
-
-    return $propertyMapping;
+    return [];
   }
 }
