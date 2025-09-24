@@ -4,6 +4,7 @@ namespace Twelver313\Sheetmap;
 
 use \ReflectionClass;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use ReflectionProperty;
 use Twelver313\Sheetmap\Sheet;
 use Twelver313\Sheetmap\ValueFormatter;
 
@@ -69,7 +70,9 @@ class SpreadsheetMapper
         }
 
         foreach ($groupedColumns[$column] as $mapping) {
-          $object->{$mapping->property} = $this->valueFormatter->format($cell, $mapping->type);
+          $refProperty = new ReflectionProperty($object, $mapping->property);
+          $refProperty->setAccessible(true);
+          $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping->type));
         }
       }
 
