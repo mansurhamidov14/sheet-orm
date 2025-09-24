@@ -2,43 +2,32 @@
 
 namespace Twelver313\Sheetmap;
 
-use \ReflectionClass;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use ReflectionProperty;
-use Twelver313\Sheetmap\Sheet;
 use Twelver313\Sheetmap\ValueFormatter;
 
 class SpreadsheetMapper
 {
-  /**
-   * @var MappingRegistry
-   */
+  /** @var MappingRegistry */
   private $mappingRegistry;
-  /**
-   * @var string
-   */
-  private $loadedClass;
-  /**
-   * @var ReflectionClass
-   */
-  private $refClass;
-  /**
-   * @var Worksheet
-   */
+
+  /** @var MetadataRegistry */
+  private $metadataRegistry;
+
+  /** @var Worksheet */
   private $sheet;
 
-  /**
-   * @var ValueFormatter
-   */
+  /** @var ValueFormatter */
   public $valueFormatter;
 
-  /**
-   * @var SpreadsheetEngine
-   */
+  /** @var SpreadsheetEngine */
   private $spreadsheetEngine;
+
+  private $currentClass;
 
   public function __construct()
   {
+    $this->metadataRegistry = new MetadataRegistry();
     $this->mappingRegistry = new MappingRegistry();
     $this->valueFormatter = new ValueFormatter();
     $this->spreadsheetEngine = new SpreadsheetEngine();
@@ -46,23 +35,26 @@ class SpreadsheetMapper
 
   public function load($className): self
   {
-    $this->loadedClass = $className;
-    $this->refClass = new ReflectionClass($className);
+    $metadataResolver = $this->metadataRegistry->register($className);
+    $this->mappingRegistry->registerMissing($metadataResolver);
+    $this->currentClass = $className;
     return $this;
   }
 
   public function fromFile(string $filePath): array
   {
     $this->spreadsheetEngine = new SpreadsheetEngine();
-    $this->spreadsheetEngine->loadFile($filePath, $this->getLoadOptions());
+    $metadataResolver = $this->metadataRegistry->get($this->currentClass);
+    $this->spreadsheetEngine->loadFile($filePath, $metadataResolver);
     $groupedColumns = $this->mappingRegistry
-      ->fulfillMissingProperties($this->refClass, $this->spreadsheetEngine->getSheetHeader())
-      ->getGroupedProperties($this->refClass->getName());
+      ->get($this->currentClass)
+      ->fulfillMissingProperties($this->spreadsheetEngine->getSheetHeader())
+      ->getGroupedProperties();
 
     $result = [];
     foreach ($this->spreadsheetEngine->fetchRows() as $row)
     {
-      $object = new $this->loadedClass();
+      $object = new ($this->currentClass)();
       foreach ($row->getCellIterator() as $cell) {
         $column = $cell->getColumn();
         if (!isset($groupedColumns[$column])) {
@@ -82,10 +74,12 @@ class SpreadsheetMapper
     return $result;
   }
 
-  public function map(string $className, callable $callback)
+  public function map($class, callable $callback): self
   {
-    $mapping = $this->mappingRegistry->registerNew($className);
+    $metadataResolver = $this->metadataRegistry->register($class);
+    $mapping = $this->mappingRegistry->register($metadataResolver);
     $callback($mapping);
+    return $this;
   }
 
   public function getSheet(): Worksheet
@@ -95,21 +89,5 @@ class SpreadsheetMapper
     }
 
     return $this->sheet;
-  }
-
-  private function getLoadOptions()
-  {
-    $sheetData = $this->refClass->getAttributes(Sheet::class);
-    if (count($sheetData)) {
-      $sheetData = $sheetData[0]->newInstance();
-      return [
-        'name' => $sheetData->name,
-        'index' => $sheetData->index,
-        'startRow' => $sheetData->startRow,
-        'endRow' => $sheetData->endRow
-      ];
-    }
-
-    return [];
   }
 }

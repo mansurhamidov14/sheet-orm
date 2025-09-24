@@ -6,7 +6,6 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use ReflectionClass;
 
 class SpreadsheetEngine
 {
@@ -18,20 +17,21 @@ class SpreadsheetEngine
   private $endRow = null;
   private $sheetHeader = [];
 
-  public function loadFile(string $filePath, $options): self
+  public function loadFile(string $filePath, MetadataResolver $metadataResolver): self
   {
     try {
       $document = IOFactory::load($filePath);
+      $sheetConfig = $metadataResolver->getSheetConfig();
 
-      if (isset($options['sheetIndex'])) {
-        $document->setActiveSheetIndex($options['sheetIndex']);
-      } else if (isset($options['sheetName'])) {
-        $document->setActiveSheetIndexByName($options['sheetName']);
+      if (isset($sheetConfig->index)) {
+        $document->setActiveSheetIndex($sheetConfig->index);
+      } else if (isset($sheetConfig->name)) {
+        $document->setActiveSheetIndexByName($sheetConfig->name);
       }
 
       $this->setSheet($document->getActiveSheet());
-      $this->setStartRow($options['startRow'] ?? 2);
-      $this->setEndRow($options['endRow'] ?? null);
+      $this->setStartRow($sheetConfig->startRow);
+      $this->setEndRow($sheetConfig->endRow);
       $this->retrieveSheetHeader();
       return $this;
     } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
