@@ -40,6 +40,11 @@ class ClassMapping
       $propertyMapping = $this->resolve($property->getName());
       $propertyAttributes = $this->metadataResolver->getColumnAttributes($property->getName());
 
+      /**
+       * If property mapping was already registered dynamically
+       * Column column title is defined, but letter wasn't
+       * We are assigning corresponding column letter from header by column title
+      */
       if (
         isset($propertyMapping) &&
         !isset($propertyMapping->column) &&
@@ -48,11 +53,20 @@ class ClassMapping
         $propertyMapping->column($header[$propertyMapping->title] ?? null);
       }
 
+      /** 
+       * If we didn't assign column attributes by default by using Column annotator
+       * We have nothing to do and skip current property
+      */
       if (!isset($propertyAttributes)) {
         continue;
       }
 
-      if (!isset($propertyMapping) && (isset($propertyAttributes->title) || isset($propertyAttributes->letter))) {
+      $defaultColumnAttrsProvided = isset($propertyAttributes->title) || isset($propertyAttributes->letter);
+      /**
+       * If we didn't create property mapping dynamically
+       * We create it from column annotator attributes if they are provided
+       */
+      if (!isset($propertyMapping) && $defaultColumnAttrsProvided) {
         $propertyMapping = $this
           ->property($property->name)
           ->column($propertyAttributes->letter ?? $header[$propertyAttributes->title] ?? null)
@@ -60,6 +74,19 @@ class ClassMapping
         continue;
       }
 
+      /**
+       * If we are missing column from dynamic creation
+       * We are assigning it from column annotator
+       */
+      if (!isset($propertyMapping->column) && $defaultColumnAttrsProvided) {
+        $propertyMapping->column($propertyAttributes->letter ?? $header[$propertyAttributes->title] ?? null);
+      }
+
+      /**
+       * If we are missing type from dynamic creation
+       * We are assigning it from column annotator
+       * Unless we are missing column
+       */
       if (isset($propertyMapping->column) && !isset($propertyMapping->type)) {
         $propertyMapping->type($propertyAttributes->type);
       }
