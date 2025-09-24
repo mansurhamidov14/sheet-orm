@@ -4,6 +4,8 @@ namespace Twelver313\Sheetmap;
 
 use ReflectionClass;
 use ReflectionProperty;
+use Twelver313\Sheetmap\Sheet;
+use Twelver313\Sheetmap\Column;
 
 class MetadataResolver
 {

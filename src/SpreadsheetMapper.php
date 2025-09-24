@@ -3,7 +3,10 @@
 namespace Twelver313\Sheetmap;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use ReflectionProperty;
+use Twelver313\Sheetmap\MappingRegistry;
+use Twelver313\Sheetmap\MetadataRegistry;
+use Twelver313\Sheetmap\RowHydrator;
+use Twelver313\Sheetmap\SpreadsheetEngine;
 use Twelver313\Sheetmap\ValueFormatter;
 
 class SpreadsheetMapper
@@ -50,25 +53,12 @@ class SpreadsheetMapper
       ->get($this->currentClass)
       ->fulfillMissingProperties($this->spreadsheetEngine->getSheetHeader())
       ->getGroupedProperties();
+    $rowHydrator = new RowHydrator($this->currentClass, $this->valueFormatter, $groupedColumns);
 
     $result = [];
     foreach ($this->spreadsheetEngine->fetchRows() as $row)
     {
-      $object = new ($this->currentClass)();
-      foreach ($row->getCellIterator() as $cell) {
-        $column = $cell->getColumn();
-        if (!isset($groupedColumns[$column])) {
-          continue;
-        }
-
-        foreach ($groupedColumns[$column] as $mapping) {
-          $refProperty = new ReflectionProperty($object, $mapping->property);
-          $refProperty->setAccessible(true);
-          $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping->type));
-        }
-      }
-
-      $result[] = $object;
+      $result[] = $rowHydrator->hydrate($row);
     }
 
     return $result;

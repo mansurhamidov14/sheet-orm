@@ -2,6 +2,7 @@
 
 namespace Twelver313\Sheetmap;
 
+use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\PropertyMapping;
 
 class ClassMapping
@@ -34,6 +35,10 @@ class ClassMapping
     return $this->mappings[$property] ?? null;
   }
 
+  /**
+   * This method fulfills missing data from dynamic mapping 
+   * with default column attributes for all properties
+   */
   public function fulfillMissingProperties(array $header): self
   {
     foreach ($this->metadataResolver->getClassProperties() as $property) {

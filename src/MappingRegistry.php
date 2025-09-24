@@ -2,6 +2,9 @@
 
 namespace Twelver313\Sheetmap;
 
+use Twelver313\Sheetmap\ClassMapping;
+use Twelver313\Sheetmap\MetadataResolver;
+
 class MappingRegistry
 {
   /** @var */

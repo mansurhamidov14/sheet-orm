@@ -2,6 +2,8 @@
 
 namespace Twelver313\Sheetmap;
 
+use Twelver313\Sheetmap\ValueFormatter;
+
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class Column
 {
