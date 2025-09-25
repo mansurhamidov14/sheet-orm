@@ -2,10 +2,12 @@
 
 namespace Twelver313\Sheetmap;
 
-use \DateTime;
+use DateTime;
 use Exception;
+use MissingValueFormatterException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Twelver313\Sheetmap\Exceptions\InvalidValueFormatterTypeException;
 
 class ValueFormatter
 {
@@ -48,12 +50,16 @@ class ValueFormatter
     });
   }
 
-  public function format(Cell $cell, mixed $type)
+  public function format(Cell $cell, PropertyMapping $propertyMapping)
   {
     try {
-      return $this->formatters[$type]($cell);
+      return $this->formatters[$propertyMapping->type]($cell);
     } catch (Exception $e) {
-      throw new Exception("Type {$type} doesn't have registered formatter. Please ensure that you have already registered formatter for this type");
+      throw new MissingValueFormatterException(
+        $propertyMapping->type,
+        $propertyMapping->property,
+        $propertyMapping->className
+      );
     }
   }
 
@@ -67,7 +73,7 @@ class ValueFormatter
       if (is_string($type)) {
         $this->formatters[$type] = $callback;
       } else {
-        throw new Exception("Type name should be a string");
+        throw new InvalidValueFormatterTypeException(gettype($type));
       }
     }
   }

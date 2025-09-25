@@ -3,6 +3,7 @@
 namespace Twelver313\Sheetmap;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Twelver313\Sheetmap\Exceptions\DocumentWasNotLoadedException;
 use Twelver313\Sheetmap\MappingRegistry;
 use Twelver313\Sheetmap\MetadataRegistry;
 use Twelver313\Sheetmap\RowHydrator;
@@ -75,7 +76,7 @@ class SpreadsheetMapper
   public function getSheet(): Worksheet
   {
     if (!isset($this->sheet)) {
-      throw new \Exception('Document file was not selected');
+      throw new DocumentWasNotLoadedException();
     }
 
     return $this->sheet;

@@ -2,6 +2,7 @@
 
 namespace Twelver313\Sheetmap;
 
+use Twelver313\Sheetmap\Exceptions\MissingClassMetadataException;
 use Twelver313\Sheetmap\MetadataResolver;
 
 class MetadataRegistry
@@ -18,7 +19,7 @@ class MetadataRegistry
   {
     try {
       return $this->get($className);
-    } catch (\Exception $e) {
+    } catch (MissingClassMetadataException $e) {
       $this->registry[$className] = new MetadataResolver($className);
       return $this->get($className);
     }
@@ -27,7 +28,7 @@ class MetadataRegistry
   public function get(string $className): MetadataResolver
   {
     if (!$this->exists($className)) {
-      throw new \Exception("Metadata for {$className} doesn't exist. Please make sure that you are invoking this method correctly");
+      throw new MissingClassMetadataException($className);
     }
     return $this->registry[$className];
   }

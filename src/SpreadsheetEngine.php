@@ -6,6 +6,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Twelver313\Sheetmap\Exceptions\SpreadsheetReaderException;
 use Twelver313\Sheetmap\MetadataResolver;
 
 class SpreadsheetEngine
@@ -36,7 +37,7 @@ class SpreadsheetEngine
       $this->retrieveSheetHeader();
       return $this;
     } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-      throw $e;
+      throw new SpreadsheetReaderException($e->getMessage(), $e->getCode(), $e->getPrevious());
     }
   }
 

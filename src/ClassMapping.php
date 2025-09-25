@@ -19,7 +19,10 @@ class ClassMapping
   }
 
   public function property(string $property): PropertyMapping {
-    return $this->mappings[$property] = new PropertyMapping($property);
+    return $this->mappings[$property] = new PropertyMapping(
+      $property,
+      $this->metadataResolver->getClass()
+    );
   }
 
   public function getMappings(): array {

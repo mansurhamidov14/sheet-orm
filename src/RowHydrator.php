@@ -35,7 +35,7 @@ class RowHydrator
       foreach ($this->groupedColumns[$column] as $mapping) {
         $refProperty = new ReflectionProperty($object, $mapping->property);
         $refProperty->setAccessible(true);
-        $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping->type));
+        $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping));
       }
     }
 
