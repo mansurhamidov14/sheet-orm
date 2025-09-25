@@ -45,11 +45,11 @@ class SpreadsheetMapper
     return $this;
   }
 
-  public function fromFile(string $filePath): array
+  public function fromFile(string $filePath, SheetConfigInterface|null $config = null): array
   {
-    $this->spreadsheetEngine = new SpreadsheetEngine();
     $metadataResolver = $this->metadataRegistry->get($this->currentClass);
-    $this->spreadsheetEngine->loadFile($filePath, $metadataResolver);
+    $this->spreadsheetEngine = new SpreadsheetEngine();
+    $this->spreadsheetEngine->loadFile($filePath, $metadataResolver, $config);
     $groupedColumns = $this->mappingRegistry
       ->get($this->currentClass)
       ->fulfillMissingProperties($this->spreadsheetEngine->getSheetHeader())

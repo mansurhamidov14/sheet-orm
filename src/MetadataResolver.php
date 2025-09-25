@@ -5,6 +5,7 @@ namespace Twelver313\Sheetmap;
 use ReflectionClass;
 use ReflectionProperty;
 use Twelver313\Sheetmap\Sheet;
+use Twelver313\Sheetmap\SheetConfigInterface;
 use Twelver313\Sheetmap\Column;
 
 class MetadataResolver
@@ -29,7 +30,7 @@ class MetadataResolver
       : null;
   }
 
-  public function getSheetConfig(): Sheet
+  public function getSheetConfig(): SheetConfigInterface
   {
     $sheetConfigAttribute = $this->refClass->getAttributes(Sheet::class)[0] ?? null;
     if (isset($sheetConfigAttribute)) {

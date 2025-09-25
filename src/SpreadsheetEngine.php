@@ -19,11 +19,11 @@ class SpreadsheetEngine
   private $endRow = null;
   private $sheetHeader = [];
 
-  public function loadFile(string $filePath, MetadataResolver $metadataResolver): self
+  public function loadFile(string $filePath, MetadataResolver $metadataResolver, SheetConfigInterface|null $config = null): self
   {
     try {
       $document = IOFactory::load($filePath);
-      $sheetConfig = $metadataResolver->getSheetConfig();
+      $sheetConfig = $sheetConfig ?? $metadataResolver->getSheetConfig();
 
       if (isset($sheetConfig->index)) {
         $document->setActiveSheetIndex($sheetConfig->index);
@@ -31,9 +31,9 @@ class SpreadsheetEngine
         $document->setActiveSheetIndexByName($sheetConfig->name);
       }
 
-      $this->setSheet($document->getActiveSheet());
-      $this->setStartRow($sheetConfig->startRow);
-      $this->setEndRow($sheetConfig->endRow);
+      $this->sheet = $document->getActiveSheet();
+      $this->startRow = $sheetConfig->startRow;
+      $this->endRow = $sheetConfig->endRow;
       $this->retrieveSheetHeader();
       return $this;
     } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
@@ -68,21 +68,6 @@ class SpreadsheetEngine
   public function getColumnByTitle(string $title)
   {
     return $this->sheetHeader[$title] ?? null;
-  }
-
-  public function setSheet(Worksheet $sheet)
-  {
-    $this->sheet = $sheet;
-  }
-
-  public function setStartRow(int $row)
-  {
-    $this->startRow = $row;
-  }
-
-  public function setEndRow(int|null $row)
-  {
-    $this->endRow = $row;
   }
 
   public function fetchRows(): RowIterator

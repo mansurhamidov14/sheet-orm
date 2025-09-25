@@ -2,8 +2,10 @@
 
 namespace Twelver313\Sheetmap;
 
+use Twelver313\Sheetmap\SheetConfigInterface;
+
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class Sheet
+class Sheet implements SheetConfigInterface
 {
   public function __construct(
     public ?string $name = null,
