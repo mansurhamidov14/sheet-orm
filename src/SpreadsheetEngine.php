@@ -6,7 +6,6 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
 use Twelver313\Sheetmap\Exceptions\SpreadsheetReaderException;
 use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\Validation\ValidationContext;
@@ -19,8 +18,6 @@ class SpreadsheetEngine
   private $startRow = 2;
   private $endRow = null;
   private $sheetHeader = [];
-
-  /** */
 
   public function loadFile(string $filePath, MetadataResolver $metadataResolver, SheetConfigInterface|null $config = null): self
   {

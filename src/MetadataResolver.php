@@ -7,7 +7,6 @@ use ReflectionProperty;
 use Twelver313\Sheetmap\Sheet;
 use Twelver313\Sheetmap\SheetConfigInterface;
 use Twelver313\Sheetmap\Column;
-use Twelver313\Sheetmap\Validation\ValidationPipeline;
 
 class MetadataResolver
 {
