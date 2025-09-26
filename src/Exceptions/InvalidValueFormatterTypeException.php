@@ -10,7 +10,7 @@ final class InvalidValueFormatterTypeException extends SheetmapException
   {
     parent::__construct(
       sprintf(
-        "Value formatter '\$type' should be type of 'string', '%s' was provided",
+        "Value formatter type should be type of 'string', '%s' was provided",
         $providedType
       )
     );

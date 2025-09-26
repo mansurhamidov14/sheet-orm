@@ -6,18 +6,21 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\RowIterator;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
 use Twelver313\Sheetmap\Exceptions\SpreadsheetReaderException;
 use Twelver313\Sheetmap\MetadataResolver;
+use Twelver313\Sheetmap\Validation\ValidationContext;
+use Twelver313\Sheetmap\Validation\ValidationPipeline;
 
 class SpreadsheetEngine
 {
-  /**
-   * @var Worksheet
-   */
+  /** @var Worksheet */
   private $sheet;
   private $startRow = 2;
   private $endRow = null;
   private $sheetHeader = [];
+
+  /** */
 
   public function loadFile(string $filePath, MetadataResolver $metadataResolver, SheetConfigInterface|null $config = null): self
   {
@@ -35,6 +38,10 @@ class SpreadsheetEngine
       $this->startRow = $sheetConfig->startRow;
       $this->endRow = $sheetConfig->endRow;
       $this->retrieveSheetHeader();
+      $validationContext = new ValidationContext($metadataResolver->getClass(), $this->sheetHeader);
+      $validationPipeline = ValidationPipeline::fromMetadata($metadataResolver);
+      $validationPipeline->validateAll($validationContext);
+
       return $this;
     } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
       throw new SpreadsheetReaderException($e->getMessage(), $e->getCode(), $e->getPrevious());
