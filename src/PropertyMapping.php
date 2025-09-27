@@ -22,7 +22,7 @@ class PropertyMapping
     return $this;
   }
 
-  public function column(string $column): self
+  public function column(string|null $column): self
   {
     $this->column = $column;
     return $this;
