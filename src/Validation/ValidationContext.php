@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class ValidationContext
 {
   /** @var string */
-  private $entity;
+  private $model;
 
   /** @var array */
   private $headerColumns;
@@ -17,14 +17,14 @@ class ValidationContext
 
   public function __construct(string $model, array $headerColumns, Worksheet $sheet)
   {
-    $this->entity = $model;
+    $this->model = $model;
     $this->headerColumns = $headerColumns;
     $this->sheet = $sheet;
   }
 
-  public function getEntity(): string
+  public function getModel(): string
   {
-    return $this->entity;
+    return $this->model;
   }
 
   public function getSheet(): Worksheet {

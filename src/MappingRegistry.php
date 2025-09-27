@@ -2,8 +2,8 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\ClassMapping;
-use Twelver313\Sheetmap\Exceptions\MissingClassMappingException;
+use Twelver313\Sheetmap\ModelMapping;
+use Twelver313\Sheetmap\Exceptions\MissingModelMappingException;
 use Twelver313\Sheetmap\MetadataResolver;
 
 class MappingRegistry
@@ -16,34 +16,34 @@ class MappingRegistry
     $this->mappings = [];
   }
 
-  public function register(MetadataResolver $metadataResolver): ClassMapping
+  public function register(MetadataResolver $metadataResolver): ModelMapping
   {
-    $className = $metadataResolver->getClass();
-    $this->mappings[$className] = new ClassMapping($metadataResolver);
-    return $this->mappings[$className];
+    $modelName = $metadataResolver->getModel();
+    $this->mappings[$modelName] = new ModelMapping($metadataResolver);
+    return $this->mappings[$modelName];
   }
 
   public function registerMissing(MetadataResolver $metadataResolver)
   {
-    $className = $metadataResolver->getClass();
+    $modelName = $metadataResolver->getModel();
 
     try {
-      return $this->get($className);
-    } catch (MissingClassMappingException $e) {
+      return $this->get($modelName);
+    } catch (MissingModelMappingException $e) {
       return $this->register($metadataResolver);
     }
   }
 
-  public function exists(string $className)
+  public function exists(string $modelName)
   {
-    return isset($this->mappings[$className]);
+    return isset($this->mappings[$modelName]);
   }
 
-  public function get(string $className): ClassMapping {
-    if (!isset($this->mappings[$className])) {
-      throw new MissingClassMappingException($className);
+  public function get(string $modelName): ModelMapping {
+    if (!isset($this->mappings[$modelName])) {
+      throw new MissingModelMappingException($modelName);
     }
 
-    return $this->mappings[$className];
+    return $this->mappings[$modelName];
   }
 }

@@ -58,7 +58,7 @@ class ValueFormatter
       throw new MissingValueFormatterException(
         $propertyMapping->type,
         $propertyMapping->property,
-        $propertyMapping->className
+        $propertyMapping->modelName
       );
     }
   }

@@ -13,12 +13,12 @@ class MetadataResolver
   /** @var ReflectionClass */
   private $refClass;
 
-  public function __construct(string $class)
+  public function __construct(string $model)
   {
-    $this->refClass = new ReflectionClass($class);
+    $this->refClass = new ReflectionClass($model);
   }
 
-  public function getClass()
+  public function getModel()
   {
     return $this->refClass->getName();
   }
@@ -61,7 +61,7 @@ class MetadataResolver
     return $this->getPropertyAttributes($property, Column::class);
   }
 
-  public function getClassProperties()
+  public function getModelProperties()
   {
     return $this->refClass->getProperties();
   }

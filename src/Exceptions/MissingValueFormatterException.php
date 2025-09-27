@@ -4,28 +4,28 @@ use Twelver313\Sheetmap\Exceptions\SheetmapException;
 
 final class MissingValueFormatterException extends SheetmapException
 {
-  protected $className;
+  protected $modelName;
   protected $property;
   protected $type;
 
-  public function __construct(string $type, string $property, string $className)
+  public function __construct(string $type, string $property, string $modelName)
   {
     parent::__construct(
       sprintf(
         "Type '%s' used for property '%s' of class '%s' has no registered formatter",
         $type,
         $property,
-        $className
+        $modelName
       )
     );
-    $this->className = $className;
+    $this->modelName = $modelName;
     $this->property = $property;
     $this->type = $type;
   }
 
-  public function getClassName()
+  public function getModelName()
   {
-    return $this->className;
+    return $this->modelName;
   }
 
   public function getProperty()

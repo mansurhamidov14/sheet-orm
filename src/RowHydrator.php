@@ -8,7 +8,7 @@ use ReflectionProperty;
 
 class RowHydrator
 {
-  private $className;
+  private $modelName;
 
   /** @var PropertyMapping[] */
   private $groupedColumns;
@@ -16,16 +16,16 @@ class RowHydrator
   /** @var ValueFormatter */
   private $valueFormatter;
 
-  public function __construct(string $className, ValueFormatter $valueFormatter, array $groupedColumns)
+  public function __construct(string $modelName, ValueFormatter $valueFormatter, array $groupedColumns)
   {
-    $this->className = $className;
+    $this->modelName = $modelName;
     $this->valueFormatter = $valueFormatter;
     $this->groupedColumns = $groupedColumns;
   }
 
   public function hydrate(Row $row)
   {
-    $object = new ($this->className)();
+    $object = new ($this->modelName)();
     foreach ($row->getCellIterator() as $cell) {
       $column = $cell->getColumn();
       if (!isset($this->groupedColumns[$column])) {

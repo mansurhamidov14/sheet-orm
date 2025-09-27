@@ -27,7 +27,7 @@ class SpreadsheetMapper
   /** @var SpreadsheetEngine */
   private $spreadsheetEngine;
 
-  private $currentClass;
+  private $currentModel;
 
   public function __construct()
   {
@@ -37,24 +37,24 @@ class SpreadsheetMapper
     $this->spreadsheetEngine = new SpreadsheetEngine();
   }
 
-  public function load($className): self
+  public function load($modelName): self
   {
-    $metadataResolver = $this->metadataRegistry->register($className);
+    $metadataResolver = $this->metadataRegistry->register($modelName);
     $this->mappingRegistry->registerMissing($metadataResolver);
-    $this->currentClass = $className;
+    $this->currentModel = $modelName;
     return $this;
   }
 
   public function fromFile(string $filePath, SheetConfigInterface|null $config = null): array
   {
-    $metadataResolver = $this->metadataRegistry->get($this->currentClass);
+    $metadataResolver = $this->metadataRegistry->get($this->currentModel);
     $this->spreadsheetEngine = new SpreadsheetEngine();
     $this->spreadsheetEngine->loadFile($filePath, $metadataResolver, $config);
     $groupedColumns = $this->mappingRegistry
-      ->get($this->currentClass)
+      ->get($this->currentModel)
       ->fulfillMissingProperties($this->spreadsheetEngine->getSheetHeader())
       ->getGroupedProperties();
-    $rowHydrator = new RowHydrator($this->currentClass, $this->valueFormatter, $groupedColumns);
+    $rowHydrator = new RowHydrator($this->currentModel, $this->valueFormatter, $groupedColumns);
 
     $result = [];
     foreach ($this->spreadsheetEngine->fetchRows() as $row)
@@ -65,9 +65,9 @@ class SpreadsheetMapper
     return $result;
   }
 
-  public function map($class, callable $callback): self
+  public function map($model, callable $callback): self
   {
-    $metadataResolver = $this->metadataRegistry->register($class);
+    $metadataResolver = $this->metadataRegistry->register($model);
     $mapping = $this->mappingRegistry->register($metadataResolver);
     $callback($mapping);
     return $this;

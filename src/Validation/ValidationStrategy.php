@@ -16,7 +16,7 @@ abstract class ValidationStrategy
   protected function formatProvidedMessage(string $message, array $params, ValidationContext $context)
   {
     $templateParams['{context.headerSize}'] = $context->getHeaderSize();
-    $templateParams['{context.entity'] = $context->getEntity();
+    $templateParams['{context.model'] = $context->getModel();
     $templateParams['{context.headerTitles'] = implode(', ', $context->getHeaderTitles());
     $templateParams['{context.headerColumns'] = implode(', ', $context->getHeaderColumns());
     foreach ($params as $key => $param) {

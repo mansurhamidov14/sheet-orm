@@ -5,7 +5,7 @@ namespace Twelver313\Sheetmap;
 use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\PropertyMapping;
 
-class ClassMapping
+class ModelMapping
 {
   /** @var PropertyMapping[] */
   private $mappings = [];
@@ -21,7 +21,7 @@ class ClassMapping
   public function property(string $property): PropertyMapping {
     return $this->mappings[$property] = new PropertyMapping(
       $property,
-      $this->metadataResolver->getClass()
+      $this->metadataResolver->getModel()
     );
   }
 
@@ -44,7 +44,7 @@ class ClassMapping
    */
   public function fulfillMissingProperties(array $header): self
   {
-    foreach ($this->metadataResolver->getClassProperties() as $property) {
+    foreach ($this->metadataResolver->getModelProperties() as $property) {
       $propertyMapping = $this->resolve($property->getName());
       $propertyAttributes = $this->metadataResolver->getColumnAttributes($property->getName());
 
