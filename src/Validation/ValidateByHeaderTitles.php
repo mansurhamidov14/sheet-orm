@@ -21,13 +21,17 @@ class ValidateByHeaderTitles extends ValidationStrategy
       if (count($expected) !== count($actual)) {
         return false;
       }
+    } else {
+      $actual = array_values(array_filter($actual, function ($title) use ($expected) {
+        return in_array($title, $expected);
+      }));
     }
 
     // 3. Order-insensitive check
     if (HeaderValidationFlags::hasFlag(HeaderValidationFlags::IGNORE_ORDER, $flags)) {
       // Special case: with regex, need matching algorithm
       if (HeaderValidationFlags::hasFlag(HeaderValidationFlags::REGEXP, $flags)) {
-        return $this->matchUnorderedRegex($expected, $actual);
+        return self::matchUnorderedRegex($expected, $actual);
       }
 
       sort($expected);
@@ -59,7 +63,7 @@ class ValidateByHeaderTitles extends ValidationStrategy
   /**
    * Match unordered regex patterns to actual titles.
    */
-  private function matchUnorderedRegex(array $patterns, array $titles): bool
+  private static function matchUnorderedRegex(array $patterns, array $titles): bool
   {
     $matched = [];
     foreach ($patterns as $pattern) {

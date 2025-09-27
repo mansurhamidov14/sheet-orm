@@ -35,7 +35,7 @@ class SpreadsheetEngine
       $this->startRow = $sheetConfig->startRow;
       $this->endRow = $sheetConfig->endRow;
       $this->retrieveSheetHeader();
-      $validationContext = new ValidationContext($metadataResolver->getClass(), $this->sheetHeader);
+      $validationContext = new ValidationContext($metadataResolver->getClass(), $this->sheetHeader, $this->sheet);
       $validationPipeline = ValidationPipeline::fromMetadata($metadataResolver);
       $validationPipeline->validateAll($validationContext);
 

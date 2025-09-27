@@ -2,6 +2,8 @@
 
 namespace Twelver313\Sheetmap\Validation;
 
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
 class ValidationContext
 {
   /** @var string */
@@ -10,15 +12,23 @@ class ValidationContext
   /** @var array */
   private $headerColumns;
 
-  public function __construct(string $model, array $headerColumns)
+  /** @var Worksheet */
+  private $sheet;
+
+  public function __construct(string $model, array $headerColumns, Worksheet $sheet)
   {
     $this->entity = $model;
     $this->headerColumns = $headerColumns;
+    $this->sheet = $sheet;
   }
 
-  public function getEntity()
+  public function getEntity(): string
   {
     return $this->entity;
+  }
+
+  public function getSheet(): Worksheet {
+    return $this->sheet;
   }
 
   public function getHeaderColumns(): array
@@ -31,7 +41,7 @@ class ValidationContext
     return array_keys($this->headerColumns);
   }
 
-  public function getHeaderSize()
+  public function getHeaderSize(): int
   {
     return count($this->headerColumns);
   }
