@@ -4,7 +4,7 @@ namespace Twelver313\Sheetmap\Validation;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ValidationContext
+class SheetValidationContext
 {
   /** @var string */
   private $model;

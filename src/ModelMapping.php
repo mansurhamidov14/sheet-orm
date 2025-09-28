@@ -50,7 +50,7 @@ class ModelMapping
 
       /**
        * If property mapping was already registered dynamically
-       * Column column title is defined, but letter wasn't
+       * SheetColumn column title is defined, but letter wasn't
        * We are assigning corresponding column letter from header by column title
       */
       if (
@@ -62,7 +62,7 @@ class ModelMapping
       }
 
       /** 
-       * If we didn't assign column attributes by default by using Column annotator
+       * If we didn't assign column attributes by default by using SheetColumn annotator
        * We have nothing to do and skip current property
       */
       if (!isset($propertyAttributes)) {

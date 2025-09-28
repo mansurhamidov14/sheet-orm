@@ -35,7 +35,7 @@ Below is a single example demonstrating annotations, custom formatters, dynamic 
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Twelver313\Sheetmap\Sheet;
-use Twelver313\Sheetmap\Column;
+use Twelver313\Sheetmap\SheetColumn;
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\ValueFormatter;
 
@@ -45,21 +45,21 @@ use Twelver313\Sheetmap\ValueFormatter;
 #[Sheet(index: 2, startRow: 5, endRow: 76)]
 class User
 {
-    #[Column(title: 'Fullname', type: ValueFormatter::TYPE_STRING)]
+    #[SheetColumn(title: 'Fullname', type: ValueFormatter::TYPE_STRING)]
     protected $fullName;
 
     /** @var \DateTime */
-    #[Column(letter: 'B', type: ValueFormatter::TYPE_DATE)]
+    #[SheetColumn(letter: 'B', type: ValueFormatter::TYPE_DATE)]
     protected $birthDate;
 
-    #[Column(letter: 'C', type: ValueFormatter::TYPE_BOOL)]
+    #[SheetColumn(letter: 'C', type: ValueFormatter::TYPE_BOOL)]
     protected $isAdmin;
 
-    #[Column(title: 'Salary', type: ValueFormatter::TYPE_FLOAT)]
+    #[SheetColumn(title: 'Salary', type: ValueFormatter::TYPE_FLOAT)]
     protected $salary;
 
     // custom type using a registered formatter
-    #[Column(title: 'Password', type: 'md5')]
+    #[SheetColumn(title: 'Password', type: 'md5')]
     protected $password;
 }
 
@@ -143,7 +143,7 @@ class User
 {
     ...
 
-    #[Column(title: 'Password', type: 'md5')]
+    #[SheetColumn(title: 'Password', type: 'md5')]
     $password;
 }
 
@@ -160,20 +160,20 @@ $spreadsheetMapper->valueFormatter->register('md5', function (Cell $cell) {
 ### Using predefined validation strategies
 ```php
 
-use Twelver313\Sheetmap\Validation;
+use Twelver313\Sheetmap\SheetValidation;
 use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
 use Twelver313\Sheetmap\Validation\ValidateByHeaderTitles;
 
 // You can provide multiple validation attributes
-#[Validation(
+#[SheetValidation(
   strategy: ValidateByHeaderTitles::class,
   params: [
     'expected' => ['First Name', 'Last Name', 'Email'],
     'flags' => HeaderValidationFlags::IGNORE_CASE | HeaderValidationFlags::IGNORE_ORDER
   ]
 )]
-#[Validation(strategy: ValidateByHeaderSize::class, params: ['exact' => 5])]
-#[Validation(
+#[SheetValidation(strategy: ValidateByHeaderSize::class, params: ['exact' => 5])]
+#[SheetValidation(
     strategy: ValidateByHeaderSize::class,
     params: ['min' => 2, 'max' => 10],
     message: 'Minimum {params.min} and maximum {params.max} required. Provided {context.headerSize}' 
@@ -185,11 +185,11 @@ class Student {}
 ```php
 
 use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
-use Twelver313\Sheetmap\Validation\ValidationContext;
+use Twelver313\Sheetmap\Validation\SheetValidationContext;
 
 class CustomisedValidateByHeaderSize extends ValidateByHeaderSize
 {
-    protected function message(array $params, ValidationContext $context): string
+    protected function message(array $params, SheetValidationContext $context): string
     {
         return 'Your own message depending on validation params and validation context';
     }
@@ -198,13 +198,13 @@ class CustomisedValidateByHeaderSize extends ValidateByHeaderSize
 
 ### Defining and providing new validation strategy
 ```php
-use Twelver313\Sheetmap\Validation;
-use Twelver313\Sheetmap\Validation\ValidationContext;
-use Twelver313\Sheetmap\Validation\ValidationStrategy;
+use Twelver313\Sheetmap\SheetValidation;
+use Twelver313\Sheetmap\Validation\SheetValidationContext;
+use Twelver313\Sheetmap\Validation\SheetValidationStrategy;
 
-class MyCustomValidationStrategy extends ValidationStrategy
+class MyCustomValidationStrategy extends SheetValidationStrategy
 {
-    protected function validate(array $params, ValidationContext $context): bool
+    protected function validate(array $params, SheetValidationContext $context): bool
     {
         if ($context->getHeaderSize() != $params['expectedHeaderSize']) {
             return false;
@@ -213,7 +213,7 @@ class MyCustomValidationStrategy extends ValidationStrategy
         }
     }
 
-    protected function message(array $params, ValidationContext $context): string
+    protected function message(array $params, SheetValidationContext $context): string
     {
         return sprintf(
             'We were expecting %s columns, you have provided %s',
@@ -223,7 +223,7 @@ class MyCustomValidationStrategy extends ValidationStrategy
     }
 }
 
-#[Validation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
+#[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
 class Student {}
 
 ```
@@ -233,10 +233,10 @@ class Student {}
 ```php
 
 use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\Validation;
+use Twelver313\Sheetmap\SheetValidation;
 use MyCustomValidationStrategy;
 
-#[Validation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
+#[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
 class Student {}
 
 $spreadsheetMapper = new SpreadsheetMapper();
@@ -263,10 +263,10 @@ if ($handler->isValidSheet()) {
 ```php
 
 use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\Validation;
+use Twelver313\Sheetmap\SheetValidation;
 use MyCustomValidationStrategy;
 
-#[Validation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
+#[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
 class Student {}
 
 try {
@@ -290,7 +290,7 @@ try {
 - `ValueFormatter` — register and resolve formatters (`register(name, callable)`).
 - `ModelMapping` — runtime mapping builder (`property()->column()->title()->type()`).
 - `SheetConfig` — runtime sheet selection and row bounds.
-- Attributes: `#[Sheet]`, `#[Column]`, and optional `#[Validation]`.
+- Attributes: `#[Sheet]`, `#[SheetColumn]`, and optional `#[SheetValidation]`.
 
 (See phpdoc in code for full signatures.)
 

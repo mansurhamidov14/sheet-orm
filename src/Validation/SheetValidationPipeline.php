@@ -4,19 +4,19 @@ namespace Twelver313\Sheetmap\Validation;
 
 use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
 use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\Validation;
+use Twelver313\Sheetmap\SheetValidation;
 
-class ValidationPipeline
+class SheetValidationPipeline
 {
-  /** @var Validation[] */
+  /** @var SheetValidation[] */
   private $validators = [];
 
   public static function fromMetadata(MetadataResolver $metadataResolver): self
   {
     $pipeline = new self();
-    $validationAttributes = $metadataResolver->getValidationAttributes();
-    foreach ($validationAttributes as $attribute) {
-      $pipeline->addValidator($attribute->newInstance());
+    $modelValidators = $metadataResolver->getModelValidators();
+    foreach ($modelValidators as $validator) {
+      $pipeline->addValidator($validator);
     }
 
     return $pipeline;
@@ -26,7 +26,7 @@ class ValidationPipeline
    * @return string[]
    * @throws \Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException
    */
-  public function validateAll(ValidationContext $context, $silent = false) {
+  public function validateAll(SheetValidationContext $context, $silent = false) {
     $errors = [];
     /** @var Validation */
     foreach ($this->validators as $validator) {
@@ -41,7 +41,7 @@ class ValidationPipeline
     return $errors;
   }
 
-  public function addValidator(Validation $validator)
+  public function addValidator(SheetValidation $validator)
   {
     $this->validators[] = $validator;
   }

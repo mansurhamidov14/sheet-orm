@@ -5,7 +5,7 @@ namespace Twelver313\Sheetmap;
 use Twelver313\Sheetmap\ValueFormatter;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class Column
+class SheetColumn
 {
   public function __construct(
     public ?string $title = null,

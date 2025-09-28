@@ -4,16 +4,16 @@ namespace Twelver313\Sheetmap\Validation;
 
 use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
 
-abstract class ValidationStrategy
+abstract class SheetValidationStrategy
 {
-  abstract protected function validate(array $params, ValidationContext $context): bool;
+  abstract protected function validate(array $params, SheetValidationContext $context): bool;
 
-  protected function message(array $params, ValidationContext $context): string
+  protected function message(array $params, SheetValidationContext $context): string
   {
     return "Provided sheet doesn't match correct template";
   }
 
-  protected function formatProvidedMessage(string $message, array $params, ValidationContext $context)
+  protected function formatProvidedMessage(string $message, array $params, SheetValidationContext $context)
   {
     $templateParams['{context.headerSize}'] = $context->getHeaderSize();
     $templateParams['{context.model'] = $context->getModel();
@@ -26,7 +26,7 @@ abstract class ValidationStrategy
     return strtr($message, $templateParams);
   }
 
-  public function handleValidation(array $params, ValidationContext $context, string|null $message = null): void
+  public function handleValidation(array $params, SheetValidationContext $context, string|null $message = null): void
   {
     $isValid = $this->validate($params, $context, $message);
 

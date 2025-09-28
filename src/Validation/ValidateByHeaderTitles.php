@@ -2,9 +2,9 @@
 
 namespace Twelver313\Sheetmap\Validation;
 
-class ValidateByHeaderTitles extends ValidationStrategy
+class ValidateByHeaderTitles extends SheetValidationStrategy
 {
-  protected function validate(array $params, ValidationContext $context): bool
+  protected function validate(array $params, SheetValidationContext $context): bool
   {
     $expected = $params['titles'];
     $actual = $context->getHeaderTitles();
@@ -85,7 +85,7 @@ class ValidateByHeaderTitles extends ValidationStrategy
     return true;
   }
 
-  protected function message(array $params, ValidationContext $context): string
+  protected function message(array $params, SheetValidationContext $context): string
   {
     return sprintf(
       "Provided sheet header doesn't match expected template. Expected: %s. Provided: %s",

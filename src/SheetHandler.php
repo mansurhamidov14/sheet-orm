@@ -7,8 +7,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\Sheetmap\Exceptions\SpreadsheetReaderException;
 use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\Validation\ValidationContext;
-use Twelver313\Sheetmap\Validation\ValidationPipeline;
+use Twelver313\Sheetmap\Validation\SheetValidationContext;
+use Twelver313\Sheetmap\Validation\SheetValidationPipeline;
 
 class SheetHandler
 {
@@ -70,12 +70,12 @@ class SheetHandler
   }
 
   private function initValidation($silent = false) {
-    $validationContext = new ValidationContext(
+    $validationContext = new SheetValidationContext(
       $this->metadataResolver->getModel(),
       $this->sheetHeader,
       $this->sheet
     );
-    $validationPipeline = ValidationPipeline::fromMetadata($this->metadataResolver);
+    $validationPipeline = SheetValidationPipeline::fromMetadata($this->metadataResolver);
     $this->errors = $validationPipeline->validateAll($validationContext, $silent);
   }
 

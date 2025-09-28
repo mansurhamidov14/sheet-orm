@@ -6,7 +6,7 @@ use ReflectionClass;
 use ReflectionProperty;
 use Twelver313\Sheetmap\Sheet;
 use Twelver313\Sheetmap\SheetConfigInterface;
-use Twelver313\Sheetmap\Column;
+use Twelver313\Sheetmap\SheetColumn;
 
 class MetadataResolver
 {
@@ -56,9 +56,9 @@ class MetadataResolver
     return $propertyAttributes[0]->newInstance();
   }
 
-  public function getColumnAttributes($property): Column|null
+  public function getColumnAttributes($property): SheetColumn|null
   {
-    return $this->getPropertyAttributes($property, Column::class);
+    return $this->getPropertyAttributes($property, SheetColumn::class);
   }
 
   public function getModelProperties()
@@ -67,10 +67,12 @@ class MetadataResolver
   }
 
   /** 
-   * @return \ReflectionAttribute<Validation>[]
+   * @return SheetValidation[]
    */
-  public function getValidationAttributes(): array
+  public function getModelValidators(): array
   {
-    return $this->refClass->getAttributes(Validation::class);
+    return array_map(function ($attribute) {
+      return $attribute->newInstance();
+    }, $this->refClass->getAttributes(SheetValidation::class));
   }
 }

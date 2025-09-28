@@ -2,14 +2,14 @@
 
 namespace Twelver313\Sheetmap\Validation;
 
-class ValidateByHeaderSize extends ValidationStrategy
+class ValidateByHeaderSize extends SheetValidationStrategy
 {
   const DEFAULT_VALIDATION_MESSAGE_EXACT = "Spreadsheet was expected to have exactly %u columns but the provided sheet has %u";
   const DEFAULT_VALIDATION_MESSAGE_MIN = "Spreadsheet was expected to have at least %u columns but the provided sheet has %u";
   const DEFAULT_VALIDATION_MESSAGE_MAX = "Spreadsheet was expected to have a maximum of %u columns but the provided sheet has %u";
   const DEFAULT_VALIDATION_MESSAGE_RANGE = "Spreadsheet was expected to have a minimum of %u and a maximum of %u columns but the provided sheet has %u";
 
-  protected function validate(array $params, ValidationContext $context): bool
+  protected function validate(array $params, SheetValidationContext $context): bool
   {
     $headerSize = $context->getHeaderSize();
 
@@ -23,7 +23,7 @@ class ValidateByHeaderSize extends ValidationStrategy
     return intval($params['exact']) === $headerSize;
   }
 
-  protected function message(array $params, ValidationContext $context): string
+  protected function message(array $params, SheetValidationContext $context): string
   {
     $headerSize = $context->getHeaderSize();
     if (isset($params['exact'])) {

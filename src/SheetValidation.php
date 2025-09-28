@@ -2,10 +2,10 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\Validation\ValidationStrategy;
+use Twelver313\Sheetmap\Validation\SheetValidationStrategy;
 
 #[\Attribute(\Attribute::TARGET_CLASS|\Attribute::IS_REPEATABLE)]
-class Validation
+class SheetValidation
 {
   public $strategy;
   public $params;
@@ -18,7 +18,7 @@ class Validation
     $this->message = $message;
   }
 
-  public function getStrategyInstance(): ValidationStrategy
+  public function getStrategyInstance(): SheetValidationStrategy
   {
     return new ($this->strategy)();
   }
