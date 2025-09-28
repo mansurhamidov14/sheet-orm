@@ -67,16 +67,16 @@ class User
 $spreadsheetMapper = new SpreadsheetMapper();
 
 // load the spreadsheet into an array of model instances
-$result = $spreadsheetMapper
+$data = $spreadsheetMapper
     ->load(User::class)
-    ->fromFile('path/to/your/spreadsheet.xlsx');
+    ->fromFile('path/to/your/spreadsheet.xlsx')
+    ->getData();
 
-// inspect result
-print_r($result);
 ```
 
 ## Defining a model and mapping dynamically
 ```php
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Twelver313\Sheetmap\ModelMapping;
@@ -112,10 +112,26 @@ $sheetConfig = new SheetConfig([
 ]);
 
 // load the spreadsheet into an array of model instances
-$result = $spreadsheetMapper
+$data = $spreadsheetMapper
     ->load(User::class)
-    ->fromFile('path/to/your/spreadsheet.xlsx', $sheetConfig);
+    ->fromFile('path/to/your/spreadsheet.xlsx', $sheetConfig)
+    ->getData();
 
+```
+
+## You may need to parse your worksheet header to map you model dynamically from user input
+```php
+use Twelver313\Sheetmap\SpreadsheetMapper;
+
+class User {}
+
+$spreadsheetMapper = new SpreadsheetMapper();
+$sheetHeader = $spreadsheetMapper
+    ->load(User::class)
+    ->fromFile('path/to/your/spreadsheet.xls')
+    ->getSheetHeader();
+
+// Sheet header represents an array of sheet columns mapped by titles ['Fullname' => 'A', 'Email' => 'B']
 ```
 
 ## Defining custom value formatter by registering new type
@@ -128,7 +144,7 @@ class User
     ...
 
     #[Column(title: 'Password', type: 'md5')]
-    $password
+    $password;
 }
 
 $spreadsheetMapper = new SpreadsheetMapper();
@@ -137,30 +153,6 @@ $spreadsheetMapper = new SpreadsheetMapper();
 $spreadsheetMapper->valueFormatter->register('md5', function (Cell $cell) {
     return md5($cell->getCalculatedValue());
 });
-```
-
-## Example `print_r` output
-```php
-Array
-(
-    [0] => User Object
-        (
-            [fullName:protected] => John Doe
-            [birthDate:protected] => DateTime Object ( [date] => 1990-05-10 00:00:00.000000 )
-            [isAdmin:protected] => 1
-            [salary:protected] => 5500.75
-            [password:protected] => 5ebe2294ecd0e0f08eab7690d2a6ee69
-        )
-
-    [1] => User Object
-        (
-            [fullName:protected] => Jane Smith
-            [birthDate:protected] => DateTime Object ( [date] => 1985-08-22 00:00:00.000000 )
-            [isAdmin:protected] =>
-            [salary:protected] => 7200
-            [password:protected] => 6e0e89d83e9a64d5158c52c57964501a
-        )
-)
 ```
 
 ## Header/template validation
@@ -195,7 +187,7 @@ class Student {}
 use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
 use Twelver313\Sheetmap\Validation\ValidationContext;
 
-class CustomisedValidateByHeaderSize
+class CustomisedValidateByHeaderSize extends ValidateByHeaderSize
 {
     protected function message(array $params, ValidationContext $context): string
     {
@@ -237,9 +229,39 @@ class Student {}
 ```
 
 ### Handling validation
+#### a) Programmatic-check
 ```php
 
-use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
+use Twelver313\Sheetmap\SpreadsheetMapper;
+use Twelver313\Sheetmap\Validation;
+use MyCustomValidationStrategy;
+
+#[Validation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
+class Student {}
+
+$spreadsheetMapper = new SpreadsheetMapper();
+
+// load the spreadsheet into an array of model instances
+$handler = $spreadsheetMapper
+    ->load(Student::class)
+    ->fromFile('path/to/your/spreadsheet.xlsx');
+
+if ($handler->isValidSheet()) {
+    $data = $hander->getData();
+    // Your data handling code here
+} else {
+    $errors = $handler->getErrors();
+    // $errors will be an array of string
+    // Do what ever you want with your errors
+}
+
+// Or you may want to handle it with try/catch
+
+```
+
+#### b) Exception-based
+```php
+
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\Validation;
 use MyCustomValidationStrategy;
@@ -249,17 +271,15 @@ class Student {}
 
 try {
     $spreadsheetMapper = new SpreadsheetMapper();
-
-    // load the spreadsheet into an array of model instances
-    $result = $spreadsheetMapper
+    $data = $spreadsheetMapper
         ->load(Student::class)
-        ->fromFile('path/to/your/spreadsheet.xlsx');
-} catch (InvalidSheetTemplateException $e) {
-    echo $e->getMessage(); // Will print out 'We were expecting 12 columns, you have provided 5'
+        ->fromFile('path/to/your/spreadsheet.xlxs')
+        ->getData();
+    // Handle your $data
+} catch (\Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException $e) {
+    // Handle your error
 }
 ```
-
-
 
 
 ---
