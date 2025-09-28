@@ -33,7 +33,7 @@ class ModelMapping
     $this->mappings[$property] = $mapping;
   }
 
-  private function resolve(string $property): PropertyMapping|null
+  private function resolve(string $property): ?PropertyMapping
   {
     return $this->mappings[$property] ?? null;
   }

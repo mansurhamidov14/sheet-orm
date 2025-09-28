@@ -2,9 +2,9 @@
 
 namespace Twelver313\Sheetmap\Validation;
 
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
 use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\SheetValidation;
 
 class SheetValidationPipeline
 {

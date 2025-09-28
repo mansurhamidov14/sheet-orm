@@ -46,13 +46,13 @@ class SheetValidationContext
     return count($this->headerColumns);
   }
 
-  public function getHeaderTitle(string $column): string|null
+  public function getHeaderTitle(string $column): ?string
   {
     $title = array_search($column, $this->headerColumns);
     return $title === false ? null : $title;
   }
 
-  public function getHeaderColumn(string $title): string|null
+  public function getHeaderColumn(string $title): ?string
   {
     return $this->headerColumns[$title] ?? null;
   }

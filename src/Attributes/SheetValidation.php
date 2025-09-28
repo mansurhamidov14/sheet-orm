@@ -1,9 +1,14 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\Sheetmap\Attributes;
 
 use Twelver313\Sheetmap\Validation\SheetValidationStrategy;
 
+/**
+ * @Annotation
+ * @NamedArgumentConstructor
+ * @Target({"CLASS"})
+ */
 #[\Attribute(\Attribute::TARGET_CLASS|\Attribute::IS_REPEATABLE)]
 class SheetValidation
 {
@@ -11,7 +16,7 @@ class SheetValidation
   public $params;
   public $message;
 
-  public function __construct(string $strategy, array|null $params = null, string|null $message = null)
+  public function __construct(string $strategy, ?array $params = null, ?string $message = null)
   {
     $this->strategy = $strategy;
     $this->params = $params;

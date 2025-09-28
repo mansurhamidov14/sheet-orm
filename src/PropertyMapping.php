@@ -4,11 +4,11 @@ namespace Twelver313\Sheetmap;
 
 class PropertyMapping
 {
-  public string $modelName;
-  public string $property;
-  public string|null $title = null;
-  public string|null $column = null;
-  public string|null $type = null;
+  public $modelName;
+  public $property;
+  public $title = null;
+  public $column = null;
+  public $type = null;
 
   public function __construct(string $property, string $modelName)
   {
@@ -22,7 +22,7 @@ class PropertyMapping
     return $this;
   }
 
-  public function column(string|null $column): self
+  public function column(?string $column): self
   {
     $this->column = $column;
     return $this;

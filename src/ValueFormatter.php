@@ -90,13 +90,13 @@ class ValueFormatter
     };
   }
 
-  public function formatString(Cell $cell): string|null
+  public function formatString(Cell $cell): ?string
   {
     $value = trim((string)$cell->getCalculatedValue());
     return $value == '' ? null : $value;
   }
 
-  public function formatDateTime(Cell $cell): DateTime|null
+  public function formatDateTime(Cell $cell): ?DateTime
   {
     $value = $cell->getValue();
     if (!is_int($value) && !is_float($value) && empty($value)) {

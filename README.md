@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c51c3a01-8a26-4f47-9046-83404509eb95" height="100px">
+</p>
+
 # Sheetmap
 
-**Sheetmap** is a PHP library that maps spreadsheet data (Excel, CSV, etc.) into PHP objects using PHP 8 attributes and flexible programmatic mappings. It aims to make converting tabular data into typed PHP models easy, testable and extensible.
+**Sheetmap** is a PHP library that maps spreadsheet data (Excel, CSV, etc.) into PHP objects using PHP 8 attributes, doc annotations and flexible programmatic mappings. It aims to make converting tabular data into typed PHP models easy, testable and extensible.
 
 ---
 
@@ -18,7 +22,6 @@
 
 ```bash
 composer require twelver313/sheetmap
-# and phpoffice/phpspreadsheet is required (composer should pull it)
 ```
 
 ---
@@ -28,14 +31,12 @@ composer require twelver313/sheetmap
 Below is a single example demonstrating annotations, custom formatters, dynamic mappings and loading. After the code block you'll find a breakdown explaining each piece.
 
 
-## Defining and mapping a model with annotators
+## Defining and mapping a model with attributes (PHP8+)
 ```php
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
-
-use Twelver313\Sheetmap\Sheet;
-use Twelver313\Sheetmap\SheetColumn;
+use Twelver313\Sheetmap\Attributes\Sheet;
+use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\ValueFormatter;
 
@@ -57,10 +58,6 @@ class User
 
     #[SheetColumn(title: 'Salary', type: ValueFormatter::TYPE_FLOAT)]
     protected $salary;
-
-    // custom type using a registered formatter
-    #[SheetColumn(title: 'Password', type: 'md5')]
-    protected $password;
 }
 
 // create mapper
@@ -74,11 +71,37 @@ $data = $spreadsheetMapper
 
 ```
 
+## Definining and mapping a model using doc annotators
+```php
+use Twelver313\Sheetmap\SpreadsheetMapper;
+
+/**
+ * @Sheet(name="UsersWorksheet", startRow=5, endRow=76)
+ * or alternatively you can reference by index
+ * @Sheet(index=2, startRow=5, endRow=76)
+ */
+class User
+{
+    /** @SheetColumn(title="Fullname", type="string") */
+    protected $fullName;
+
+    /** 
+     * @var \DateTime
+     * @SheetColumn(letter="B", type="date")
+     */
+    protected $birthDate;
+
+    /** @SheetColumn(letter="C", type="bool") */
+    protected $isAdmin;
+
+    /** @SheetColumn(title="Salary", type="float") */
+    protected $salary;
+}
+
+```
+
 ## Defining a model and mapping dynamically
 ```php
-
-require_once __DIR__ . '/vendor/autoload.php';
-
 use Twelver313\Sheetmap\ModelMapping;
 use Twelver313\Sheetmap\SheetConfig;
 use Twelver313\Sheetmap\SpreadsheetMapper;
@@ -119,7 +142,8 @@ $data = $spreadsheetMapper
 
 ```
 
-## You may need to parse your worksheet header to map you model dynamically from user input
+## Parsing sheet header
+Sometimes you may need to parse your worksheet header to map your model dynamically from user input
 ```php
 use Twelver313\Sheetmap\SpreadsheetMapper;
 
@@ -158,17 +182,18 @@ $spreadsheetMapper->valueFormatter->register('md5', function (Cell $cell) {
 ## Header/template validation
 
 ### Using predefined validation strategies
+
+#### a) With PHP8+ attributes
 ```php
 
-use Twelver313\Sheetmap\SheetValidation;
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
 use Twelver313\Sheetmap\Validation\ValidateByHeaderTitles;
 
-// You can provide multiple validation attributes
 #[SheetValidation(
   strategy: ValidateByHeaderTitles::class,
   params: [
-    'expected' => ['First Name', 'Last Name', 'Email'],
+    'titles' => ['First Name', 'Last Name', 'Email'],
     'flags' => HeaderValidationFlags::IGNORE_CASE | HeaderValidationFlags::IGNORE_ORDER
   ]
 )]
@@ -181,7 +206,29 @@ use Twelver313\Sheetmap\Validation\ValidateByHeaderTitles;
 class Student {}
 ```
 
+#### b) With doc annotators
+```php
+/**
+ * @SheetValidation(
+ *  strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderTitles",
+ *  params={
+ *    "titles"={"First name", "Last name", "Email"},
+ *    "flags"=9
+ *  }
+ * )
+ * @SheetValidation(strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderSize", params={"exact"=5})
+ * @SheetValidation(
+ *   strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderSize",
+ *   params={"min"=2, "max"=10},
+ *   message="Minimum {params.min} and maximum {params.max} required. Provided {context.headerSize}"
+ * )
+ */
+class Student {}
+```
+
+
 ### Overriding/customizing error messages with predefined validation strategies
+You may need to override message logic especially if you are using PHP<8 and want to print out messages using translation methods/functions
 ```php
 
 use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
@@ -198,7 +245,7 @@ class CustomisedValidateByHeaderSize extends ValidateByHeaderSize
 
 ### Defining and providing new validation strategy
 ```php
-use Twelver313\Sheetmap\SheetValidation;
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\Validation\SheetValidationContext;
 use Twelver313\Sheetmap\Validation\SheetValidationStrategy;
 
@@ -233,7 +280,7 @@ class Student {}
 ```php
 
 use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\SheetValidation;
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 use MyCustomValidationStrategy;
 
 #[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
@@ -263,7 +310,7 @@ if ($handler->isValidSheet()) {
 ```php
 
 use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\SheetValidation;
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 use MyCustomValidationStrategy;
 
 #[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]

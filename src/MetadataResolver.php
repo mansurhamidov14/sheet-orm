@@ -2,20 +2,31 @@
 
 namespace Twelver313\Sheetmap;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
 use ReflectionProperty;
-use Twelver313\Sheetmap\Sheet;
+use Twelver313\Sheetmap\Attributes\AttributeHelpers;
+use Twelver313\Sheetmap\Attributes\Sheet;
+use Twelver313\Sheetmap\Attributes\SheetColumn;
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\SheetConfigInterface;
-use Twelver313\Sheetmap\SheetColumn;
 
 class MetadataResolver
 {
+  /** @var AnnotationReader */
+  private $annotationReader;
+
   /** @var ReflectionClass */
   private $refClass;
+  
+  /** @var object[] */
+  private $classAnnotations = [];
 
   public function __construct(string $model)
   {
+    $this->annotationReader = new AnnotationReader();
     $this->refClass = new ReflectionClass($model);
+    $this->classAnnotations = $this->annotationReader->getClassAnnotations($this->refClass);
   }
 
   public function getModel()
@@ -23,7 +34,7 @@ class MetadataResolver
     return $this->refClass->getName();
   }
 
-  public function findPropertyByName(string $property): ReflectionProperty|null
+  public function findPropertyByName(string $property): ?ReflectionProperty
   {
     return $this->refClass->hasProperty($property)
       ? $this->refClass->getProperty($property)
@@ -32,33 +43,36 @@ class MetadataResolver
 
   public function getSheetConfig(): SheetConfigInterface
   {
-    $sheetConfigAttribute = $this->refClass->getAttributes(Sheet::class)[0] ?? null;
-    if (isset($sheetConfigAttribute)) {
-      return $sheetConfigAttribute->newInstance();
+    if (AttributeHelpers::attributesSupported()) {
+      $sheetConfigAttribute = $this->refClass->getAttributes(Sheet::class)[0] ?? null;
+      if (isset($sheetConfigAttribute)) {
+        return $sheetConfigAttribute->newInstance();
+      }
     }
 
-    return new Sheet();
+    $configAnnotators = array_filter($this->classAnnotations, function ($annotation) {
+      return $annotation instanceof Sheet;
+    });
+
+    return $configAnnotators[0] ?? new Sheet();
   }
 
-  public function getPropertyAttributes(string $property, string $attributeClass): object|null
+  public function getColumnAttributes($property): ?SheetColumn
   {
     if (!$this->refClass->hasProperty($property)) {
       return null;
     }
 
     $refProperty = $this->refClass->getProperty($property);
-    $propertyAttributes = $refProperty->getAttributes($attributeClass);
 
-    if (!count($propertyAttributes)) {
-      return null;
+    if (AttributeHelpers::attributesSupported()) {
+      $columnAttributes = $refProperty->getAttributes(SheetColumn::class);
+      if (!empty($columnAttributes)) {
+        return $columnAttributes[0]->newInstance();
+      }
     }
 
-    return $propertyAttributes[0]->newInstance();
-  }
-
-  public function getColumnAttributes($property): SheetColumn|null
-  {
-    return $this->getPropertyAttributes($property, SheetColumn::class);
+    return $this->annotationReader->getPropertyAnnotation($refProperty, SheetColumn::class);
   }
 
   public function getModelProperties()
@@ -71,8 +85,17 @@ class MetadataResolver
    */
   public function getModelValidators(): array
   {
-    return array_map(function ($attribute) {
-      return $attribute->newInstance();
-    }, $this->refClass->getAttributes(SheetValidation::class));
+    if (AttributeHelpers::attributesSupported()) {
+      $validationAttributes =  $this->refClass->getAttributes(SheetValidation::class);
+      if (count($validationAttributes)) {
+        return array_map(function ($attribute) {
+          return $attribute->newInstance();
+        }, $validationAttributes);
+      }
+    }
+    
+    return array_filter($this->classAnnotations, function ($annotation) {
+      return $annotation instanceof SheetValidation;
+    });
   }
 }

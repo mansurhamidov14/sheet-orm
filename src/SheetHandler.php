@@ -30,7 +30,7 @@ class SheetHandler
     MetadataResolver $metadataResolver,
     ValueFormatter $valueFormatter,
     ModelMapping $modelMapping,
-    SheetConfigInterface|null $config = null
+    ?SheetConfigInterface $config = null
   )
   {
     try {
@@ -51,11 +51,11 @@ class SheetHandler
       $this->endRow = $sheetConfig->endRow;
       $this->initSheetHeader();
     } catch (\Exception $e) {
-      throw new SpreadsheetReaderException($e->getMessage(), $e->getCode(), $e->getPrevious());
+      throw $e;
     }
   }
 
-  public function getErrors(): array|null
+  public function getErrors(): ?array
   {
     return $this->errors;
   }

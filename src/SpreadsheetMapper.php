@@ -40,7 +40,7 @@ class SpreadsheetMapper
     return $this;
   }
 
-  public function fromFile(string $filePath, SheetConfigInterface|null $config = null): SheetHandler
+  public function fromFile(string $filePath, ?SheetConfigInterface $config = null): SheetHandler
   {
     $metadataResolver = $this->metadataRegistry->get($this->currentModel);
     $sheetHandler = new SheetHandler(

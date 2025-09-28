@@ -26,7 +26,7 @@ abstract class SheetValidationStrategy
     return strtr($message, $templateParams);
   }
 
-  public function handleValidation(array $params, SheetValidationContext $context, string|null $message = null): void
+  public function handleValidation(array $params, SheetValidationContext $context, ?string $message = null): void
   {
     $isValid = $this->validate($params, $context, $message);
 
