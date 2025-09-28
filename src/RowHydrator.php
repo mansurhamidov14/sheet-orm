@@ -23,7 +23,7 @@ class RowHydrator
     $this->groupedColumns = $groupedColumns;
   }
 
-  public function hydrate(Row $row)
+  public function rowToObject(Row $row)
   {
     $object = new ($this->modelName)();
     foreach ($row->getCellIterator() as $cell) {

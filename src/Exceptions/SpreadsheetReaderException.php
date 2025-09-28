@@ -2,4 +2,4 @@
 
 namespace Twelver313\Sheetmap\Exceptions;
 
-class SpreadsheetReaderException extends \PhpOffice\PhpSpreadsheet\Reader\Exception {}
+class SpreadsheetReaderException extends SheetmapException {}

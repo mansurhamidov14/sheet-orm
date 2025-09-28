@@ -2,6 +2,7 @@
 
 namespace Twelver313\Sheetmap\Validation;
 
+use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
 use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\Validation;
 
@@ -22,13 +23,22 @@ class ValidationPipeline
   }
 
   /**
+   * @return string[]
    * @throws \Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException
    */
-  public function validateAll(ValidationContext $context) {
+  public function validateAll(ValidationContext $context, $silent = false) {
+    $errors = [];
     /** @var Validation */
     foreach ($this->validators as $validator) {
-      $validator->getStrategyInstance()->handleValidation($validator->params, $context, $validator->message);
+      try {
+        $validator->getStrategyInstance()->handleValidation($validator->params, $context, $validator->message);
+      } catch (InvalidSheetTemplateException $e) {
+        $errors[] = $e->getMessage();
+        if (!$silent) throw $e;
+      }
     }
+
+    return $errors;
   }
 
   public function addValidator(Validation $validator)

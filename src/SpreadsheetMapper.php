@@ -6,8 +6,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\Sheetmap\Exceptions\DocumentWasNotLoadedException;
 use Twelver313\Sheetmap\MappingRegistry;
 use Twelver313\Sheetmap\MetadataRegistry;
-use Twelver313\Sheetmap\RowHydrator;
-use Twelver313\Sheetmap\SpreadsheetEngine;
+use Twelver313\Sheetmap\SheetHandler;
 use Twelver313\Sheetmap\ValueFormatter;
 
 class SpreadsheetMapper
@@ -24,9 +23,6 @@ class SpreadsheetMapper
   /** @var ValueFormatter */
   public $valueFormatter;
 
-  /** @var SpreadsheetEngine */
-  private $spreadsheetEngine;
-
   private $currentModel;
 
   public function __construct()
@@ -34,7 +30,6 @@ class SpreadsheetMapper
     $this->metadataRegistry = new MetadataRegistry();
     $this->mappingRegistry = new MappingRegistry();
     $this->valueFormatter = new ValueFormatter();
-    $this->spreadsheetEngine = new SpreadsheetEngine();
   }
 
   public function load($modelName): self
@@ -45,24 +40,17 @@ class SpreadsheetMapper
     return $this;
   }
 
-  public function fromFile(string $filePath, SheetConfigInterface|null $config = null): array
+  public function fromFile(string $filePath, SheetConfigInterface|null $config = null): SheetHandler
   {
     $metadataResolver = $this->metadataRegistry->get($this->currentModel);
-    $this->spreadsheetEngine = new SpreadsheetEngine();
-    $this->spreadsheetEngine->loadFile($filePath, $metadataResolver, $config);
-    $groupedColumns = $this->mappingRegistry
-      ->get($this->currentModel)
-      ->fulfillMissingProperties($this->spreadsheetEngine->getSheetHeader())
-      ->getGroupedProperties();
-    $rowHydrator = new RowHydrator($this->currentModel, $this->valueFormatter, $groupedColumns);
-
-    $result = [];
-    foreach ($this->spreadsheetEngine->fetchRows() as $row)
-    {
-      $result[] = $rowHydrator->hydrate($row);
-    }
-
-    return $result;
+    $sheetHandler = new SheetHandler(
+      $filePath,
+      $metadataResolver,
+      $this->valueFormatter,
+      $this->mappingRegistry->get($this->currentModel),
+      $config
+    );
+    return $sheetHandler;
   }
 
   public function map($model, callable $callback): self
