@@ -53,7 +53,7 @@ class ValueFormatter
   public function format(Cell $cell, PropertyMapping $propertyMapping)
   {
     try {
-      return $this->formatters[$propertyMapping->type]($cell);
+      return $this->formatters[$propertyMapping->type]($cell, $this);
     } catch (Exception $e) {
       throw new MissingValueFormatterException(
         $propertyMapping->type,

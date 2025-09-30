@@ -92,12 +92,12 @@ class SheetHandler
     $titleToLetterMapping = [];
     for ($col = 0; $col < $highestColumnIndex; $col++) {
       $cell = $this->sheet->getCell("{$currentColumn}1");
-      $value = $cell->getValue();
+      $value = $cell->getCalculatedValue();
       if ($value !== null && $value !== '') {
         $value = strval($value);
         $titleToLetterMapping[$value] = $currentColumn;
-        $currentColumn++;
       }
+      $currentColumn++;
     }
 
     $this->sheetHeader = $titleToLetterMapping;
