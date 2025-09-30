@@ -74,6 +74,8 @@ $data = $spreadsheetMapper
 ## Definining and mapping a model using doc annotators
 ```php
 use Twelver313\Sheetmap\SpreadsheetMapper;
+use Twelver313\Sheetmap\Attributes\Sheet;
+use Twelver313\Sheetmap\Attributes\SheetColumn;
 
 /**
  * @Sheet(name="UsersWorksheet", startRow=5, endRow=76)
@@ -208,6 +210,9 @@ class Student {}
 
 #### b) With doc annotators
 ```php
+
+use Twelver313\Sheetmap\Attributes\SheetValidation;
+
 /**
  * @SheetValidation(
  *  strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderTitles",
