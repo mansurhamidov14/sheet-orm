@@ -2,7 +2,7 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\MetadataResolver;
+use Twelver313\Sheetmap\ModelMetadataResolver;
 use Twelver313\Sheetmap\PropertyMapping;
 
 class ModelMapping
@@ -10,10 +10,10 @@ class ModelMapping
   /** @var PropertyMapping[] */
   private $mappings = [];
 
-  /** @var MetadataResolver */
+  /** @var ModelMetadataResolver */
   private $metadataResolver;
 
-  public function __construct(MetadataResolver $metadataResolver)
+  public function __construct(ModelMetadataResolver $metadataResolver)
   {
     $this->metadataResolver = $metadataResolver;
   }
@@ -21,7 +21,7 @@ class ModelMapping
   public function property(string $property): PropertyMapping {
     return $this->mappings[$property] = new PropertyMapping(
       $property,
-      $this->metadataResolver->getModel()
+      $this->metadataResolver->getEntityName()
     );
   }
 

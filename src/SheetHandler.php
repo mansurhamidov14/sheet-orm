@@ -18,8 +18,8 @@ class SheetHandler
   private $sheet;
   /** @var ValueFormatter */
   private $valueFormatter;
-  /** @var ModelMapping */
-  private $modelMapping;
+  /** @var ArrayMapping|ModelMapping */
+  private $mapping;
   private $startRow = 2;
   private $endRow = null;
   private $sheetHeader = [];
@@ -29,7 +29,7 @@ class SheetHandler
     string $filePath,
     MetadataResolver $metadataResolver,
     ValueFormatter $valueFormatter,
-    ModelMapping $modelMapping,
+    ArrayMapping|ModelMapping $mapping,
     ?SheetConfigInterface $config = null
   )
   {
@@ -37,7 +37,7 @@ class SheetHandler
       $document = IOFactory::load($filePath);
       $this->metadataResolver = $metadataResolver;
       $this->valueFormatter = $valueFormatter;
-      $this->modelMapping = $modelMapping;
+      $this->mapping = $mapping;
       $sheetConfig = $config ?? $metadataResolver->getSheetConfig();
 
       if (isset($sheetConfig->index)) {
@@ -71,7 +71,7 @@ class SheetHandler
 
   private function initValidation($silent = false) {
     $validationContext = new SheetValidationContext(
-      $this->metadataResolver->getModel(),
+      $this->metadataResolver->getEntityName(),
       $this->sheetHeader,
       $this->sheet
     );
@@ -114,11 +114,18 @@ class SheetHandler
       $this->initValidation();
     }
 
-    $groupedColumns = $this->modelMapping->fulfillMissingProperties($this->sheetHeader)->getGroupedProperties();
-    $rowHydrator = new RowHydrator($this->metadataResolver->getModel(), $this->valueFormatter, $groupedColumns);
+    if ($this->mapping instanceof ModelMapping) {
+      $groupedColumns = $this->mapping->fulfillMissingProperties($this->sheetHeader)->getGroupedProperties();
+      $hydrationMethod = 'rowToObject';
+    } else {
+      $groupedColumns = $this->mapping->linkHeaderTitlesToLetters($this->sheetHeader)->getGroupedKeys();
+      $hydrationMethod = 'rowToArray';
+    }
+
+    $rowHydrator = new RowHydrator($this->metadataResolver->getEntityName(), $this->valueFormatter, $groupedColumns);
     $result = [];
     foreach ($this->sheet->getRowIterator($this->startRow, $this->endRow) as $row) {
-      $result[] = $rowHydrator->rowToObject($row);
+      $result[] = $rowHydrator->{$hydrationMethod}($row);
     }
     return $result;
   }

@@ -32,11 +32,27 @@ class SpreadsheetMapper
     $this->valueFormatter = new ValueFormatter();
   }
 
-  public function load($modelName): self
+  public function load(string $modelName): self
   {
-    $metadataResolver = $this->metadataRegistry->register($modelName);
-    $this->mappingRegistry->registerMissing($metadataResolver);
+    if (!$this->metadataRegistry->exists($modelName)) {
+      $metadataResolver = new ModelMetadataResolver($modelName);
+      $this->metadataRegistry->register($metadataResolver);
+    }
+    $this->mappingRegistry->registerMissing($modelName, new ModelMapping($metadataResolver));
     $this->currentModel = $modelName;
+    
+    return $this;
+  }
+
+  public function loadArraySchema(ArraySchema $schema): self
+  {
+    $metadataResolver = new ArraySchemaMetadataResolver($schema);
+    $this->mappingRegistry->register(
+      $schema->getName(),
+      $schema->getMapping()
+    );
+    $this->metadataRegistry->register($metadataResolver);
+    $this->currentModel = $schema->getName();
     return $this;
   }
 
@@ -55,9 +71,11 @@ class SpreadsheetMapper
 
   public function map($model, callable $callback): self
   {
-    $metadataResolver = $this->metadataRegistry->register($model);
-    $mapping = $this->mappingRegistry->register($metadataResolver);
-    $callback($mapping);
+    $metadataResolver = new ModelMetadataResolver($model);
+    $this->metadataRegistry->register($metadataResolver);
+    $modelMapping = new ModelMapping($metadataResolver);
+    $this->mappingRegistry->register($model, $modelMapping);
+    $callback($modelMapping);
     return $this;
   }
 

@@ -2,9 +2,9 @@
 
 namespace Twelver313\Sheetmap;
 
+use Twelver313\Sheetmap\ArrayMapping;
+use Twelver313\Sheetmap\Exceptions\MissingMappingException;
 use Twelver313\Sheetmap\ModelMapping;
-use Twelver313\Sheetmap\Exceptions\MissingModelMappingException;
-use Twelver313\Sheetmap\MetadataResolver;
 
 class MappingRegistry
 {
@@ -16,34 +16,29 @@ class MappingRegistry
     $this->mappings = [];
   }
 
-  public function register(MetadataResolver $metadataResolver): ModelMapping
+  public function register(string $name, ModelMapping|ArrayMapping $mapping): void
   {
-    $modelName = $metadataResolver->getModel();
-    $this->mappings[$modelName] = new ModelMapping($metadataResolver);
-    return $this->mappings[$modelName];
+    $this->mappings[$name] = $mapping;
   }
 
-  public function registerMissing(MetadataResolver $metadataResolver)
+  public function registerMissing(string $name, ModelMapping|ArrayMapping $mapping): void
   {
-    $modelName = $metadataResolver->getModel();
-
-    try {
-      return $this->get($modelName);
-    } catch (MissingModelMappingException $e) {
-      return $this->register($metadataResolver);
+    if (!$this->exists($name)) {
+      $this->register($name, $mapping);
     }
   }
 
-  public function exists(string $modelName)
+  public function exists(string $entityName)
   {
-    return isset($this->mappings[$modelName]);
+    return isset($this->mappings[$entityName]);
   }
 
-  public function get(string $modelName): ModelMapping {
-    if (!isset($this->mappings[$modelName])) {
-      throw new MissingModelMappingException($modelName);
+  public function get(string $entityName): ModelMapping|ArrayMapping
+  {
+    if (!isset($this->mappings[$entityName])) {
+      throw new MissingMappingException($entityName);
     }
 
-    return $this->mappings[$modelName];
+    return $this->mappings[$entityName];
   }
 }

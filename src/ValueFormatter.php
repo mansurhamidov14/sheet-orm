@@ -50,14 +50,14 @@ class ValueFormatter
     });
   }
 
-  public function format(Cell $cell, PropertyMapping $propertyMapping)
+  public function format(Cell $cell, PropertyMapping|KeyMapping $propertyMapping)
   {
     try {
       return $this->formatters[$propertyMapping->type]($cell, $this);
     } catch (Exception $e) {
       throw new MissingValueFormatterException(
         $propertyMapping->type,
-        $propertyMapping->property,
+        $propertyMapping->property ?? $propertyMapping->key,
         $propertyMapping->modelName
       );
     }

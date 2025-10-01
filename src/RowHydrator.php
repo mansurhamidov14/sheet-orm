@@ -41,4 +41,20 @@ class RowHydrator
 
     return $object;
   }
+
+  public function rowToArray(Row $row) {
+    $result = [];
+    foreach ($row->getCellIterator() as $cell) {
+      $column = $cell->getColumn();
+      if (!isset($this->groupedColumns[$column])) {
+        continue;
+      }
+
+      foreach ($this->groupedColumns[$column] as $mapping) {
+        $result[$mapping->key] = $this->valueFormatter->format($cell, $mapping);
+      }
+    }
+
+    return $result;
+  }
 }
