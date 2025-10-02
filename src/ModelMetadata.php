@@ -4,15 +4,14 @@ namespace Twelver313\Sheetmap;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
-use ReflectionProperty;
 use Twelver313\Sheetmap\Attributes\AttributeHelpers;
 use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\SheetConfigInterface;
+use Twelver313\Sheetmap\SheetConfig;
 
-class ModelMetadataResolver implements MetadataResolver
+class ModelMetadata implements MetadataResolver
 {
   /** @var AnnotationReader */
   private $annotationReader;
@@ -35,7 +34,7 @@ class ModelMetadataResolver implements MetadataResolver
     return $this->refClass->getName();
   }
 
-  public function getSheetConfig(): SheetConfigInterface
+  public function getSheetConfig(): SheetConfig
   {
     if (AttributeHelpers::attributesSupported()) {
       $sheetConfigAttribute = $this->refClass->getAttributes(Sheet::class)[0] ?? null;

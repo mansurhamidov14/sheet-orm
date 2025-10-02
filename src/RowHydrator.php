@@ -10,7 +10,7 @@ class RowHydrator
 {
   private $modelName;
 
-  /** @var PropertyMapping[] */
+  /** @var FieldMapping[] */
   private $groupedColumns;
 
   /** @var ValueFormatter */
@@ -32,8 +32,9 @@ class RowHydrator
         continue;
       }
 
+      /** @var FieldMapping */
       foreach ($this->groupedColumns[$column] as $mapping) {
-        $refProperty = new ReflectionProperty($object, $mapping->property);
+        $refProperty = new ReflectionProperty($object, $mapping->field);
         $refProperty->setAccessible(true);
         $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping));
       }
@@ -51,7 +52,7 @@ class RowHydrator
       }
 
       foreach ($this->groupedColumns[$column] as $mapping) {
-        $result[$mapping->key] = $this->valueFormatter->format($cell, $mapping);
+        $result[$mapping->field] = $this->valueFormatter->format($cell, $mapping);
       }
     }
 

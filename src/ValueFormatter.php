@@ -3,11 +3,10 @@
 namespace Twelver313\Sheetmap;
 
 use DateTime;
-use Exception;
-use MissingValueFormatterException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Twelver313\Sheetmap\Exceptions\InvalidValueFormatterTypeException;
+use Twelver313\Sheetmap\Exceptions\MissingValueFormatterException;
 
 class ValueFormatter
 {
@@ -50,17 +49,18 @@ class ValueFormatter
     });
   }
 
-  public function format(Cell $cell, PropertyMapping|KeyMapping $propertyMapping)
+  public function format(Cell $cell, FieldMapping $fieldMapping)
   {
-    try {
-      return $this->formatters[$propertyMapping->type]($cell, $this);
-    } catch (Exception $e) {
-      throw new MissingValueFormatterException(
-        $propertyMapping->type,
-        $propertyMapping->property ?? $propertyMapping->key,
-        $propertyMapping->modelName
-      );
+    $type = $fieldMapping->type ?? self::TYPE_AUTO;
+    if (isset($this->formatters[$type])) {
+      return $this->formatters[$type]($cell, $this);
     }
+    
+    throw new MissingValueFormatterException(
+      $fieldMapping->type,
+      $fieldMapping->field,
+      $fieldMapping->entityName
+    );
   }
 
   public function register(string|array $typeOrTypes, callable $callback)
@@ -108,7 +108,11 @@ class ValueFormatter
     }
 
     $dateTime = new DateTime();
-    $dateTime->setTimestamp(strtotime($value));
+    $timeStamp = strtotime($value);
+
+    if ($timeStamp === false) return null;
+
+    $dateTime->setTimestamp($timeStamp);
     return $dateTime;
   }
 

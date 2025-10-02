@@ -8,7 +8,7 @@ final class MissingMappingException extends SheetmapException
 
   public function __construct(string $entityName)
   {
-    parent::__construct(sprintf("Entity '%s' has no model mapping and is not loaded.", $entityName));
+    parent::__construct(sprintf("Entity '%s' has no mapping and is not loaded.", $entityName));
     $this->entityName = $entityName;
   }
 

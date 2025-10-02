@@ -71,7 +71,7 @@ $data = $spreadsheetMapper
 
 ```
 
-## Definining and mapping a model using doc annotators
+## Defining and mapping a model using doc annotators
 ```php
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\Attributes\Sheet;
@@ -123,10 +123,10 @@ $spreadsheetMapper = new SpreadsheetMapper();
 
 // map properties dynamically
 $spreadsheetMapper->map(User::class, function (ModelMapping $mapping) {
-    $mapping->property('fullName')->title('Fullname')->type(ValueFormatter::TYPE_STRING);
-    $mapping->property('birthDate')->column('B')->type(ValueFomatter::TYPE_DATE);
-    $mapping->property('isAdmin')->column('C')->type(ValueFormatter::TYPE_BOOL);
-    $mapping->property('salary')->title('Salary')->type(ValueFormatter::TYPE_FLOAT);
+    $mapping->field('fullName')->title('Fullname')->type(ValueFormatter::TYPE_STRING);
+    $mapping->field('birthDate')->column('B')->type(ValueFomatter::TYPE_DATE);
+    $mapping->field('isAdmin')->column('C')->type(ValueFormatter::TYPE_BOOL);
+    $mapping->field('salary')->title('Salary')->type(ValueFormatter::TYPE_FLOAT);
 });
 
 // Defining sheet config dynamically
@@ -141,7 +141,30 @@ $data = $spreadsheetMapper
     ->load(User::class)
     ->fromFile('path/to/your/spreadsheet.xlsx', $sheetConfig)
     ->getData();
+```
 
+## Defining an array schema for mapping an array
+```php
+use Twelver313\Sheetmap\ArrayMapping;
+use Twelver313\Sheetmap\ArraySchema;
+use Twelver313\Sheetmap\SpreadsheetMapper;
+use Twelver313\Sheetmap\ValueFormatter;
+
+$arraySchema = new ArraySchema('boardGames', [
+  'endRow' => 4
+]);
+
+$arraySchema->mapKeys(function (ArrayMapping $mapping) {
+  $mapping->field('id')->title('row_id')->type(ValueFormatter::TYPE_INT);
+  $mapping->field('game')->title('boardgame');
+});
+
+$spreadsheetMapper = new SpreadsheetMapper();
+
+$data = $spreadsheetMapper
+  ->loadAsArray($arraySchema)
+  ->fromFile(__DIR__ . '/boardgames.csv')
+  ->getData();
 ```
 
 ## Parsing sheet header
@@ -164,6 +187,7 @@ $sheetHeader = $spreadsheetMapper
 ```php
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use Twelver313\Sheetmap\SpreadsheetMapper;
+use Twelver313\Sheetmap\ValueFormatter;
 
 class User
 {
@@ -171,6 +195,9 @@ class User
 
     #[SheetColumn(title: 'Password', type: 'md5')]
     $password;
+
+    #[SheetColumn(title: 'birthDate', type: 'formattedDate')]
+    $birthDate
 }
 
 $spreadsheetMapper = new SpreadsheetMapper();
@@ -179,6 +206,10 @@ $spreadsheetMapper = new SpreadsheetMapper();
 $spreadsheetMapper->valueFormatter->register('md5', function (Cell $cell) {
     return md5($cell->getCalculatedValue());
 });
+$spreadsheetMapper->valueFormatter->register('formattedDate', function (Cell $cell, ValueFormatter $formatter) {
+    $initialValue = $formatter->formatDateTime($cell);
+    return $initialValue?->format('d.m.Y');
+})
 ```
 
 ## Header/template validation

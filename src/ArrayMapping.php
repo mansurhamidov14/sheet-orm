@@ -2,28 +2,29 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\KeyMapping;
+use Twelver313\Sheetmap\FieldMapping;
 
-class ArrayMapping
+class ArrayMapping implements MappingProvider
 {
-  /** @var KeyMapping[] */
+  /** @var FieldMapping[] */
   private $mappings = [];
 
-  public function key(string $key): KeyMapping {
-    return $this->mappings[$key] = new KeyMapping(
+  /** @var MetadataResolver */
+  private $arraySchema;
+
+  public function __construct(MetadataResolver $arraySchema)
+  {
+    $this->arraySchema = $arraySchema;
+  }
+
+  public function field(string $key): FieldMapping {
+    return $this->mappings[$key] = new FieldMapping(
       $key,
+      $this->arraySchema->getEntityName()
     );
   }
 
-  public function getMappings(): array {
-    return $this->mappings;
-  }
-
-  public function setMappings($key, $mapping) {
-    $this->mappings[$key] = $mapping;
-  }
-
-  public function linkHeaderTitlesToLetters(array $header): self
+  public function assembleFieldMappings(array $header): self
   {
     foreach ($this->mappings as $mapping) {
       if (empty($mapping->column) && $mapping->title) {
@@ -34,15 +35,15 @@ class ArrayMapping
     return $this;
   }
 
-  public function getGroupedKeys()
+  public function getGroupedFields(): array
   {
     $result = [];
-    foreach ($this->mappings as $keyMapping) {
-      if (!isset($keyMapping->column)) {
+    foreach ($this->mappings as $fieldMapping) {
+      if (!isset($fieldMapping->column)) {
         continue;
       }
 
-      $result[$keyMapping->column][] = $keyMapping;
+      $result[$fieldMapping->column][] = $fieldMapping;
     }
 
     return $result;

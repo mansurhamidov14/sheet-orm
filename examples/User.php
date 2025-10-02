@@ -3,10 +3,12 @@
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\ValueFormatter;
 
+#[Sheet(endRow: 5)]
 class User {
   #[SheetColumn(title: 'Id', type: ValueFormatter::TYPE_INT)]
   public $id;
@@ -22,6 +24,9 @@ class User {
 
   #[SheetColumn(title: 'Age', type: ValueFormatter::TYPE_INT)]
   public $age;
+
+  #[SheetColumn(title: 'Date', type: 'formattedDate')]
+  public $birthDate;
 }
 
 $spreadsheetMapper = new SpreadsheetMapper();
@@ -31,6 +36,9 @@ $spreadsheetMapper->valueFormatter->register('gender', function (Cell $cell) {
     'female' => '♀',
     'default' => null
   };
+});
+$spreadsheetMapper->valueFormatter->register('formattedDate', function (Cell $cell, ValueFormatter $formatter) {
+  return $formatter->formatDateTime($cell)?->format('d.m.Y');
 });
 
 $handler = $spreadsheetMapper->load(User::class)->fromFile(__DIR__ . '/users.xls');

@@ -35,7 +35,7 @@ class SpreadsheetMapper
   public function load(string $modelName): self
   {
     if (!$this->metadataRegistry->exists($modelName)) {
-      $metadataResolver = new ModelMetadataResolver($modelName);
+      $metadataResolver = new ModelMetadata($modelName);
       $this->metadataRegistry->register($metadataResolver);
     }
     $this->mappingRegistry->registerMissing($modelName, new ModelMapping($metadataResolver));
@@ -44,19 +44,18 @@ class SpreadsheetMapper
     return $this;
   }
 
-  public function loadArraySchema(ArraySchema $schema): self
+  public function loadAsArray(ArraySchema $schema): self
   {
-    $metadataResolver = new ArraySchemaMetadataResolver($schema);
     $this->mappingRegistry->register(
-      $schema->getName(),
+      $schema->getEntityName(),
       $schema->getMapping()
     );
-    $this->metadataRegistry->register($metadataResolver);
-    $this->currentModel = $schema->getName();
+    $this->metadataRegistry->register($schema);
+    $this->currentModel = $schema->getEntityName();
     return $this;
   }
 
-  public function fromFile(string $filePath, ?SheetConfigInterface $config = null): SheetHandler
+  public function fromFile(string $filePath, ?SheetConfig $config = null): SheetHandler
   {
     $metadataResolver = $this->metadataRegistry->get($this->currentModel);
     $sheetHandler = new SheetHandler(
@@ -71,7 +70,7 @@ class SpreadsheetMapper
 
   public function map($model, callable $callback): self
   {
-    $metadataResolver = new ModelMetadataResolver($model);
+    $metadataResolver = new ModelMetadata($model);
     $this->metadataRegistry->register($metadataResolver);
     $modelMapping = new ModelMapping($metadataResolver);
     $this->mappingRegistry->register($model, $modelMapping);

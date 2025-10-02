@@ -5,7 +5,6 @@ namespace Twelver313\Sheetmap;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\Exceptions\SpreadsheetReaderException;
 use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\Validation\SheetValidationContext;
 use Twelver313\Sheetmap\Validation\SheetValidationPipeline;
@@ -30,7 +29,7 @@ class SheetHandler
     MetadataResolver $metadataResolver,
     ValueFormatter $valueFormatter,
     ArrayMapping|ModelMapping $mapping,
-    ?SheetConfigInterface $config = null
+    ?SheetConfig $config = null
   )
   {
     try {
@@ -114,18 +113,16 @@ class SheetHandler
       $this->initValidation();
     }
 
-    if ($this->mapping instanceof ModelMapping) {
-      $groupedColumns = $this->mapping->fulfillMissingProperties($this->sheetHeader)->getGroupedProperties();
-      $hydrationMethod = 'rowToObject';
-    } else {
-      $groupedColumns = $this->mapping->linkHeaderTitlesToLetters($this->sheetHeader)->getGroupedKeys();
-      $hydrationMethod = 'rowToArray';
-    }
+    $groupedColumns = $this->mapping
+      ->assembleFieldMappings($this->sheetHeader)
+      ->getGroupedFields();
 
     $rowHydrator = new RowHydrator($this->metadataResolver->getEntityName(), $this->valueFormatter, $groupedColumns);
     $result = [];
     foreach ($this->sheet->getRowIterator($this->startRow, $this->endRow) as $row) {
-      $result[] = $rowHydrator->{$hydrationMethod}($row);
+      $result[] = ($this->mapping instanceof ModelMapping)
+        ? $rowHydrator->rowToObject($row)
+        : $rowHydrator->rowToArray($row);
     }
     return $result;
   }

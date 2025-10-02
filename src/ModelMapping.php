@@ -2,83 +2,75 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\ModelMetadataResolver;
-use Twelver313\Sheetmap\PropertyMapping;
+use Twelver313\Sheetmap\ModelMetadata;
+use Twelver313\Sheetmap\FieldMapping;
 
-class ModelMapping
+class ModelMapping implements MappingProvider
 {
-  /** @var PropertyMapping[] */
+  /** @var FieldMapping[] */
   private $mappings = [];
 
-  /** @var ModelMetadataResolver */
+  /** @var ModelMetadata */
   private $metadataResolver;
 
-  public function __construct(ModelMetadataResolver $metadataResolver)
+  public function __construct(ModelMetadata $metadataResolver)
   {
     $this->metadataResolver = $metadataResolver;
   }
 
-  public function property(string $property): PropertyMapping {
-    return $this->mappings[$property] = new PropertyMapping(
-      $property,
+  public function field(string $field): FieldMapping {
+    return $this->mappings[$field] = new FieldMapping(
+      $field,
       $this->metadataResolver->getEntityName()
     );
   }
 
-  public function getMappings(): array {
-    return $this->mappings;
-  }
-
-  public function setMappings($property, $mapping) {
-    $this->mappings[$property] = $mapping;
-  }
-
-  private function resolve(string $property): ?PropertyMapping
+  private function resolve(string $field): ?FieldMapping
   {
-    return $this->mappings[$property] ?? null;
+    return $this->mappings[$field] ?? null;
   }
 
   /**
    * This method fulfills missing data from dynamic mapping 
    * with default column attributes for all properties
    */
-  public function fulfillMissingProperties(array $header): self
+  public function assembleFieldMappings(array $header): self
   {
-    foreach ($this->metadataResolver->getModelProperties() as $property) {
-      $propertyMapping = $this->resolve($property->getName());
-      $propertyAttributes = $this->metadataResolver->getColumnAttributes($property->getName());
+    foreach ($this->metadataResolver->getModelProperties() as $field) {
+      $fieldMapping = $this->resolve($field->getName());
+      $fieldAttributes = $this->metadataResolver->getColumnAttributes($field->getName());
 
       /**
-       * If property mapping was already registered dynamically
+       * If field mapping was already registered dynamically
        * SheetColumn column title is defined, but letter wasn't
        * We are assigning corresponding column letter from header by column title
       */
       if (
-        isset($propertyMapping) &&
-        !isset($propertyMapping->column) &&
-        isset($propertyMapping->title)
+        isset($fieldMapping) &&
+        !isset($fieldMapping->column) &&
+        isset($fieldMapping->title)
       ) {
-        $propertyMapping->column($header[$propertyMapping->title] ?? null);
+        $fieldMapping->column($header[$fieldMapping->title] ?? null);
       }
 
       /** 
        * If we didn't assign column attributes by default by using SheetColumn annotator
-       * We have nothing to do and skip current property
+       * We have nothing to do and skip current field
       */
-      if (!isset($propertyAttributes)) {
+      if (!isset($fieldAttributes)) {
         continue;
       }
 
-      $defaultColumnAttrsProvided = isset($propertyAttributes->title) || isset($propertyAttributes->letter);
+      $defaultColumnAttrsProvided = isset($fieldAttributes->title) || isset($fieldAttributes->letter);
       /**
-       * If we didn't create property mapping dynamically
+       * If we didn't create field mapping dynamically
        * We create it from column annotator attributes if they are provided
        */
-      if (!isset($propertyMapping) && $defaultColumnAttrsProvided) {
-        $propertyMapping = $this
-          ->property($property->name)
-          ->column($propertyAttributes->letter ?? $header[$propertyAttributes->title] ?? null)
-          ->type($propertyAttributes->type);
+      if (!isset($fieldMapping) && $defaultColumnAttrsProvided) {
+        $fieldMapping = $this
+          ->field($field->name)
+          ->column($fieldAttributes->letter ?? $header[$fieldAttributes->title] ?? null)
+          ->type($fieldAttributes->type);
         continue;
       }
 
@@ -86,8 +78,8 @@ class ModelMapping
        * If we are missing column from dynamic creation
        * We are assigning it from column annotator
        */
-      if (!isset($propertyMapping->column) && $defaultColumnAttrsProvided) {
-        $propertyMapping->column($propertyAttributes->letter ?? $header[$propertyAttributes->title] ?? null);
+      if (!isset($fieldMapping->column) && $defaultColumnAttrsProvided) {
+        $fieldMapping->column($fieldAttributes->letter ?? $header[$fieldAttributes->title] ?? null);
       }
 
       /**
@@ -95,23 +87,23 @@ class ModelMapping
        * We are assigning it from column annotator
        * Unless we are missing column
        */
-      if (isset($propertyMapping->column) && !isset($propertyMapping->type)) {
-        $propertyMapping->type($propertyAttributes->type);
+      if (isset($fieldMapping->column) && !isset($fieldMapping->type)) {
+        $fieldMapping->type($fieldAttributes->type);
       }
     }
 
     return $this;
   }
 
-  public function getGroupedProperties()
+  public function getGroupedFields(): array
   {
     $result = [];
-    foreach ($this->mappings as $propertyMapping) {
-      if (!isset($propertyMapping->column)) {
+    foreach ($this->mappings as $fieldMapping) {
+      if (!isset($fieldMapping->column)) {
         continue;
       }
 
-      $result[$propertyMapping->column][] = $propertyMapping;
+      $result[$fieldMapping->column][] = $fieldMapping;
     }
 
     return $result;
