@@ -1,5 +1,7 @@
 <?php
 
+namespace Twelver313\Sheetmap\Exceptions;
+
 use Twelver313\Sheetmap\Exceptions\SheetmapException;
 
 final class MissingValueFormatterException extends SheetmapException
@@ -12,7 +14,7 @@ final class MissingValueFormatterException extends SheetmapException
   {
     parent::__construct(
       sprintf(
-        "Type '%s' used for property '%s' of class '%s' has no registered formatter",
+        "Type '%s' used for field '%s' of entity '%s' has no registered formatter",
         $type,
         $property,
         $modelName

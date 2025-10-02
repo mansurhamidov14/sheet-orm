@@ -14,7 +14,7 @@ class SheetValidationPipeline
   public static function fromMetadata(MetadataResolver $metadataResolver): self
   {
     $pipeline = new self();
-    $modelValidators = $metadataResolver->getModelValidators();
+    $modelValidators = $metadataResolver->getSheetValidators();
     foreach ($modelValidators as $validator) {
       $pipeline->addValidator($validator);
     }

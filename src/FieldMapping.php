@@ -2,18 +2,18 @@
 
 namespace Twelver313\Sheetmap;
 
-class PropertyMapping
+class FieldMapping
 {
-  public $modelName;
-  public $property;
+  public $entityName;
+  public $field;
   public $title = null;
   public $column = null;
   public $type = null;
 
-  public function __construct(string $property, string $modelName)
+  public function __construct(string $field, string $entityName)
   {
-    $this->property = $property;
-    $this->modelName = $modelName;
+    $this->field = $field;
+    $this->entityName = $entityName;
   }
 
   public function title(string $title): self

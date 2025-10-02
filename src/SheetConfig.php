@@ -2,10 +2,9 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\SheetConfigInterface;
-
-class SheetConfig implements SheetConfigInterface
+class SheetConfig
 {
+  public $headerRow;
   public $name;
   public $index;
   public $startRow;
@@ -13,9 +12,10 @@ class SheetConfig implements SheetConfigInterface
 
   public function __construct($options)
   {
+    $this->headerRow = $options['headerRow'] ?? 1;
     $this->index = $options['index'] ?? null;
     $this->name = $options['name'] ?? null;
     $this->startRow = $options['startRow'] ?? 2;
-    $this->endRow = $options['endRow'];
+    $this->endRow = $options['endRow'] ?? null;
   }
 }

@@ -5,7 +5,6 @@ namespace Twelver313\Sheetmap;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\Exceptions\SpreadsheetReaderException;
 use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\Validation\SheetValidationContext;
 use Twelver313\Sheetmap\Validation\SheetValidationPipeline;
@@ -18,8 +17,8 @@ class SheetHandler
   private $sheet;
   /** @var ValueFormatter */
   private $valueFormatter;
-  /** @var ModelMapping */
-  private $modelMapping;
+  /** @var ArrayMapping|ModelMapping */
+  private $mapping;
   private $startRow = 2;
   private $endRow = null;
   private $sheetHeader = [];
@@ -29,15 +28,15 @@ class SheetHandler
     string $filePath,
     MetadataResolver $metadataResolver,
     ValueFormatter $valueFormatter,
-    ModelMapping $modelMapping,
-    ?SheetConfigInterface $config = null
+    ArrayMapping|ModelMapping $mapping,
+    ?SheetConfig $config = null
   )
   {
     try {
       $document = IOFactory::load($filePath);
       $this->metadataResolver = $metadataResolver;
       $this->valueFormatter = $valueFormatter;
-      $this->modelMapping = $modelMapping;
+      $this->mapping = $mapping;
       $sheetConfig = $config ?? $metadataResolver->getSheetConfig();
 
       if (isset($sheetConfig->index)) {
@@ -71,7 +70,7 @@ class SheetHandler
 
   private function initValidation($silent = false) {
     $validationContext = new SheetValidationContext(
-      $this->metadataResolver->getModel(),
+      $this->metadataResolver->getEntityName(),
       $this->sheetHeader,
       $this->sheet
     );
@@ -114,11 +113,16 @@ class SheetHandler
       $this->initValidation();
     }
 
-    $groupedColumns = $this->modelMapping->fulfillMissingProperties($this->sheetHeader)->getGroupedProperties();
-    $rowHydrator = new RowHydrator($this->metadataResolver->getModel(), $this->valueFormatter, $groupedColumns);
+    $groupedColumns = $this->mapping
+      ->assembleFieldMappings($this->sheetHeader)
+      ->getGroupedFields();
+
+    $rowHydrator = new RowHydrator($this->metadataResolver->getEntityName(), $this->valueFormatter, $groupedColumns);
     $result = [];
     foreach ($this->sheet->getRowIterator($this->startRow, $this->endRow) as $row) {
-      $result[] = $rowHydrator->rowToObject($row);
+      $result[] = ($this->mapping instanceof ModelMapping)
+        ? $rowHydrator->rowToObject($row)
+        : $rowHydrator->rowToArray($row);
     }
     return $result;
   }

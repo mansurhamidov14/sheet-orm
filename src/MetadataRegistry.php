@@ -2,7 +2,7 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\Exceptions\MissingModelMetadataException;
+use Twelver313\Sheetmap\Exceptions\MissingMetadataException;
 use Twelver313\Sheetmap\MetadataResolver;
 
 class MetadataRegistry
@@ -10,26 +10,21 @@ class MetadataRegistry
   /** @var MetadataResolver[] */
   private $registry = [];
 
-  public function exists(string $modelName)
+  public function exists(string $entityName)
   {
-    return isset($this->registry[$modelName]);
+    return isset($this->registry[$entityName]);
   }
 
-  public function register(string $modelName): MetadataResolver
+  public function register(MetadataResolver $metadataResolver): void
   {
-    try {
-      return $this->get($modelName);
-    } catch (MissingModelMetadataException $e) {
-      $this->registry[$modelName] = new MetadataResolver($modelName);
-      return $this->get($modelName);
-    }
+    $this->registry[$metadataResolver->getEntityName()] = $metadataResolver;
   }
 
-  public function get(string $modelName): MetadataResolver
+  public function get(string $entityName): MetadataResolver
   {
-    if (!$this->exists($modelName)) {
-      throw new MissingModelMetadataException($modelName);
+    if (!$this->exists($entityName)) {
+      throw new MissingMetadataException($entityName);
     }
-    return $this->registry[$modelName];
+    return $this->registry[$entityName];
   }
 }

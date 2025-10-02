@@ -2,7 +2,7 @@
 
 namespace Twelver313\Sheetmap\Attributes;
 
-use Twelver313\Sheetmap\SheetConfigInterface;
+use Twelver313\Sheetmap\SheetConfig;
 
 /**
  * @Annotation
@@ -10,16 +10,12 @@ use Twelver313\Sheetmap\SheetConfigInterface;
  * @Target({"CLASS"})
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class Sheet implements SheetConfigInterface
+class Sheet extends SheetConfig
 {
-  public $name;
-  public $index;
-  public $startRow;
-  public $endRow;
-
-  public function __construct(?string $name = null, ?int $index = null, int $startRow = 2, ?int $endRow = null) {
+  public function __construct(?string $name = null, ?int $index = null, int $headerRow = 2, int $startRow = 2, ?int $endRow = null) {
     $this->name = $name;
-    $this->index = null;
+    $this->index = $index ?? null;
+    $this->headerRow = $headerRow;
     $this->startRow = $startRow ?? 2;
     $this->endRow = $endRow;
   }

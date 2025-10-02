@@ -1,0 +1,19 @@
+<?php
+
+namespace Twelver313\Sheetmap\Exceptions;
+
+final class MissingMetadataException extends SheetmapException
+{
+  protected $entityName;
+
+  public function __construct(string $entityName)
+  {
+    parent::__construct(sprintf("Entity '%s' has no metada and is not loaded.", $entityName));
+    $this->entityName = $entityName;
+  }
+
+  public function getEntityName()
+  {
+    return $this->entityName;
+  }
+}
