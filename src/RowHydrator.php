@@ -25,7 +25,7 @@ class RowHydrator
 
   public function rowToObject(Row $row)
   {
-    $object = new ($this->modelName)();
+    $object = new $this->modelName();
     foreach ($row->getCellIterator() as $cell) {
       $column = $cell->getColumn();
       if (!isset($this->groupedColumns[$column])) {

@@ -24,7 +24,7 @@ class ArrayMapping implements MappingProvider
     );
   }
 
-  public function assembleFieldMappings(array $header): self
+  public function assembleFieldMappings(array $header): MappingProvider
   {
     foreach ($this->mappings as $mapping) {
       if (empty($mapping->column) && $mapping->title) {

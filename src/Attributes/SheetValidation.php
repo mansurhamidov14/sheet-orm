@@ -25,6 +25,6 @@ class SheetValidation
 
   public function getStrategyInstance(): SheetValidationStrategy
   {
-    return new ($this->strategy)();
+    return new $this->strategy();
   }
 }

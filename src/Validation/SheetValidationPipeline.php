@@ -24,7 +24,7 @@ class SheetValidationPipeline
 
   /**
    * @return string[]
-   * @throws \Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException
+   * @throws InvalidSheetTemplateException
    */
   public function validateAll(SheetValidationContext $context, $silent = false) {
     $errors = [];

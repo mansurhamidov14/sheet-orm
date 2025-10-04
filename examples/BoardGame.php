@@ -5,7 +5,9 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
+use Twelver313\Sheetmap\Attributes\SheetValidation;
 
+/** @SheetValidation(strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderSize", params={"exact": 57}) */
 class BoardGame {
   /** @SheetColumn(title="row_id", type="int") */
   public $id;

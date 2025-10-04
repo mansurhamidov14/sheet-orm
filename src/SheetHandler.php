@@ -17,7 +17,7 @@ class SheetHandler
   private $sheet;
   /** @var ValueFormatter */
   private $valueFormatter;
-  /** @var ArrayMapping|ModelMapping */
+  /** @var MappingProvider */
   private $mapping;
   private $startRow = 2;
   private $endRow = null;
@@ -28,7 +28,7 @@ class SheetHandler
     string $filePath,
     MetadataResolver $metadataResolver,
     ValueFormatter $valueFormatter,
-    ArrayMapping|ModelMapping $mapping,
+    MappingProvider $mapping,
     ?SheetConfig $config = null
   )
   {

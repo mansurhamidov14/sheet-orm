@@ -13,7 +13,7 @@ class ModelMapping implements MappingProvider
   /** @var ModelMetadata */
   private $metadataResolver;
 
-  public function __construct(ModelMetadata $metadataResolver)
+  public function __construct(MetadataResolver $metadataResolver)
   {
     $this->metadataResolver = $metadataResolver;
   }
@@ -31,10 +31,10 @@ class ModelMapping implements MappingProvider
   }
 
   /**
-   * This method fulfills missing data from dynamic mapping 
+   * This method fills missing data from dynamic mapping 
    * with default column attributes for all properties
    */
-  public function assembleFieldMappings(array $header): self
+  public function assembleFieldMappings(array $header): MappingProvider
   {
     foreach ($this->metadataResolver->getModelProperties() as $field) {
       $fieldMapping = $this->resolve($field->getName());

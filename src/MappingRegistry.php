@@ -2,9 +2,8 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\ArrayMapping;
+use Twelver313\Sheetmap\MappingProvider;
 use Twelver313\Sheetmap\Exceptions\MissingMappingException;
-use Twelver313\Sheetmap\ModelMapping;
 
 class MappingRegistry
 {
@@ -16,12 +15,12 @@ class MappingRegistry
     $this->mappings = [];
   }
 
-  public function register(string $name, ModelMapping|ArrayMapping $mapping): void
+  public function register(string $name, MappingProvider $mapping): void
   {
     $this->mappings[$name] = $mapping;
   }
 
-  public function registerMissing(string $name, ModelMapping|ArrayMapping $mapping): void
+  public function registerMissing(string $name, MappingProvider $mapping): void
   {
     if (!$this->exists($name)) {
       $this->register($name, $mapping);
@@ -33,7 +32,7 @@ class MappingRegistry
     return isset($this->mappings[$entityName]);
   }
 
-  public function get(string $entityName): ModelMapping|ArrayMapping
+  public function get(string $entityName): MappingProvider
   {
     if (!isset($this->mappings[$entityName])) {
       throw new MissingMappingException($entityName);

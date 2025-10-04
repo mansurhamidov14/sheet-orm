@@ -63,7 +63,11 @@ class ValueFormatter
     );
   }
 
-  public function register(string|array $typeOrTypes, callable $callback)
+  /**
+   * @param string|array $typeOrTypes
+   * @param callable $callback
+   */
+  public function register($typeOrTypes, callable $callback)
   {
     if (is_string($typeOrTypes)) {
       return $this->formatters[$typeOrTypes] = $callback;
