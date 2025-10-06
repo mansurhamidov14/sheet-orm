@@ -38,18 +38,40 @@ class FieldMapping
     return $this;
   }
 
-  public function groupItem(string $target)
+  /**
+   * @param string|ArraySchema $target
+   */
+  public function groupItem($target): MappingProvider
   {
+    if ($target instanceof ArraySchema) {
+      $this->groupItem = $target->getMapping();
+      return $this->groupItem;
+    }
+
     $metadataResolver = new ModelMetadata($target);
     $this->groupItem = new ModelMapping($metadataResolver);
     return $this->groupItem;
   }
 
-  public function groupList(string $target, int $size, int $step)
+  /**
+   * @param string|ArraySchema $target
+   */
+  public function groupList($target, int $size, int $step): MappingProvider
   {
+    $params = ['size' => $size, 'step' => $step];
+    
+    if ($target instanceof ArraySchema) {
+      $this->groupList = [
+        'params' => $params,
+        'mappingProvider' => $target->getMapping()
+      ];
+      return $target->getMapping();
+    }
+    
     $metadataResolver = new ModelMetadata($target);
+    
     $this->groupList = [
-      'params' => ['size' => $size, 'step' => $step],
+      'params' => $params,
       'mappingProvider' => new ModelMapping($metadataResolver)
     ];
 

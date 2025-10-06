@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Attributes;
+namespace Twelver313\Sheetmap\Helpers;
 
-class AttributeHelpers
+class Attributes
 {
   public static function attributesSupported()
   {

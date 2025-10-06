@@ -4,12 +4,12 @@ namespace Twelver313\Sheetmap;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
-use Twelver313\Sheetmap\Attributes\AttributeHelpers;
 use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
 use Twelver313\Sheetmap\Attributes\ColumnGroupList;
 use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\Attributes\SheetValidation;
+use Twelver313\Sheetmap\Helpers\Attributes;
 use Twelver313\Sheetmap\MetadataResolver;
 use Twelver313\Sheetmap\SheetConfig;
 
@@ -38,7 +38,7 @@ class ModelMetadata implements MetadataResolver
 
   public function getSheetConfig(): SheetConfig
   {
-    if (AttributeHelpers::attributesSupported()) {
+    if (Attributes::attributesSupported()) {
       $sheetConfigAttribute = $this->refClass->getAttributes(Sheet::class)[0] ?? null;
       if (isset($sheetConfigAttribute)) {
         return $sheetConfigAttribute->newInstance();
@@ -60,7 +60,7 @@ class ModelMetadata implements MetadataResolver
 
     $refProperty = $this->refClass->getProperty($property);
 
-    if (AttributeHelpers::attributesSupported()) {
+    if (Attributes::attributesSupported()) {
       $columnAttributes = $refProperty->getAttributes($type);
       if (!empty($columnAttributes)) {
         return $columnAttributes[0]->newInstance();
@@ -95,7 +95,7 @@ class ModelMetadata implements MetadataResolver
    */
   public function getSheetValidators(): array
   {
-    if (AttributeHelpers::attributesSupported()) {
+    if (Attributes::attributesSupported()) {
       $validationAttributes =  $this->refClass->getAttributes(SheetValidation::class);
       if (count($validationAttributes)) {
         return array_map(function ($attribute) {

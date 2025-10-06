@@ -2,37 +2,11 @@
 
 namespace Twelver313\Sheetmap;
 
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use ReflectionProperty;
-use Twelver313\Sheetmap\ModelMetadata;
 use Twelver313\Sheetmap\FieldMapping;
 
-class ModelMapping implements MappingProvider
+class ModelMapping extends MappingProvider
 {
-  /** @var FieldMapping[] */
-  private $mappings = [];
-
-  /** @var ModelMetadata */
-  private $metadataResolver;
-
-  public function __construct(MetadataResolver $metadataResolver)
-  {
-    $this->metadataResolver = $metadataResolver;
-  }
-
-  public function getMappings()
-  {
-    return $this->mappings;
-  }
-
-  public function field(string $field): FieldMapping
-  {
-    return $this->mappings[$field] = new FieldMapping(
-      $field,
-      $this->metadataResolver->getEntityName()
-    );
-  }
-
   private function resolve(string $field): ?FieldMapping
   {
     return $this->mappings[$field] ?? null;
@@ -48,7 +22,6 @@ class ModelMapping implements MappingProvider
       $fieldColumnCreated = $this->createColumnFromField($field, $header);
       if ($fieldColumnCreated) continue;
 
-
       $fieldColumnGroupItemCreated = $this->createColumnGroupItemFromField($field, $header);
       if ($fieldColumnGroupItemCreated) continue;
 
@@ -58,7 +31,7 @@ class ModelMapping implements MappingProvider
     return $this;
   }
 
-  public function createColumnFromField(ReflectionProperty $field, array $header): bool
+  private function createColumnFromField(ReflectionProperty $field, array $header): bool
   {
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
@@ -166,63 +139,5 @@ class ModelMapping implements MappingProvider
       ->assembleFieldMappings($header);
     return true;
 
-  }
-
-  public function map(callable $callback)
-  {
-    $callback($this);
-  }
-
-  public function getGroupedFields(): array
-  {
-    $result = [];
-    foreach ($this->mappings as $fieldMapping) {
-      $this->createGroupedColumn($result, $fieldMapping);
-    }
-    return $result;
-  }
-
-  private function createGroupedColumn(
-    array &$groupedHeader,
-    FieldMapping $fieldMapping,
-    int $offset = 0,
-    int $step = 0,
-    $address = []
-  )
-  {
-    if (isset($fieldMapping->column)) {
-      $columnIndex = Coordinate::columnIndexFromString($fieldMapping->column);
-      $columnIndex += $offset;
-      $column = Coordinate::stringFromColumnIndex($columnIndex);
-      $groupedHeader[$column][] = new FieldMetadata($address, $fieldMapping);
-    } else if (isset($fieldMapping->groupItem)) {
-      foreach ($fieldMapping->groupItem->getMappings() as $mapping) {
-        $addressCopy = $address;
-        $addressItem = new FieldAddressItem(FieldAddressItem::ASSIGNMENT_SINGLE, $fieldMapping->field, $mapping->entityName);
-        $addressCopy[] = $addressItem;
-        $this->createGroupedColumn($groupedHeader, $mapping, $offset, $step, $addressCopy);
-      }
-    } else if (isset($fieldMapping->groupList)) {
-      for ($i = 0; $i < $fieldMapping->groupList['params']['size']; $i++) {
-        foreach ($fieldMapping->groupList['mappingProvider']->getMappings() as $innerFieldMapping) {
-          $addressCopy = $address;
-          $newAddress = new FieldAddressItem(
-            FieldAddressItem::ASSIGNMENT_MULTIPLE,
-            $fieldMapping->field,
-            $innerFieldMapping->entityName,
-            $i
-          );
-
-          $addressCopy[] = $newAddress;
-          $this->createGroupedColumn(
-            $groupedHeader,
-            $innerFieldMapping,
-            $offset + ($i * $fieldMapping->groupList['params']['step']),
-            $fieldMapping->groupList['params']['step'],
-            $addressCopy
-          );
-        }
-      }
-    }
   }
 }

@@ -33,7 +33,7 @@ class ArraySchema implements MetadataResolver
 
   public function mapKeys(callable $callback)
   {
-    $callback($this->mapping);
+    $this->mapping->map($callback);
   }
 
   public function getEntityName(): string

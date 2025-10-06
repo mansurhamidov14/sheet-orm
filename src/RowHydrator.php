@@ -82,10 +82,36 @@ class RowHydrator
       }
 
       foreach ($this->groupedColumns[$column] as $mapping) {
-        $result[$mapping->field] = $this->valueFormatter->format($cell, $mapping);
+        $this->fillArray($result, $mapping, $cell);
       }
     }
 
     return $result;
+  }
+
+  private function fillArray(&$rootArray, FieldMetadata $fieldMetadata, Cell $cell): void
+  {
+    if (!$fieldMetadata->isRootField()) {
+      $current = &$rootArray;
+      foreach ($fieldMetadata->address as $step) {
+        if ($step->isArrayItem()) {
+          if (!isset($current[$step->fieldName])) {
+            $current[$step->fieldName] = [];
+          }
+          if (!isset($current[$step->fieldName][$step->index])) {
+            $current[$step->fieldName][$step->index] = [];
+          }
+          $current = &$current[$step->fieldName][$step->index];
+        } else {
+          if (!isset($current[$step->fieldName])) {
+            $current[$step->fieldName] = [];
+          }
+          $current = &$current[$step->fieldName];
+        }
+      }
+      $current[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
+    } else {
+      $rootArray[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
+    }
   }
 }
