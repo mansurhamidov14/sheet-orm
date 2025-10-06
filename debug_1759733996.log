@@ -1,0 +1,509 @@
+Array
+(
+    [A] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => User
+                            [field] => firstName
+                            [title] => 
+                            [column] => A
+                            [type] => auto
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [B] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => User
+                            [field] => lastName
+                            [title] => 
+                            [column] => B
+                            [type] => auto
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [C] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 0
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => date
+                            [title] => 
+                            [column] => C
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [D] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 0
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => time
+                            [title] => 
+                            [column] => D
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [G] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 0
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => date
+                            [title] => 
+                            [column] => C
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+            [1] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 2
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => date
+                            [title] => 
+                            [column] => C
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [H] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 0
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => time
+                            [title] => 
+                            [column] => D
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+            [1] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 2
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => time
+                            [title] => 
+                            [column] => D
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [E] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 1
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => date
+                            [title] => 
+                            [column] => C
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [F] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 1
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => time
+                            [title] => 
+                            [column] => D
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [I] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 1
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => date
+                            [title] => 
+                            [column] => C
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [J] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 1
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => time
+                            [title] => 
+                            [column] => D
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [K] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 2
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => date
+                            [title] => 
+                            [column] => C
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+    [L] => Array
+        (
+            [0] => Twelver313\Sheetmap\FieldMetadata Object
+                (
+                    [address] => Array
+                        (
+                            [0] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => months
+                                    [target] => UserScheduleMonth
+                                    [index] => 
+                                )
+
+                            [1] => Twelver313\Sheetmap\FieldAddressItem Object
+                                (
+                                    [assignmentType] => multiple
+                                    [fieldName] => schedules
+                                    [target] => UserSchedule
+                                    [index] => 2
+                                )
+
+                        )
+
+                    [mapping] => Twelver313\Sheetmap\FieldMapping Object
+                        (
+                            [entityName] => UserSchedule
+                            [field] => time
+                            [title] => 
+                            [column] => D
+                            [type] => date
+                            [groupItem] => 
+                            [groupList] => 
+                        )
+
+                )
+
+        )
+
+)

@@ -116,7 +116,8 @@ class SheetHandler
     $groupedColumns = $this->mapping
       ->assembleFieldMappings($this->sheetHeader)
       ->getGroupedFields();
-
+    $res = print_r($groupedColumns, true);
+    file_put_contents(__DIR__ . '/../debug_' . date('U') . '.log', $res);
     $rowHydrator = new RowHydrator($this->metadataResolver->getEntityName(), $this->valueFormatter, $groupedColumns);
     $result = [];
     foreach ($this->sheet->getRowIterator($this->startRow, $this->endRow) as $row) {

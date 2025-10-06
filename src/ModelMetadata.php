@@ -5,6 +5,8 @@ namespace Twelver313\Sheetmap;
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
 use Twelver313\Sheetmap\Attributes\AttributeHelpers;
+use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
+use Twelver313\Sheetmap\Attributes\ColumnGroupList;
 use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\Attributes\SheetValidation;
@@ -50,7 +52,7 @@ class ModelMetadata implements MetadataResolver
     return $configAnnotators[0] ?? new Sheet();
   }
 
-  public function getColumnAttributes($property): ?SheetColumn
+  protected function getPropertyAttributesByType(string $property, string $type)
   {
     if (!$this->refClass->hasProperty($property)) {
       return null;
@@ -59,13 +61,28 @@ class ModelMetadata implements MetadataResolver
     $refProperty = $this->refClass->getProperty($property);
 
     if (AttributeHelpers::attributesSupported()) {
-      $columnAttributes = $refProperty->getAttributes(SheetColumn::class);
+      $columnAttributes = $refProperty->getAttributes($type);
       if (!empty($columnAttributes)) {
         return $columnAttributes[0]->newInstance();
       }
     }
 
-    return $this->annotationReader->getPropertyAnnotation($refProperty, SheetColumn::class);
+    return $this->annotationReader->getPropertyAnnotation($refProperty, $type);
+  }
+
+  public function getColumnAttributes($property): ?SheetColumn
+  {
+    return $this->getPropertyAttributesByType($property, SheetColumn::class);
+  }
+
+  public function getColumnGroupItemAttributes($property): ?ColumnGroupItem
+  {
+    return $this->getPropertyAttributesByType($property, ColumnGroupItem::class);
+  }
+
+  public function getColumnGroupListAttributes($property): ?ColumnGroupList
+  {
+    return $this->getPropertyAttributesByType($property, ColumnGroupList::class);
   }
 
   public function getModelProperties()

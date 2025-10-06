@@ -2,6 +2,7 @@
 
 namespace Twelver313\Sheetmap;
 
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use Twelver313\Sheetmap\ValueFormatter;
 use ReflectionProperty;
@@ -32,15 +33,37 @@ class RowHydrator
         continue;
       }
 
-      /** @var FieldMapping */
-      foreach ($this->groupedColumns[$column] as $mapping) {
-        $refProperty = new ReflectionProperty($object, $mapping->field);
-        $refProperty->setAccessible(true);
-        $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping));
+      /** @var FieldMetadata */
+      foreach ($this->groupedColumns[$column] as $fieldMetadata) {
+        $this->fillObject($object, $fieldMetadata, $cell);
       }
     }
 
     return $object;
+  }
+
+  private function fillObject(object $rootObject, FieldMetadata $fieldMetada, Cell $cell): void
+  {
+    $current = $rootObject;
+    if (!$fieldMetada->isRootField()) {
+      foreach ($fieldMetada->address as $step) {
+        $refProperty = new ReflectionProperty($current, $step->fieldName);
+        $refProperty->setAccessible(true);
+        $value = $refProperty->getValue($current);
+        $newValue = new $step->target();
+        if ($step->isArrayItem()) {
+          if (!isset($step->index)) $value[] = $newValue;
+          else $value[$step->index] = $newValue;
+        } else {
+          $value = $newValue;
+        }
+        $refProperty->setValue($current, $value);
+        $current = $newValue;
+      }
+    }
+    $refProperty = new ReflectionProperty($current, $fieldMetada->mapping->field);
+    $refProperty->setAccessible(true);
+    $refProperty->setValue($current, $this->valueFormatter->format($cell, $fieldMetada->mapping));
   }
 
   public function rowToArray(Row $row) {
