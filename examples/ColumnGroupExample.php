@@ -32,7 +32,7 @@ class User
     #[SheetColumn(letter: 'B')]
     public $lastName;
 
-    #[ColumnGroupList(target: UserScheduleMonth::class, size: 3, step: 2)]
+    #[ColumnGroupList(target: UserScheduleMonth::class, size: 3, step: 4)]
     public $months;
 }
 

@@ -50,15 +50,22 @@ class RowHydrator
         $refProperty = new ReflectionProperty($current, $step->fieldName);
         $refProperty->setAccessible(true);
         $value = $refProperty->getValue($current);
-        $newValue = new $step->target();
+  
         if ($step->isArrayItem()) {
-          if (!isset($step->index)) $value[] = $newValue;
-          else $value[$step->index] = $newValue;
+          $value = $value ?? [];
+          // Ensure array element exists
+          if (!isset($value[$step->index])) {
+            $value[$step->index] = new $step->target();
+          }
+          $refProperty->setValue($current, $value);
+          $current = $value[$step->index];
         } else {
-          $value = $newValue;
+          if (!isset($value)) {
+            $value = new $step->target();
+            $refProperty->setValue($current, $value);
+          }
+          $current = $value;
         }
-        $refProperty->setValue($current, $value);
-        $current = $newValue;
       }
     }
     $refProperty = new ReflectionProperty($current, $fieldMetada->mapping->field);

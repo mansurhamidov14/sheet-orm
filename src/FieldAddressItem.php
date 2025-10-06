@@ -17,7 +17,7 @@ class FieldAddressItem
    * @param string|int $value Field name or index value
    * @param string $target Target class name for object property, empty for array index
    */
-  public function __construct(string $assignmentType, string $fieldName, string $target, ?string $index = null)
+  public function __construct(string $assignmentType, string $fieldName, string $target, ?int $index = null)
   {
     $this->assignmentType = $assignmentType;
     $this->fieldName = $fieldName;

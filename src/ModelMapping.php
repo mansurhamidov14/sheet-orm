@@ -4,9 +4,6 @@ namespace Twelver313\Sheetmap;
 
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use ReflectionProperty;
-use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
-use Twelver313\Sheetmap\Attributes\ColumnGroupList;
-use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\ModelMetadata;
 use Twelver313\Sheetmap\FieldMapping;
 
@@ -189,7 +186,6 @@ class ModelMapping implements MappingProvider
     array &$groupedHeader,
     FieldMapping $fieldMapping,
     int $offset = 0,
-    ?int $iteration = null,
     int $step = 0,
     $address = []
   )
@@ -197,7 +193,6 @@ class ModelMapping implements MappingProvider
     if (isset($fieldMapping->column)) {
       $columnIndex = Coordinate::columnIndexFromString($fieldMapping->column);
       $columnIndex += $offset;
-      $columnIndex += (intval($iteration) * $step);
       $column = Coordinate::stringFromColumnIndex($columnIndex);
       $groupedHeader[$column][] = new FieldMetadata($address, $fieldMapping);
     } else if (isset($fieldMapping->groupItem)) {
@@ -205,27 +200,24 @@ class ModelMapping implements MappingProvider
         $addressCopy = $address;
         $addressItem = new FieldAddressItem(FieldAddressItem::ASSIGNMENT_SINGLE, $fieldMapping->field, $mapping->entityName);
         $addressCopy[] = $addressItem;
-        $this->createGroupedColumn($groupedHeader, $mapping, $offset, $iteration, $step, $addressCopy);
+        $this->createGroupedColumn($groupedHeader, $mapping, $offset, $step, $addressCopy);
       }
     } else if (isset($fieldMapping->groupList)) {
-      for (
-        $innerIteratation = 0;
-        $innerIteratation < $fieldMapping->groupList['params']['size'];
-        $innerIteratation++
-      ) {
+      for ($i = 0; $i < $fieldMapping->groupList['params']['size']; $i++) {
         foreach ($fieldMapping->groupList['mappingProvider']->getMappings() as $innerFieldMapping) {
           $addressCopy = $address;
-          $addressCopy[] = new FieldAddressItem(
+          $newAddress = new FieldAddressItem(
             FieldAddressItem::ASSIGNMENT_MULTIPLE,
             $fieldMapping->field,
             $innerFieldMapping->entityName,
-            $iteration
+            $i
           );
+
+          $addressCopy[] = $newAddress;
           $this->createGroupedColumn(
             $groupedHeader,
             $innerFieldMapping,
-            $offset + ($innerIteratation * $fieldMapping->groupList['params']['step']),
-            $innerIteratation, 
+            $offset + ($i * $fieldMapping->groupList['params']['step']),
             $fieldMapping->groupList['params']['step'],
             $addressCopy
           );
