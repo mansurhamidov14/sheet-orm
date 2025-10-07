@@ -1,9 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap;
-
-use Twelver313\Sheetmap\FieldAddressItem;
-use Twelver313\Sheetmap\FieldMapping;
+namespace Twelver313\Sheetmap\Field;
 
 class FieldMetadata
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\Sheetmap\Mapping;
 
 use ReflectionProperty;
-use Twelver313\Sheetmap\FieldMapping;
+use Twelver313\Sheetmap\Field\FieldMapping;
 
 class ModelMapping extends MappingProvider
 {

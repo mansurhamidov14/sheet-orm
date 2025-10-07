@@ -5,7 +5,8 @@ namespace Twelver313\Sheetmap;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\MetadataResolver;
+use Twelver313\Sheetmap\Mapping\MappingProvider;
+use Twelver313\Sheetmap\Mapping\ModelMapping;
 use Twelver313\Sheetmap\Validation\SheetValidationContext;
 use Twelver313\Sheetmap\Validation\SheetValidationPipeline;
 

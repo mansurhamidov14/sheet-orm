@@ -1,9 +1,12 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\Sheetmap\Mapping;
 
-use Twelver313\Sheetmap\FieldMapping;
+use Twelver313\Sheetmap\Field\FieldAddressItem;
+use Twelver313\Sheetmap\Field\FieldMapping;
+use Twelver313\Sheetmap\Field\FieldMetadata;
 use Twelver313\Sheetmap\Helpers\Calculations;
+use Twelver313\Sheetmap\MetadataResolver;
 
 abstract class MappingProvider
 {

@@ -2,8 +2,6 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\SheetConfig;
-
 interface MetadataResolver
 {
   public function getEntityName(): string;

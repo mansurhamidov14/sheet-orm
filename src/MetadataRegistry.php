@@ -3,7 +3,6 @@
 namespace Twelver313\Sheetmap;
 
 use Twelver313\Sheetmap\Exceptions\MissingMetadataException;
-use Twelver313\Sheetmap\MetadataResolver;
 
 class MetadataRegistry
 {

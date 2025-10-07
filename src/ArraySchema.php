@@ -2,7 +2,7 @@
 
 namespace Twelver313\Sheetmap;
 
-use Twelver313\Sheetmap\ArrayMapping;
+use Twelver313\Sheetmap\Mapping\ArrayMapping;
 use Twelver313\Sheetmap\Attributes\SheetValidation;
 
 class ArraySchema implements MetadataResolver

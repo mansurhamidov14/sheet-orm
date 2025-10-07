@@ -7,6 +7,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Twelver313\Sheetmap\Exceptions\InvalidValueFormatterTypeException;
 use Twelver313\Sheetmap\Exceptions\MissingValueFormatterException;
+use Twelver313\Sheetmap\Field\FieldMapping;
 
 class ValueFormatter
 {

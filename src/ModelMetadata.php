@@ -10,8 +10,6 @@ use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
 use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\Helpers\Attributes;
-use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\SheetConfig;
 
 class ModelMetadata implements MetadataResolver
 {

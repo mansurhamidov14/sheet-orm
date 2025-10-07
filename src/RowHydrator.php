@@ -4,8 +4,8 @@ namespace Twelver313\Sheetmap;
 
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
-use Twelver313\Sheetmap\ValueFormatter;
 use ReflectionProperty;
+use Twelver313\Sheetmap\Field\FieldMetadata;
 
 class RowHydrator
 {

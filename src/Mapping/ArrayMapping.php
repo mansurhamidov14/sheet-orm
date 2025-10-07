@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\Sheetmap\Mapping;
 
 class ArrayMapping extends MappingProvider
 {

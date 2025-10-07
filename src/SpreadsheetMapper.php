@@ -4,10 +4,8 @@ namespace Twelver313\Sheetmap;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\Sheetmap\Exceptions\DocumentWasNotLoadedException;
-use Twelver313\Sheetmap\MappingRegistry;
-use Twelver313\Sheetmap\MetadataRegistry;
-use Twelver313\Sheetmap\SheetHandler;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\Sheetmap\Mapping\MappingRegistry;
+use Twelver313\Sheetmap\Mapping\ModelMapping;
 
 class SpreadsheetMapper
 {
