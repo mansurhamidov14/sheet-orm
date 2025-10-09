@@ -39,4 +39,6 @@ class User
 $mapper = new SpreadsheetMapper();
 $data = $mapper->load(User::class)->fromFile(__DIR__ . '/columngrouplist.xlsx')->getData();
 $output = print_r($data, true);
+$output = str_replace('    ', ' ', $output);
+$output = str_replace("\n\n", "\n", $output);
 file_put_contents(__DIR__ . '/../output_' . date('U') . '.log', $output);
