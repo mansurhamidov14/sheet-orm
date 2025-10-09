@@ -10,7 +10,7 @@ class Calculations
     'nextColumn' => []
   ];
 
-  public static function getNextColumn(string $letter, int $offset)
+  public static function getShiftedColumn(string $letter, int $offset)
   {
     if (empty($offset)) {
       return $letter;

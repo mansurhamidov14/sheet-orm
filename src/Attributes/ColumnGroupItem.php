@@ -11,11 +11,11 @@ namespace Twelver313\Sheetmap\Attributes;
 class ColumnGroupItem
 {
   public $target;
-  public $repeatTimes;
-  public $step;
+  public $params;
 
-  public function __construct(string $target)
+  public function __construct(string $target, array $params = [])
   {
     $this->target = $target;
+    $this->params = $params;
   }
 }

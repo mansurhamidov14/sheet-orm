@@ -14,9 +14,8 @@ class FieldMapping
   public $title = null;
   public $column = null;
   public $type = null;
-  /** @var ModelMapping */
-  public $groupItem = null;
-  public $groupList = null;
+  /** @var ColumnGroup */
+  public $columnGroup = null;
 
   public function __construct(string $field, string $entityName)
   {
@@ -44,55 +43,43 @@ class FieldMapping
   /**
    * @param string|ArraySchema $target
    */
-  public function groupItem($target, array $config = []): MappingProvider
+  public function groupItem($target, array $params = []): MappingProvider
   {
     if ($target instanceof ArraySchema) {
-      $this->groupItem = $target->getMapping();
-      return $this->groupItem;
+      $this->columnGroup = new ColumnGroup($target->getMapping(), $params);
+      return $this->columnGroup->getMappingProvider();
     }
 
     if (!class_exists($target)) {
-      $arraySchema = new ArraySchema($target, $config);
-      $this->groupItem = $arraySchema->getMapping();
-      return $this->groupItem;
+      $arraySchema = new ArraySchema($target, $params);
+      $this->columnGroup = new ColumnGroup($arraySchema->getMapping(), $params);
+      return $this->columnGroup->getMappingProvider();
     }
 
     $metadataResolver = new ModelMetadata($target);
-    $this->groupItem = new ModelMapping($metadataResolver);
-    return $this->groupItem;
+    $mappingProvider = new ModelMapping($metadataResolver);
+    $this->columnGroup = new ColumnGroup($mappingProvider, $params);
+    return $this->columnGroup->getMappingProvider();
   }
 
   /**
    * @param string|ArraySchema $target
    */
-  public function groupList($target, int $size, int $step, array $config = []): MappingProvider
+  public function groupList($target, array $params): MappingProvider
   {
-    $params = ['size' => $size, 'step' => $step];
-    
     if ($target instanceof ArraySchema) {
-      $this->groupList = [
-        'params' => $params,
-        'mappingProvider' => $target->getMapping()
-      ];
-      return $target->getMapping();
+      $this->columnGroup = new ColumnGroup($target->getMapping(), $params, true);
+      return $this->columnGroup->getMappingProvider();
     }
 
     if (!class_exists($target)) {
-      $arraySchema = new ArraySchema($target, $config);
-      $this->groupList = [
-        'params' => $params,
-        'mappingProvider' => $arraySchema->getMapping()
-      ];
-      return $arraySchema->getMapping();
+      $arraySchema = new ArraySchema($target);
+      $this->columnGroup = new ColumnGroup($arraySchema->getMapping(), $params, true);
+      return $this->columnGroup->getMappingProvider();
     }
     
     $metadataResolver = new ModelMetadata($target);
-    
-    $this->groupList = [
-      'params' => $params,
-      'mappingProvider' => new ModelMapping($metadataResolver)
-    ];
-
-    return $this->groupList['mappingProvider'];
+    $this->columnGroup = new ColumnGroup(new ModelMapping($metadataResolver), $params, true);
+    return $this->columnGroup->getMappingProvider();
   }
 }

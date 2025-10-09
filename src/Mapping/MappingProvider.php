@@ -13,7 +13,7 @@ abstract class MappingProvider
   /** @var FieldMapping[] */
   protected $mappings = [];
 
-  /** @var ModelMetadata */
+  /** @var \Twelver313\Sheetmap\ModelMetadata */
   protected $metadataResolver;
 
   public function __construct(MetadataResolver $metadataResolver)
@@ -54,28 +54,42 @@ abstract class MappingProvider
   )
   {
     if (isset($fieldMapping->column)) {
-      $column = Calculations::getNextColumn($fieldMapping->column, $offset);
+      $column = Calculations::getShiftedColumn($fieldMapping->column, $offset);
       $groupedHeader[$column][] = new FieldMetadata($address, $fieldMapping);
-    } else if (isset($fieldMapping->groupItem)) {
-      $this->handleGroupItem($fieldMapping, $groupedHeader, $address, $offset, $step);
-    } else if (isset($fieldMapping->groupList)) {
+    } else if (isset($fieldMapping->columnGroup)) {
+      $this->handleGroup($fieldMapping, $groupedHeader, $address, $offset, $step);
+    }
+  }
+
+  private function handleGroup(FieldMapping $fieldMapping, array &$groupedHeader, array $address, int $offset, int $step)
+  {
+    if (!isset($fieldMapping->columnGroup)) {
+      return;
+    }
+    if ($fieldMapping->columnGroup->isList()) {
       $this->handleGroupList($fieldMapping, $groupedHeader, $address, $offset, $step);
+      return;
+    } else {
+      $this->handleGroupItem($fieldMapping, $groupedHeader, $address, $offset, $step);
+      return;
     }
   }
 
   private function handleGroupItem(FieldMapping $fieldMapping, array &$groupedHeader, array $address, int $offset, int $step)
   {
-    foreach ($fieldMapping->groupItem->getMappings() as $mapping) {
+
+    foreach ($fieldMapping->columnGroup->getMappingProvider()->getMappings() as $mapping) {
+      $addressCopy = $address;
       $addressItem = new FieldAddressItem(FieldAddressItem::ASSIGNMENT_SINGLE, $fieldMapping->field, $mapping->entityName);
-      $address[] = $addressItem;
-      $this->createGroupedColumn($groupedHeader, $mapping, $offset, $step, $address);
+      $addressCopy[] = $addressItem;
+      $this->createGroupedColumn($groupedHeader, $mapping, $offset, $step, $addressCopy);
     }
   }
 
   private function handleGroupList(FieldMapping $fieldMapping, array &$groupedHeader, array $address, int $offset, int $step)
   {
-    for ($i = 0; $i < $fieldMapping->groupList['params']['size']; $i++) {
-      foreach ($fieldMapping->groupList['mappingProvider']->getMappings() as $innerFieldMapping) {
+    for ($i = 0; $i < $fieldMapping->columnGroup->getParams()['size']; $i++) {
+      foreach ($fieldMapping->columnGroup->getMappingProvider()->getMappings() as $innerFieldMapping) {
         $addressCopy = $address;
         $newAddress = new FieldAddressItem(
           FieldAddressItem::ASSIGNMENT_MULTIPLE,
@@ -88,8 +102,8 @@ abstract class MappingProvider
         $this->createGroupedColumn(
           $groupedHeader,
           $innerFieldMapping,
-          Calculations::getNextOffset($offset, $fieldMapping->groupList['params']['step'], $i),
-          $fieldMapping->groupList['params']['step'],
+          Calculations::getNextOffset($offset, $fieldMapping->columnGroup->getParams()['step'], $i),
+          $fieldMapping->columnGroup->getParams()['step'],
           $addressCopy
         );
       }

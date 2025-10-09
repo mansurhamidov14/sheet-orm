@@ -3,6 +3,8 @@
 namespace Twelver313\Sheetmap\Mapping;
 
 use ReflectionProperty;
+use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
+use Twelver313\Sheetmap\Attributes\ColumnGroupList;
 use Twelver313\Sheetmap\Field\FieldMapping;
 
 class ModelMapping extends MappingProvider
@@ -95,20 +97,21 @@ class ModelMapping extends MappingProvider
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
     $fieldColumnGroupItemAttributes = $this->metadataResolver->getColumnGroupItemAttributes($fieldName);
+    $wasSetDynamically = $this->wasGroupSetDynamically($fieldMapping);
     /** If field was not decorated as column group item skipping column creation for the field */
-    $columnGroupItemWasNotSetDynamically = !isset($fieldMapping) || !isset($fieldMapping->groupItem);
-    if ($columnGroupItemWasNotSetDynamically && !isset($fieldColumnGroupItemAttributes)) {
+    if (!$wasSetDynamically && !isset($fieldColumnGroupItemAttributes)) {
       return false;
     }
 
-    if (isset($fieldMapping) && isset($fieldMapping->groupItem)) {
-      $fieldMapping->groupItem->assembleFieldMappings($header);
+    if ($wasSetDynamically) {
+      $this->fillMissingGroupParams($fieldColumnGroupItemAttributes, $fieldMapping);
+      $fieldMapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
 
       return true;
     }
 
     $this->field($fieldName)
-      ->groupItem($fieldColumnGroupItemAttributes->target)
+      ->groupItem($fieldColumnGroupItemAttributes->target, $fieldColumnGroupItemAttributes->params)
       ->assembleFieldMappings($header);
     return true;
   }
@@ -118,26 +121,37 @@ class ModelMapping extends MappingProvider
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
     $fieldColumnGroupListAttributes = $this->metadataResolver->getColumnGroupListAttributes($fieldName);
-
+    $wasSetDynamically = $this->wasGroupSetDynamically($fieldMapping, true);
     /** If field was not decorated as column group list skipping group list creation for the field */
-    $columnGroupListWasNotSetDynamically = !isset($fieldMapping) || !isset($fieldMapping->groupList);
-    if ($columnGroupListWasNotSetDynamically && !isset($fieldColumnGroupListAttributes)) {
+    if (!$wasSetDynamically && !isset($fieldColumnGroupListAttributes)) {
       return false;
     }
 
-    if (isset($fieldMapping) && isset($fieldMapping->groupList)) {
-      $fieldMapping->groupList['mappingProvider']->assembleFieldMappings($header);
+    if ($wasSetDynamically) {
+      $this->fillMissingGroupParams($fieldColumnGroupListAttributes, $fieldMapping);
+      $fieldMapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
       return true;
     }
 
     $this->field($fieldName)
       ->groupList(
         $fieldColumnGroupListAttributes->target,
-        $fieldColumnGroupListAttributes->size,
-        $fieldColumnGroupListAttributes->step
+        $fieldColumnGroupListAttributes->params
       )
       ->assembleFieldMappings($header);
     return true;
+  }
 
+  private function fillMissingGroupParams(ColumnGroupItem|ColumnGroupList|null $groupAttributes, FieldMapping $fieldMapping): void
+  {
+    $defaultParams = $groupAttributes ? $groupAttributes->params : [];
+    $fieldMapping->columnGroup->setParams(array_merge($defaultParams, $fieldMapping->columnGroup->getParams()));
+  }
+
+  private function wasGroupSetDynamically(?FieldMapping $fieldMapping, bool $isList = false): bool
+  {
+    return isset($fieldMapping)
+      && isset($fieldMapping->columnGroup)
+      && $fieldMapping->columnGroup->isList() === $isList;
   }
 }

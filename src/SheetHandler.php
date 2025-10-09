@@ -103,11 +103,6 @@ class SheetHandler
     $this->sheetHeader = $titleToLetterMapping;
   }
 
-  public function getColumnByTitle(string $title)
-  {
-    return $this->sheetHeader[$title] ?? null;
-  }
-
   public function getData(): array
   {
     if (!isset($this->errors)) {

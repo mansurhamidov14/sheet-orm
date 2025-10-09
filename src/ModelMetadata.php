@@ -50,7 +50,7 @@ class ModelMetadata implements MetadataResolver
     return $configAnnotators[0] ?? new Sheet();
   }
 
-  protected function getPropertyAttributesByType(string $property, string $type)
+  public function getPropertyAttributesByType(string $property, string $type)
   {
     if (!$this->refClass->hasProperty($property)) {
       return null;
