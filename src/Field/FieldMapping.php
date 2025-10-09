@@ -44,10 +44,16 @@ class FieldMapping
   /**
    * @param string|ArraySchema $target
    */
-  public function groupItem($target): MappingProvider
+  public function groupItem($target, array $config = []): MappingProvider
   {
     if ($target instanceof ArraySchema) {
       $this->groupItem = $target->getMapping();
+      return $this->groupItem;
+    }
+
+    if (!class_exists($target)) {
+      $arraySchema = new ArraySchema($target, $config);
+      $this->groupItem = $arraySchema->getMapping();
       return $this->groupItem;
     }
 
@@ -59,7 +65,7 @@ class FieldMapping
   /**
    * @param string|ArraySchema $target
    */
-  public function groupList($target, int $size, int $step): MappingProvider
+  public function groupList($target, int $size, int $step, array $config = []): MappingProvider
   {
     $params = ['size' => $size, 'step' => $step];
     
@@ -69,6 +75,15 @@ class FieldMapping
         'mappingProvider' => $target->getMapping()
       ];
       return $target->getMapping();
+    }
+
+    if (!class_exists($target)) {
+      $arraySchema = new ArraySchema($target, $config);
+      $this->groupList = [
+        'params' => $params,
+        'mappingProvider' => $arraySchema->getMapping()
+      ];
+      return $arraySchema->getMapping();
     }
     
     $metadataResolver = new ModelMetadata($target);
