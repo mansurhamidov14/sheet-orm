@@ -7,6 +7,7 @@ use Twelver313\Sheetmap\Field\FieldMapping;
 use Twelver313\Sheetmap\Field\FieldMetadata;
 use Twelver313\Sheetmap\Helpers\Calculations;
 use Twelver313\Sheetmap\MetadataResolver;
+use Twelver313\Sheetmap\SheetHeader;
 
 abstract class MappingProvider
 {
@@ -21,7 +22,7 @@ abstract class MappingProvider
     $this->metadataResolver = $metadataResolver;
   }
 
-  abstract public function assembleFieldMappings(array $header): self;
+  abstract public function assembleFieldMappings(SheetHeader $header): self;
 
   public function field(string $field): FieldMapping
   {

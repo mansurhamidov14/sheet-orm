@@ -43,22 +43,22 @@ class FieldMapping
   /**
    * @param string|ArraySchema $target
    */
-  public function groupItem($target, array $params = []): MappingProvider
+  public function groupItem($target): MappingProvider
   {
     if ($target instanceof ArraySchema) {
-      $this->columnGroup = new ColumnGroup($target->getMapping(), $params);
+      $this->columnGroup = new ColumnGroup($target->getMapping());
       return $this->columnGroup->getMappingProvider();
     }
 
     if (!class_exists($target)) {
-      $arraySchema = new ArraySchema($target, $params);
-      $this->columnGroup = new ColumnGroup($arraySchema->getMapping(), $params);
+      $arraySchema = new ArraySchema($target);
+      $this->columnGroup = new ColumnGroup($arraySchema->getMapping());
       return $this->columnGroup->getMappingProvider();
     }
 
     $metadataResolver = new ModelMetadata($target);
     $mappingProvider = new ModelMapping($metadataResolver);
-    $this->columnGroup = new ColumnGroup($mappingProvider, $params);
+    $this->columnGroup = new ColumnGroup($mappingProvider);
     return $this->columnGroup->getMappingProvider();
   }
 

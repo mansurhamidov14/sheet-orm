@@ -2,21 +2,24 @@
 
 namespace Twelver313\Sheetmap\Mapping;
 
+use Twelver313\Sheetmap\SheetHeader;
+
 class ArrayMapping extends MappingProvider
 {
-  public function assembleFieldMappings(array $header): MappingProvider
+  public function assembleFieldMappings(SheetHeader $header): MappingProvider
   {
     foreach ($this->mappings as $mapping) {
+      $headerRow = $header->getScope($this->metadataResolver->getEntityName(), true);
       if (empty($mapping->column) && $mapping->title) {
-        $mapping->column = $header[$mapping->title] ?? null;
+        $mapping->column = $headerRow[$mapping->title] ?? null;
       }
 
-      if (isset($mapping->groupItem)) {
-        $mapping->groupItem->assembleFieldMappings($header);
+      if (isset($mapping->columnGroup)) {
+        $mapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
       }
 
       if (isset($mapping->groupList)) {
-        $mapping->groupList['mappingProvider']->assembleFieldMappings($header);
+        $mapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
       }
     }
 

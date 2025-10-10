@@ -6,6 +6,7 @@ use ReflectionProperty;
 use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
 use Twelver313\Sheetmap\Attributes\ColumnGroupList;
 use Twelver313\Sheetmap\Field\FieldMapping;
+use Twelver313\Sheetmap\SheetHeader;
 
 class ModelMapping extends MappingProvider
 {
@@ -18,7 +19,7 @@ class ModelMapping extends MappingProvider
    * This method fills missing data from dynamic mapping 
    * with default column attributes for all properties
    */
-  public function assembleFieldMappings(array $header): MappingProvider
+  public function assembleFieldMappings(SheetHeader $header): MappingProvider
   {
     foreach ($this->metadataResolver->getModelProperties() as $field) {
       $fieldColumnCreated = $this->createColumnFromField($field, $header);
@@ -33,11 +34,12 @@ class ModelMapping extends MappingProvider
     return $this;
   }
 
-  private function createColumnFromField(ReflectionProperty $field, array $header): bool
+  private function createColumnFromField(ReflectionProperty $field, SheetHeader $header): bool
   {
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
     $fieldColumnAttributes = $this->metadataResolver->getColumnAttributes($fieldName);
+    $headerRow = $header->getScope($this->metadataResolver->getEntityName(), true);
 
     /** If field was not decorated as column skipping column creation for the field */
     $columnWasNotSetDynamically = !isset($fieldMapping) || (!isset($fieldMapping->column) && !isset($fieldMapping->title));
@@ -55,7 +57,7 @@ class ModelMapping extends MappingProvider
       !isset($fieldMapping->column) &&
       isset($fieldMapping->title)
     ) {
-      $fieldMapping->column($header[$fieldMapping->title] ?? null);
+      $fieldMapping->column($headerRow[$fieldMapping->title] ?? null);
     }
 
     $defaultColumnAttrsProvided = isset($fieldColumnAttributes) && isset($fieldColumnAttributes->title) || isset($fieldColumnAttributes->letter);
@@ -66,7 +68,7 @@ class ModelMapping extends MappingProvider
     if (!isset($fieldMapping) && $defaultColumnAttrsProvided) {
       $fieldMapping = $this
         ->field($fieldName)
-        ->column($fieldColumnAttributes->letter ?? $header[$fieldColumnAttributes->title] ?? null)
+        ->column($fieldColumnAttributes->letter ?? $headerRow[$fieldColumnAttributes->title] ?? null)
         ->type($fieldColumnAttributes->type);
       return true;
     }
@@ -76,7 +78,7 @@ class ModelMapping extends MappingProvider
      * We are assigning it from column annotator
      */
     if (!isset($fieldMapping->column) && $defaultColumnAttrsProvided) {
-      $fieldMapping->column($fieldColumnAttributes->letter ?? $header[$fieldColumnAttributes->title] ?? null);
+      $fieldMapping->column($fieldColumnAttributes->letter ?? $headerRow[$fieldColumnAttributes->title] ?? null);
     }
 
     /**
@@ -92,60 +94,52 @@ class ModelMapping extends MappingProvider
     return false;
   }
 
-  public function createColumnGroupItemFromField(ReflectionProperty $field, array $header)
+  public function createColumnGroupItemFromField(ReflectionProperty $field, SheetHeader $header)
   {
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
-    $fieldColumnGroupItemAttributes = $this->metadataResolver->getColumnGroupItemAttributes($fieldName);
+    $groupAttributes = $this->metadataResolver->getColumnGroupItemAttributes($fieldName);
     $wasSetDynamically = $this->wasGroupSetDynamically($fieldMapping);
     /** If field was not decorated as column group item skipping column creation for the field */
-    if (!$wasSetDynamically && !isset($fieldColumnGroupItemAttributes)) {
+    if (!$wasSetDynamically && !isset($groupAttributes)) {
       return false;
     }
 
     if ($wasSetDynamically) {
-      $this->fillMissingGroupParams($fieldColumnGroupItemAttributes, $fieldMapping);
       $fieldMapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
 
       return true;
     }
 
     $this->field($fieldName)
-      ->groupItem($fieldColumnGroupItemAttributes->target, $fieldColumnGroupItemAttributes->params)
+      ->groupItem($groupAttributes->target)
       ->assembleFieldMappings($header);
     return true;
   }
 
-  public function createColumnGroupListFromField(ReflectionProperty $field, array $header)
+  public function createColumnGroupListFromField(ReflectionProperty $field, SheetHeader $header)
   {
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
-    $fieldColumnGroupListAttributes = $this->metadataResolver->getColumnGroupListAttributes($fieldName);
+    $groupAttributes = $this->metadataResolver->getColumnGroupListAttributes($fieldName);
     $wasSetDynamically = $this->wasGroupSetDynamically($fieldMapping, true);
     /** If field was not decorated as column group list skipping group list creation for the field */
-    if (!$wasSetDynamically && !isset($fieldColumnGroupListAttributes)) {
+    if (!$wasSetDynamically && !isset($groupAttributes)) {
       return false;
     }
 
     if ($wasSetDynamically) {
-      $this->fillMissingGroupParams($fieldColumnGroupListAttributes, $fieldMapping);
       $fieldMapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
       return true;
     }
 
     $this->field($fieldName)
       ->groupList(
-        $fieldColumnGroupListAttributes->target,
-        $fieldColumnGroupListAttributes->params
+        $groupAttributes->target,
+        ['size' => $groupAttributes->size, 'step' => $groupAttributes->step]
       )
       ->assembleFieldMappings($header);
     return true;
-  }
-
-  private function fillMissingGroupParams(ColumnGroupItem|ColumnGroupList|null $groupAttributes, FieldMapping $fieldMapping): void
-  {
-    $defaultParams = $groupAttributes ? $groupAttributes->params : [];
-    $fieldMapping->columnGroup->setParams(array_merge($defaultParams, $fieldMapping->columnGroup->getParams()));
   }
 
   private function wasGroupSetDynamically(?FieldMapping $fieldMapping, bool $isList = false): bool

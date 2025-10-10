@@ -8,6 +8,7 @@ use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
 use Twelver313\Sheetmap\Attributes\ColumnGroupList;
 use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
+use Twelver313\Sheetmap\Attributes\SheetHeaderRow;
 use Twelver313\Sheetmap\Attributes\SheetValidation;
 use Twelver313\Sheetmap\Helpers\Attributes;
 
@@ -104,6 +105,25 @@ class ModelMetadata implements MetadataResolver
     
     return array_filter($this->classAnnotations, function ($annotation) {
       return $annotation instanceof SheetValidation;
+    });
+  }
+
+  /** 
+   * @return SheetHeaderRow[]
+   */
+  public function getHeaderRows(): array
+  {
+    if (Attributes::attributesSupported()) {
+      $headerRowAttributes =  $this->refClass->getAttributes(SheetHeaderRow::class);
+      if (count($headerRowAttributes)) {
+        return array_map(function ($attribute) {
+          return $attribute->newInstance();
+        }, $headerRowAttributes);
+      }
+    }
+    
+    return array_filter($this->classAnnotations, function ($annotation) {
+      return $annotation instanceof SheetHeaderRow;
     });
   }
 

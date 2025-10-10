@@ -5,15 +5,16 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 use Twelver313\Sheetmap\Attributes\ColumnGroupList;
 use Twelver313\Sheetmap\Attributes\Sheet;
 use Twelver313\Sheetmap\Attributes\SheetColumn;
+use Twelver313\Sheetmap\Attributes\SheetHeaderRow;
 use Twelver313\Sheetmap\SpreadsheetMapper;
 use Twelver313\Sheetmap\ValueFormatter;
 
 class UserSchedule
 {
-    #[SheetColumn(letter: 'C', type: ValueFormatter::TYPE_DATE)]
+    #[SheetColumn(title: 'Date', type: ValueFormatter::TYPE_DATE)]
     public $date;
 
-    #[SheetColumn(letter: 'D', type: ValueFormatter::TYPE_DATE)]
+    #[SheetColumn(title: 'Time', type: ValueFormatter::TYPE_DATE)]
     public $time;
 }
 
@@ -23,7 +24,9 @@ class UserScheduleMonth
     public $schedules;
 }
 
-#[Sheet(startRow: 4, endRow: 4)]
+#[Sheet(startRow: 5, endRow: 5)]
+#[SheetHeaderRow(row: 1)]
+#[SheetHeaderRow(scope: UserSchedule::class, row: 4)]
 class User
 {
     #[SheetColumn(letter: 'A')]

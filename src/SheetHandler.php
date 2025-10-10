@@ -2,7 +2,6 @@
 
 namespace Twelver313\Sheetmap;
 
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\Sheetmap\Mapping\MappingProvider;
@@ -22,6 +21,7 @@ class SheetHandler
   private $mapping;
   private $startRow = 2;
   private $endRow = null;
+  /** @var SheetHeader */
   private $sheetHeader = [];
   private $errors = null;
 
@@ -45,11 +45,11 @@ class SheetHandler
       } else if (isset($sheetConfig->name)) {
         $document->setActiveSheetIndexByName($sheetConfig->name);
       }
-
+      
       $this->sheet = $document->getActiveSheet();
-      $this->startRow = $sheetConfig->startRow;
+      $maxHeaderRow = $this->initSheetHeader();
+      $this->startRow = $sheetConfig->startRow ?? $maxHeaderRow + 1;
       $this->endRow = $sheetConfig->endRow;
-      $this->initSheetHeader();
     } catch (\Exception $e) {
       throw $e;
     }
@@ -72,7 +72,7 @@ class SheetHandler
   private function initValidation($silent = false) {
     $validationContext = new SheetValidationContext(
       $this->metadataResolver->getEntityName(),
-      $this->sheetHeader,
+      $this->sheetHeader->getScope(),
       $this->sheet
     );
     $validationPipeline = SheetValidationPipeline::fromMetadata($this->metadataResolver);
@@ -84,23 +84,51 @@ class SheetHandler
     return $this->sheetHeader;
   }
 
-  private function initSheetHeader()
+  private function initSheetHeader(): int
   {
-    $highestColumn = $this->sheet->getHighestColumn();
-    $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
-    $currentColumn = 'A';
-    $titleToLetterMapping = [];
-    for ($col = 0; $col < $highestColumnIndex; $col++) {
-      $cell = $this->sheet->getCell("{$currentColumn}1");
-      $value = $cell->getCalculatedValue();
-      if ($value !== null && $value !== '') {
-        $value = strval($value);
-        $titleToLetterMapping[$value] = $currentColumn;
-      }
-      $currentColumn++;
+    $this->sheetHeader = new SheetHeader();
+    $headerRowToScope = $this->mapHeaderRowsToScopes();
+
+    if (empty($headerRowToScope)) {
+      return 0;
     }
 
-    $this->sheetHeader = $titleToLetterMapping;
+    $headerRows = array_keys($headerRowToScope);
+    $minHeaderRow = min($headerRows);
+    $maxHeaderRow = max($headerRows);
+
+    foreach ($this->sheet->getRowIterator($minHeaderRow, $maxHeaderRow) as $row) {
+      $rowIndex = $row->getRowIndex();
+      $scope = $headerRowToScope[$rowIndex] ?? null;
+
+      if (!isset($scope)) {
+        continue;
+      }
+      $header = [];
+      foreach ($row->getCellIterator() as $cell) {
+        $column = $cell->getColumn();
+        $value = $cell->getCalculatedValue();
+        
+        if (!empty($value) && empty($header[$value])) {
+          $header[$value] = $column;
+        }
+      }
+      $this->sheetHeader->addRow($scope, $header, $scope === $this->metadataResolver->getEntityName());
+    }
+
+    return $maxHeaderRow;
+  }
+
+  private function mapHeaderRowsToScopes(): array
+  {
+    $result = [];
+    $headerRowAttributes = $this->metadataResolver->getHeaderRows();
+    foreach ($headerRowAttributes as $headerRow) {
+      $result[$headerRow->row] = $headerRow->scope ?? $this->metadataResolver->getEntityName();
+    }
+
+
+    return $result;
   }
 
   public function getData(): array

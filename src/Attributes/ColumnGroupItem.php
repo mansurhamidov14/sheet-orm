@@ -10,12 +10,11 @@ namespace Twelver313\Sheetmap\Attributes;
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class ColumnGroupItem
 {
+  /** @var string $target */
   public $target;
-  public $params;
 
-  public function __construct(string $target, array $params = [])
+  public function __construct(string $target)
   {
     $this->target = $target;
-    $this->params = $params;
   }
 }
