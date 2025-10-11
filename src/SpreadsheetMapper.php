@@ -36,9 +36,17 @@ class SpreadsheetMapper
       $metadataResolver = new ModelMetadata($modelName);
       $this->metadataRegistry->register($metadataResolver);
     }
-    $this->mappingRegistry->registerMissing($modelName, new ModelMapping($metadataResolver));
-    $this->currentModel = $modelName;
+    if (!$this->mappingRegistry->exists($modelName)) {
+      $this->mappingRegistry->registerMissing(
+        $modelName,
+        new ModelMapping(
+          $this->metadataRegistry->get($modelName)
+        )
+      );
+    }
     
+    $this->currentModel = $modelName;
+
     return $this;
   }
 
