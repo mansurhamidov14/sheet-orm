@@ -12,10 +12,17 @@ use Twelver313\SheetORM\SheetConfig;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class Sheet extends SheetConfig
 {
-  public function __construct(?string $name = null, ?int $index = null, ?int $startRow = null, ?int $endRow = null) {
+  public function __construct(
+    ?string $name = null,
+    ?int $index = null,
+    ?int $startRow = null,
+    ?int $endRow = null,
+    bool $includeEmptyRows = false
+  ) {
     $this->name = $name;
     $this->index = $index ?? null;
     $this->startRow = $startRow ?? null;
     $this->endRow = $endRow;
+    $this->includeEmptyRows = $includeEmptyRows;
   }
 }

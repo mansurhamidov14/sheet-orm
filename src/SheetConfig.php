@@ -8,6 +8,7 @@ class SheetConfig
   public $index;
   public $startRow;
   public $endRow;
+  public $includeEmptyRows;
 
   public function __construct($options)
   {
@@ -15,5 +16,6 @@ class SheetConfig
     $this->name = $options['name'] ?? null;
     $this->startRow = $options['startRow'] ?? null;
     $this->endRow = $options['endRow'] ?? null;
+    $this->includeEmptyRows = $options['includeEmptyRows'] ?? false;
   }
 }

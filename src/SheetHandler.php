@@ -141,12 +141,14 @@ class SheetHandler
       ->assembleFieldMappings($this->sheetHeader)
       ->getGroupedFields();
 
-    $rowHydrator = new RowHydrator($this->metadataResolver->getEntityName(), $this->valueFormatter, $groupedColumns);
+    $rowHydrator = new RowHydrator($this->metadataResolver, $this->valueFormatter, $groupedColumns);
     $result = [];
     foreach ($this->sheet->getRowIterator($this->startRow, $this->endRow) as $row) {
-      $result[] = ($this->mapping instanceof ModelMapping)
-        ? $rowHydrator->rowToObject($row)
-        : $rowHydrator->rowToArray($row);
+      if ($this->metadataResolver->getSheetConfig()->includeEmptyRows || !$rowHydrator->isEmptyRow($row)) {
+        $result[] = ($this->mapping instanceof ModelMapping)
+          ? $rowHydrator->rowToObject($row)
+          : $rowHydrator->rowToArray($row);
+      }
     }
     return $result;
   }

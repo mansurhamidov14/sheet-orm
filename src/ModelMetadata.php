@@ -9,7 +9,9 @@ use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Attributes\Sheet;
 use Twelver313\SheetORM\Attributes\Column;
 use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\Attributes\SheetHeaderRows;
 use Twelver313\SheetORM\Attributes\SheetValidation;
+use Twelver313\SheetORM\Attributes\SheetValidators;
 use Twelver313\SheetORM\Helpers\Attributes;
 
 class ModelMetadata implements MetadataResolver
@@ -89,23 +91,37 @@ class ModelMetadata implements MetadataResolver
     return $this->refClass->getProperties();
   }
 
+  public function getRepeatableAttribute(string $attributeClass, string $annotationWrapper): array
+  {
+    if (Attributes::attributesSupported()) {
+      $attributes = $this->refClass->getAttributes($attributeClass);
+      if (count($attributes)) {
+        return array_map(function ($attribute) {
+          return $attribute->newInstance();
+        }, $attributes);
+      }
+    }
+
+    $wrapperAttribute = current(array_filter($this->classAnnotations, function ($annotation) use ($annotationWrapper) {
+      return $annotation instanceof $annotationWrapper;
+    }));
+
+
+    if ($wrapperAttribute) {
+      return $wrapperAttribute->value;
+    }
+
+    return array_filter($this->classAnnotations, function ($annotation) use ($attributeClass) {
+      return $annotation instanceof $attributeClass;
+    });
+  }
+
   /** 
    * @return SheetValidation[]
    */
   public function getSheetValidators(): array
   {
-    if (Attributes::attributesSupported()) {
-      $validationAttributes =  $this->refClass->getAttributes(SheetValidation::class);
-      if (count($validationAttributes)) {
-        return array_map(function ($attribute) {
-          return $attribute->newInstance();
-        }, $validationAttributes);
-      }
-    }
-    
-    return array_filter($this->classAnnotations, function ($annotation) {
-      return $annotation instanceof SheetValidation;
-    });
+    return $this->getRepeatableAttribute(SheetValidation::class, SheetValidators::class);
   }
 
   /** 
@@ -113,18 +129,7 @@ class ModelMetadata implements MetadataResolver
    */
   public function getHeaderRows(): array
   {
-    if (Attributes::attributesSupported()) {
-      $headerRowAttributes =  $this->refClass->getAttributes(SheetHeaderRow::class);
-      if (count($headerRowAttributes)) {
-        return array_map(function ($attribute) {
-          return $attribute->newInstance();
-        }, $headerRowAttributes);
-      }
-    }
-    
-    return array_filter($this->classAnnotations, function ($annotation) {
-      return $annotation instanceof SheetHeaderRow;
-    });
+    return $this->getRepeatableAttribute(SheetHeaderRow::class, SheetHeaderRows::class);
   }
 
   public function getEntityType(): string

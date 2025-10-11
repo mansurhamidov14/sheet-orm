@@ -5,6 +5,10 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Attributes\Column;
 use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\Attributes\SheetHeaderRows;
+use Twelver313\SheetORM\Attributes\SheetValidation;
+use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
+use Twelver313\SheetORM\Attributes\SheetValidators;
 use Twelver313\SheetORM\SpreadsheetMapper;
 
 class UserSchedule
@@ -14,31 +18,63 @@ class UserSchedule
 
     /** @Column(title="Time", type="time") */
     public $time;
+
+    public function toArray()
+    {
+        return [
+            'date' => $this->date?->format('Y-m-d'),
+            'time' => $this->time?->format('H:i:s')
+        ];
+    }
 }
 
 class UserScheduleMonth
 {
     /** @ColumnGroupList(target="UserSchedule", size=2, step=2) */
     public $schedules;
+
+    public function toArray()
+    {
+        return [
+            'schedules' => array_map(fn ($i) => $i->toArray(), $this->schedules ?? [])
+        ];
+    }
 }
 
-/** @SheetHeaderRow() */
-/** @SheetHeaderRow(scope="UserSchedule", row=4) */
+/**
+ * @SheetHeaderRows({
+ *  @SheetHeaderRow(row=1),
+ *  @SheetHeaderRow(scope="UserSchedule", row=4),
+ * })
+ * @SheetValidators({
+ *  @SheetValidation(strategy=ValidateByHeaderSize::class, params={"exact"=3}),
+ *  @SheetValidation(strategy=ValidateByHeaderSize::class, params={"exact"=2, "scope"=UserSchedule::class})
+ * })
+ */
 class User
 {
     /** @Column(title="Name") */
-    public $firstName;
+    protected $firstName;
 
     /** @Column(title="Last name") */
-    public $lastName;
+    protected $lastName;
 
     /** @ColumnGroupList(target="UserScheduleMonth", size=3, step=4) */
-    public $months;
+    protected $months;
+
+    public function toArray()
+    {
+        return [
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'months' => array_map(fn ($i) => $i->toArray(), $this->months ?? [])
+        ];
+    }
 }
 
 $mapper = new SpreadsheetMapper();
 $data = $mapper->load(User::class)->fromFile(__DIR__ . '/columngrouplist.xlsx')->getData();
-$output = print_r($data, true);
-$output = str_replace('    ', ' ', $output);
-$output = str_replace("\n\n", "\n", $output);
-file_put_contents(__DIR__ . '/../output_' . date('U') . '.log', $output);
+$output = json_encode(array_map(fn ($i) => $i->toArray(), $data), JSON_PRETTY_PRINT);
+// $output = str_replace('    ', ' ', $output);
+// $output = str_replace("\n\n", "\n", $output);
+file_put_contents(__DIR__ . '/../outputs/output_' . date('Y-m-d-H-i-s') . '.json', $output);

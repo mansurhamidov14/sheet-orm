@@ -7,7 +7,7 @@ use Twelver313\SheetORM\Validation\SheetValidationStrategy;
 /**
  * @Annotation
  * @NamedArgumentConstructor
- * @Target({"CLASS"})
+ * @Target({"ANNOTATION", "CLASS"})
  */
 #[\Attribute(\Attribute::TARGET_CLASS|\Attribute::IS_REPEATABLE)]
 class SheetValidation

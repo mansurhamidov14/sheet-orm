@@ -9,7 +9,8 @@ use Twelver313\SheetORM\Field\FieldMetadata;
 
 class RowHydrator
 {
-  private $modelName;
+  /** @var MetadataResolver */
+  private $metadataResolver;
 
   /** @var FieldMapping[] */
   private $groupedColumns;
@@ -17,16 +18,17 @@ class RowHydrator
   /** @var ValueFormatter */
   private $valueFormatter;
 
-  public function __construct(string $modelName, ValueFormatter $valueFormatter, array $groupedColumns)
+  public function __construct(MetadataResolver $metadataResolver, ValueFormatter $valueFormatter, array $groupedColumns)
   {
-    $this->modelName = $modelName;
+    $this->metadataResolver = $metadataResolver;
     $this->valueFormatter = $valueFormatter;
     $this->groupedColumns = $groupedColumns;
   }
 
   public function rowToObject(Row $row)
   {
-    $object = new $this->modelName();
+    $class = $this->metadataResolver->getEntityName();
+    $object = new $class;
     foreach ($row->getCellIterator() as $cell) {
       $column = $cell->getColumn();
       if (!isset($this->groupedColumns[$column])) {
@@ -42,11 +44,11 @@ class RowHydrator
     return $object;
   }
 
-  private function fillObject(object $rootObject, FieldMetadata $fieldMetada, Cell $cell): void
+  private function fillObject(object $rootObject, FieldMetadata $fieldMetadata, Cell $cell): void
   {
     $current = $rootObject;
-    if (!$fieldMetada->isRootField()) {
-      foreach ($fieldMetada->address as $step) {
+    if (!$fieldMetadata->isRootField()) {
+      foreach ($fieldMetadata->address as $step) {
         $refProperty = new ReflectionProperty($current, $step->fieldName);
         $refProperty->setAccessible(true);
         $value = $refProperty->getValue($current);
@@ -68,9 +70,9 @@ class RowHydrator
         }
       }
     }
-    $refProperty = new ReflectionProperty($current, $fieldMetada->mapping->field);
+    $refProperty = new ReflectionProperty($current, $fieldMetadata->mapping->field);
     $refProperty->setAccessible(true);
-    $refProperty->setValue($current, $this->valueFormatter->format($cell, $fieldMetada->mapping));
+    $refProperty->setValue($current, $this->valueFormatter->format($cell, $fieldMetadata->mapping));
   }
 
   public function rowToArray(Row $row) {
@@ -113,5 +115,18 @@ class RowHydrator
     } else {
       $rootArray[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
     }
+  }
+
+  public function isEmptyRow(Row $row, $startColumn = 'A', $endColumn = null): bool
+  {
+    foreach ($row->getCellIterator($startColumn, $endColumn) as $cell) {
+      $value = $cell->getCalculatedValue();
+      $value = strval($value);
+      if (trim($value) !== '') {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

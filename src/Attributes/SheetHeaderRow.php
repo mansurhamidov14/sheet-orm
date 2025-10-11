@@ -5,7 +5,7 @@ namespace Twelver313\SheetORM\Attributes;
 /**
  * @Annotation
  * @NamedArgumentConstructor
- * @Target({"CLASS"})
+ * @Target({"ANNOTATION", "CLASS"})
  */
 #[\Attribute(\Attribute::TARGET_CLASS|\Attribute::IS_REPEATABLE)]
 class SheetHeaderRow
