@@ -1,10 +1,11 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
-use Twelver313\Sheetmap\ValueFormatter;
 use ReflectionProperty;
+use Twelver313\SheetORM\Field\FieldMetadata;
 
 class RowHydrator
 {
@@ -32,15 +33,44 @@ class RowHydrator
         continue;
       }
 
-      /** @var FieldMapping */
-      foreach ($this->groupedColumns[$column] as $mapping) {
-        $refProperty = new ReflectionProperty($object, $mapping->field);
-        $refProperty->setAccessible(true);
-        $refProperty->setValue($object, $this->valueFormatter->format($cell, $mapping));
+      /** @var FieldMetadata */
+      foreach ($this->groupedColumns[$column] as $fieldMetadata) {
+        $this->fillObject($object, $fieldMetadata, $cell);
       }
     }
 
     return $object;
+  }
+
+  private function fillObject(object $rootObject, FieldMetadata $fieldMetada, Cell $cell): void
+  {
+    $current = $rootObject;
+    if (!$fieldMetada->isRootField()) {
+      foreach ($fieldMetada->address as $step) {
+        $refProperty = new ReflectionProperty($current, $step->fieldName);
+        $refProperty->setAccessible(true);
+        $value = $refProperty->getValue($current);
+  
+        if ($step->isArrayItem()) {
+          $value = $value ?? [];
+          // Ensure array element exists
+          if (!isset($value[$step->index])) {
+            $value[$step->index] = new $step->target();
+          }
+          $refProperty->setValue($current, $value);
+          $current = $value[$step->index];
+        } else {
+          if (!isset($value)) {
+            $value = new $step->target();
+            $refProperty->setValue($current, $value);
+          }
+          $current = $value;
+        }
+      }
+    }
+    $refProperty = new ReflectionProperty($current, $fieldMetada->mapping->field);
+    $refProperty->setAccessible(true);
+    $refProperty->setValue($current, $this->valueFormatter->format($cell, $fieldMetada->mapping));
   }
 
   public function rowToArray(Row $row) {
@@ -52,10 +82,36 @@ class RowHydrator
       }
 
       foreach ($this->groupedColumns[$column] as $mapping) {
-        $result[$mapping->field] = $this->valueFormatter->format($cell, $mapping);
+        $this->fillArray($result, $mapping, $cell);
       }
     }
 
     return $result;
+  }
+
+  private function fillArray(&$rootArray, FieldMetadata $fieldMetadata, Cell $cell): void
+  {
+    if (!$fieldMetadata->isRootField()) {
+      $current = &$rootArray;
+      foreach ($fieldMetadata->address as $step) {
+        if ($step->isArrayItem()) {
+          if (!isset($current[$step->fieldName])) {
+            $current[$step->fieldName] = [];
+          }
+          if (!isset($current[$step->fieldName][$step->index])) {
+            $current[$step->fieldName][$step->index] = [];
+          }
+          $current = &$current[$step->fieldName][$step->index];
+        } else {
+          if (!isset($current[$step->fieldName])) {
+            $current[$step->fieldName] = [];
+          }
+          $current = &$current[$step->fieldName];
+        }
+      }
+      $current[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
+    } else {
+      $rootArray[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
+    }
   }
 }

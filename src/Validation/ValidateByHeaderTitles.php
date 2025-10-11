@@ -1,13 +1,13 @@
 <?php
 
-namespace Twelver313\Sheetmap\Validation;
+namespace Twelver313\SheetORM\Validation;
 
 class ValidateByHeaderTitles extends SheetValidationStrategy
 {
   protected function validate(array $params, SheetValidationContext $context): bool
   {
     $expected = $params['titles'];
-    $actual = $context->getHeaderTitles();
+    $actual = $context->getHeaderTitles($params['scope']);
     $flags = $params['flags'] ?? 0;
 
     // 1. Case normalization
@@ -88,7 +88,8 @@ class ValidateByHeaderTitles extends SheetValidationStrategy
   protected function message(array $params, SheetValidationContext $context): string
   {
     return sprintf(
-      "Provided sheet header doesn't match expected template. Expected: %s. Provided: %s",
+      "Provided sheet header doesn't match expected template at row #%u. Expected: %s. Provided: %s",
+      $context->getSheetHeader()->getScopeRowNumber($params['scope'] ?? null),
       implode(', ', $params['titles']),
       implode(', ', $context->getHeaderTitles())
     );

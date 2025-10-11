@@ -35,10 +35,10 @@ Below is a single example demonstrating annotations, custom formatters, dynamic 
 ```php
 <?php
 
-use Twelver313\Sheetmap\Attributes\Sheet;
-use Twelver313\Sheetmap\Attributes\SheetColumn;
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\Attributes\Sheet;
+use Twelver313\SheetORM\Attributes\Column;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\ValueFormatter;
 
 // Optional: describe the sheet (attribute is optional; defaults exist)
 #[Sheet(name: 'UsersWorksheet', startRow: 5, endRow: 76)]
@@ -46,17 +46,17 @@ use Twelver313\Sheetmap\ValueFormatter;
 #[Sheet(index: 2, startRow: 5, endRow: 76)]
 class User
 {
-    #[SheetColumn(title: 'Fullname', type: ValueFormatter::TYPE_STRING)]
+    #[Column(title: 'Fullname', type: ValueFormatter::TYPE_STRING)]
     protected $fullName;
 
     /** @var \DateTime */
-    #[SheetColumn(letter: 'B', type: ValueFormatter::TYPE_DATE)]
+    #[Column(letter: 'B', type: ValueFormatter::TYPE_DATE)]
     protected $birthDate;
 
-    #[SheetColumn(letter: 'C', type: ValueFormatter::TYPE_BOOL)]
+    #[Column(letter: 'C', type: ValueFormatter::TYPE_BOOL)]
     protected $isAdmin;
 
-    #[SheetColumn(title: 'Salary', type: ValueFormatter::TYPE_FLOAT)]
+    #[Column(title: 'Salary', type: ValueFormatter::TYPE_FLOAT)]
     protected $salary;
 }
 
@@ -73,9 +73,9 @@ $data = $spreadsheetMapper
 
 ## Defining and mapping a model using doc annotators
 ```php
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\Attributes\Sheet;
-use Twelver313\Sheetmap\Attributes\SheetColumn;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\Attributes\Sheet;
+use Twelver313\SheetORM\Attributes\Column;
 
 /**
  * @Sheet(name="UsersWorksheet", startRow=5, endRow=76)
@@ -84,19 +84,19 @@ use Twelver313\Sheetmap\Attributes\SheetColumn;
  */
 class User
 {
-    /** @SheetColumn(title="Fullname", type="string") */
+    /** @Column(title="Fullname", type="string") */
     protected $fullName;
 
     /** 
      * @var \DateTime
-     * @SheetColumn(letter="B", type="date")
+     * @Column(letter="B", type="date")
      */
     protected $birthDate;
 
-    /** @SheetColumn(letter="C", type="bool") */
+    /** @Column(letter="C", type="bool") */
     protected $isAdmin;
 
-    /** @SheetColumn(title="Salary", type="float") */
+    /** @Column(title="Salary", type="float") */
     protected $salary;
 }
 
@@ -104,10 +104,10 @@ class User
 
 ## Defining a model and mapping dynamically
 ```php
-use Twelver313\Sheetmap\ModelMapping;
-use Twelver313\Sheetmap\SheetConfig;
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\ModelMapping;
+use Twelver313\SheetORM\SheetConfig;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\ValueFormatter;
 
 class User
 {
@@ -145,10 +145,10 @@ $data = $spreadsheetMapper
 
 ## Defining an array schema for mapping an array
 ```php
-use Twelver313\Sheetmap\ArrayMapping;
-use Twelver313\Sheetmap\ArraySchema;
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\ArrayMapping;
+use Twelver313\SheetORM\ArraySchema;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\ValueFormatter;
 
 $arraySchema = new ArraySchema('boardGames', [
   'endRow' => 4
@@ -170,7 +170,7 @@ $data = $spreadsheetMapper
 ## Parsing sheet header
 Sometimes you may need to parse your worksheet header to map your model dynamically from user input
 ```php
-use Twelver313\Sheetmap\SpreadsheetMapper;
+use Twelver313\SheetORM\SpreadsheetMapper;
 
 class User {}
 
@@ -186,17 +186,17 @@ $sheetHeader = $spreadsheetMapper
 ## Defining custom value formatter by registering new type
 ```php
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\ValueFormatter;
 
 class User
 {
     ...
 
-    #[SheetColumn(title: 'Password', type: 'md5')]
+    #[Column(title: 'Password', type: 'md5')]
     $password;
 
-    #[SheetColumn(title: 'birthDate', type: 'formattedDate')]
+    #[Column(title: 'birthDate', type: 'formattedDate')]
     $birthDate
 }
 
@@ -219,9 +219,9 @@ $spreadsheetMapper->valueFormatter->register('formattedDate', function (Cell $ce
 #### a) With PHP8+ attributes
 ```php
 
-use Twelver313\Sheetmap\Attributes\SheetValidation;
-use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
-use Twelver313\Sheetmap\Validation\ValidateByHeaderTitles;
+use Twelver313\SheetORM\Attributes\SheetValidation;
+use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
+use Twelver313\SheetORM\Validation\ValidateByHeaderTitles;
 
 #[SheetValidation(
   strategy: ValidateByHeaderTitles::class,
@@ -242,19 +242,19 @@ class Student {}
 #### b) With doc annotators
 ```php
 
-use Twelver313\Sheetmap\Attributes\SheetValidation;
+use Twelver313\SheetORM\Attributes\SheetValidation;
 
 /**
  * @SheetValidation(
- *  strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderTitles",
+ *  strategy="Twelver313\SheetORM\Validation\ValidateByHeaderTitles",
  *  params={
  *    "titles"={"First name", "Last name", "Email"},
  *    "flags"=9
  *  }
  * )
- * @SheetValidation(strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderSize", params={"exact"=5})
+ * @SheetValidation(strategy="Twelver313\SheetORM\Validation\ValidateByHeaderSize", params={"exact"=5})
  * @SheetValidation(
- *   strategy="Twelver313\Sheetmap\Validation\ValidateByHeaderSize",
+ *   strategy="Twelver313\SheetORM\Validation\ValidateByHeaderSize",
  *   params={"min"=2, "max"=10},
  *   message="Minimum {params.min} and maximum {params.max} required. Provided {context.headerSize}"
  * )
@@ -267,8 +267,8 @@ class Student {}
 You may need to override message logic especially if you are using PHP<8 and want to print out messages using translation methods/functions
 ```php
 
-use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
-use Twelver313\Sheetmap\Validation\SheetValidationContext;
+use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
+use Twelver313\SheetORM\Validation\SheetValidationContext;
 
 class CustomisedValidateByHeaderSize extends ValidateByHeaderSize
 {
@@ -281,9 +281,9 @@ class CustomisedValidateByHeaderSize extends ValidateByHeaderSize
 
 ### Defining and providing new validation strategy
 ```php
-use Twelver313\Sheetmap\Attributes\SheetValidation;
-use Twelver313\Sheetmap\Validation\SheetValidationContext;
-use Twelver313\Sheetmap\Validation\SheetValidationStrategy;
+use Twelver313\SheetORM\Attributes\SheetValidation;
+use Twelver313\SheetORM\Validation\SheetValidationContext;
+use Twelver313\SheetORM\Validation\SheetValidationStrategy;
 
 class MyCustomValidationStrategy extends SheetValidationStrategy
 {
@@ -315,8 +315,8 @@ class Student {}
 #### a) Programmatic-check
 ```php
 
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\Attributes\SheetValidation;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\Attributes\SheetValidation;
 use MyCustomValidationStrategy;
 
 #[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
@@ -345,8 +345,8 @@ if ($handler->isValidSheet()) {
 #### b) Exception-based
 ```php
 
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\Attributes\SheetValidation;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\Attributes\SheetValidation;
 use MyCustomValidationStrategy;
 
 #[SheetValidation(strategy: MyCustomValidationStrategy::class, params: ['expectedHeaderSize' => 12])]
@@ -359,7 +359,7 @@ try {
         ->fromFile('path/to/your/spreadsheet.xlxs')
         ->getData();
     // Handle your $data
-} catch (\Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException $e) {
+} catch (\Twelver313\SheetORM\Exceptions\InvalidSheetTemplateException $e) {
     // Handle your error
 }
 ```
@@ -373,7 +373,7 @@ try {
 - `ValueFormatter` — register and resolve formatters (`register(name, callable)`).
 - `ModelMapping` — runtime mapping builder (`property()->column()->title()->type()`).
 - `SheetConfig` — runtime sheet selection and row bounds.
-- Attributes: `#[Sheet]`, `#[SheetColumn]`, and optional `#[SheetValidation]`.
+- Attributes: `#[Sheet]`, `#[Column]`, and optional `#[SheetValidation]`.
 
 (See phpdoc in code for full signatures.)
 

@@ -1,9 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM\Mapping;
 
-use Twelver313\Sheetmap\MappingProvider;
-use Twelver313\Sheetmap\Exceptions\MissingMappingException;
+use Twelver313\SheetORM\Exceptions\MissingMappingException;
 
 class MappingRegistry
 {

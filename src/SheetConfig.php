@@ -1,10 +1,9 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 class SheetConfig
 {
-  public $headerRow;
   public $name;
   public $index;
   public $startRow;
@@ -12,10 +11,9 @@ class SheetConfig
 
   public function __construct($options)
   {
-    $this->headerRow = $options['headerRow'] ?? 1;
     $this->index = $options['index'] ?? null;
     $this->name = $options['name'] ?? null;
-    $this->startRow = $options['startRow'] ?? 2;
+    $this->startRow = $options['startRow'] ?? null;
     $this->endRow = $options['endRow'] ?? null;
   }
 }

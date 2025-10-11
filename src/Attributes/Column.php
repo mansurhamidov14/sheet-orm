@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Attributes;
+namespace Twelver313\SheetORM\Attributes;
 
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\ValueFormatter;
 
 /**
  * @Annotation
@@ -10,7 +10,7 @@ use Twelver313\Sheetmap\ValueFormatter;
  * @Target({"PROPERTY"})
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class SheetColumn
+class Column
 {
   public $title;
   public $letter;

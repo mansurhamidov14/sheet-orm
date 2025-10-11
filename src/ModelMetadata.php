@@ -1,15 +1,16 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
-use Twelver313\Sheetmap\Attributes\AttributeHelpers;
-use Twelver313\Sheetmap\Attributes\Sheet;
-use Twelver313\Sheetmap\Attributes\SheetColumn;
-use Twelver313\Sheetmap\Attributes\SheetValidation;
-use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\SheetConfig;
+use Twelver313\SheetORM\Attributes\ColumnGroupItem;
+use Twelver313\SheetORM\Attributes\ColumnGroupList;
+use Twelver313\SheetORM\Attributes\Sheet;
+use Twelver313\SheetORM\Attributes\Column;
+use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\Attributes\SheetValidation;
+use Twelver313\SheetORM\Helpers\Attributes;
 
 class ModelMetadata implements MetadataResolver
 {
@@ -36,7 +37,7 @@ class ModelMetadata implements MetadataResolver
 
   public function getSheetConfig(): SheetConfig
   {
-    if (AttributeHelpers::attributesSupported()) {
+    if (Attributes::attributesSupported()) {
       $sheetConfigAttribute = $this->refClass->getAttributes(Sheet::class)[0] ?? null;
       if (isset($sheetConfigAttribute)) {
         return $sheetConfigAttribute->newInstance();
@@ -50,7 +51,7 @@ class ModelMetadata implements MetadataResolver
     return $configAnnotators[0] ?? new Sheet();
   }
 
-  public function getColumnAttributes($property): ?SheetColumn
+  public function getPropertyAttributesByType(string $property, string $type)
   {
     if (!$this->refClass->hasProperty($property)) {
       return null;
@@ -58,14 +59,29 @@ class ModelMetadata implements MetadataResolver
 
     $refProperty = $this->refClass->getProperty($property);
 
-    if (AttributeHelpers::attributesSupported()) {
-      $columnAttributes = $refProperty->getAttributes(SheetColumn::class);
+    if (Attributes::attributesSupported()) {
+      $columnAttributes = $refProperty->getAttributes($type);
       if (!empty($columnAttributes)) {
         return $columnAttributes[0]->newInstance();
       }
     }
 
-    return $this->annotationReader->getPropertyAnnotation($refProperty, SheetColumn::class);
+    return $this->annotationReader->getPropertyAnnotation($refProperty, $type);
+  }
+
+  public function getColumnAttributes($property): ?Column
+  {
+    return $this->getPropertyAttributesByType($property, Column::class);
+  }
+
+  public function getColumnGroupItemAttributes($property): ?ColumnGroupItem
+  {
+    return $this->getPropertyAttributesByType($property, ColumnGroupItem::class);
+  }
+
+  public function getColumnGroupListAttributes($property): ?ColumnGroupList
+  {
+    return $this->getPropertyAttributesByType($property, ColumnGroupList::class);
   }
 
   public function getModelProperties()
@@ -78,7 +94,7 @@ class ModelMetadata implements MetadataResolver
    */
   public function getSheetValidators(): array
   {
-    if (AttributeHelpers::attributesSupported()) {
+    if (Attributes::attributesSupported()) {
       $validationAttributes =  $this->refClass->getAttributes(SheetValidation::class);
       if (count($validationAttributes)) {
         return array_map(function ($attribute) {
@@ -89,6 +105,25 @@ class ModelMetadata implements MetadataResolver
     
     return array_filter($this->classAnnotations, function ($annotation) {
       return $annotation instanceof SheetValidation;
+    });
+  }
+
+  /** 
+   * @return SheetHeaderRow[]
+   */
+  public function getHeaderRows(): array
+  {
+    if (Attributes::attributesSupported()) {
+      $headerRowAttributes =  $this->refClass->getAttributes(SheetHeaderRow::class);
+      if (count($headerRowAttributes)) {
+        return array_map(function ($attribute) {
+          return $attribute->newInstance();
+        }, $headerRowAttributes);
+      }
+    }
+    
+    return array_filter($this->classAnnotations, function ($annotation) {
+      return $annotation instanceof SheetHeaderRow;
     });
   }
 

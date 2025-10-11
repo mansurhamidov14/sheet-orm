@@ -1,13 +1,11 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\Exceptions\DocumentWasNotLoadedException;
-use Twelver313\Sheetmap\MappingRegistry;
-use Twelver313\Sheetmap\MetadataRegistry;
-use Twelver313\Sheetmap\SheetHandler;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\Exceptions\DocumentWasNotLoadedException;
+use Twelver313\SheetORM\Mapping\MappingRegistry;
+use Twelver313\SheetORM\Mapping\ModelMapping;
 
 class SpreadsheetMapper
 {
@@ -38,9 +36,17 @@ class SpreadsheetMapper
       $metadataResolver = new ModelMetadata($modelName);
       $this->metadataRegistry->register($metadataResolver);
     }
-    $this->mappingRegistry->registerMissing($modelName, new ModelMapping($metadataResolver));
-    $this->currentModel = $modelName;
+    if (!$this->mappingRegistry->exists($modelName)) {
+      $this->mappingRegistry->registerMissing(
+        $modelName,
+        new ModelMapping(
+          $this->metadataRegistry->get($modelName)
+        )
+      );
+    }
     
+    $this->currentModel = $modelName;
+
     return $this;
   }
 
