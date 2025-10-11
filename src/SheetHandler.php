@@ -72,7 +72,7 @@ class SheetHandler
   private function initValidation($silent = false) {
     $validationContext = new SheetValidationContext(
       $this->metadataResolver->getEntityName(),
-      $this->sheetHeader->getScope(),
+      $this->sheetHeader,
       $this->sheet
     );
     $validationPipeline = SheetValidationPipeline::fromMetadata($this->metadataResolver);
@@ -113,7 +113,7 @@ class SheetHandler
           $header[$value] = $column;
         }
       }
-      $this->sheetHeader->addRow($scope, $header, $scope === $this->metadataResolver->getEntityName());
+      $this->sheetHeader->addRow($rowIndex, $scope, $header, $scope === $this->metadataResolver->getEntityName());
     }
 
     return $maxHeaderRow;

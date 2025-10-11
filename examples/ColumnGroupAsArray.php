@@ -4,13 +4,15 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 use Twelver313\Sheetmap\ArraySchema;
 use Twelver313\Sheetmap\Mapping\ArrayMapping;
+use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
 use Twelver313\Sheetmap\ValueFormatter;
 
 $userSchema = new ArraySchema('userSchema', ['endRow' => 5]);
 $userSchema->pickOutHeaderRow();
 $userSchema->pickOutHeaderRow(4, 'daySchema');
+$userSchema->addSheetValidator(ValidateByHeaderSize::class, ['exact' => 2]);
 
-$userSchema->mapKeys(function (ArrayMapping $mapping) {
+$userSchema->map(function (ArrayMapping $mapping) {
   $mapping->field('firstName')->title('Name')->type(ValueFormatter::TYPE_STRING);
   $mapping->field('lastName')->title('Last name')->type(ValueFormatter::TYPE_STRING);
   $mapping->field('months')

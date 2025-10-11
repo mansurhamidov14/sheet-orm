@@ -7,12 +7,16 @@ class SheetHeader
   /** @var array */
   protected $headers = [];
 
+  /** @var array */
+  protected $rowNumbers = [];
+
   /** @var string */
   protected $defaultScope = 'default';
 
-  public function addRow(string $scope, array $header, bool $isDefault = false): void
+  public function addRow(int $rowNumber, string $scope, array $header, bool $isDefault = false): void
   {
     $this->headers[$scope] = $header;
+    $this->rowNumbers[$scope] = $rowNumber;
 
     if ($isDefault) {
       $this->defaultScope = $scope;
@@ -30,6 +34,11 @@ class SheetHeader
     }
 
     return [];
+  }
+
+  public function getScopeRowNumber(?string $scope): int
+  {
+    return $this->rowNumbers[$scope ?? $this->defaultScope] ?? 0;
   }
 
   public function getAll(): array

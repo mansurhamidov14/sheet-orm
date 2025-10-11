@@ -47,7 +47,7 @@ class ArraySchema implements MetadataResolver
     return $this->headerRows;
   }
 
-  public function mapKeys(callable $callback): void
+  public function map(callable $callback): void
   {
     $this->mapping->map($callback);
   }
