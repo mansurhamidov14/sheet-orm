@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap\Helpers;
+namespace Twelver313\SheetORM\Helpers;
 
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 

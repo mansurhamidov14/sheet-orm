@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Field;
+namespace Twelver313\SheetORM\Field;
 
-use Twelver313\Sheetmap\Mapping\MappingProvider;
+use Twelver313\SheetORM\Mapping\MappingProvider;
 
 final class ColumnGroup
 {

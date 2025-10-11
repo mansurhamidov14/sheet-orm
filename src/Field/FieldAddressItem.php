@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap\Field;
+namespace Twelver313\SheetORM\Field;
 
 class FieldAddressItem
 {

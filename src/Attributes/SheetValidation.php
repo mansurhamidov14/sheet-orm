@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Attributes;
+namespace Twelver313\SheetORM\Attributes;
 
-use Twelver313\Sheetmap\Validation\SheetValidationStrategy;
+use Twelver313\SheetORM\Validation\SheetValidationStrategy;
 
 /**
  * @Annotation

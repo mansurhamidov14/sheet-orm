@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap\Exceptions;
+namespace Twelver313\SheetORM\Exceptions;
 
 use Exception;
 

@@ -2,10 +2,10 @@
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-use Twelver313\Sheetmap\ArraySchema;
-use Twelver313\Sheetmap\Mapping\ArrayMapping;
-use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\ArraySchema;
+use Twelver313\SheetORM\Mapping\ArrayMapping;
+use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
+use Twelver313\SheetORM\ValueFormatter;
 
 $userSchema = new ArraySchema('userSchema', ['endRow' => 5]);
 $userSchema->pickOutHeaderRow();
@@ -28,7 +28,7 @@ $userSchema->map(function (ArrayMapping $mapping) {
 });
 
 // var_dump($userSchema->getMapping());die;
-$mapper = new \Twelver313\Sheetmap\SpreadsheetMapper();
+$mapper = new \Twelver313\SheetORM\SpreadsheetMapper();
 $data = $mapper->loadAsArray($userSchema)->fromFile(__DIR__ . '/columngrouplist.xlsx')->getData();
 $res = json_encode($data, JSON_PRETTY_PRINT);
 file_put_contents(__DIR__ . '/../outputs/output_' . date('U') . '.json', $res);

@@ -1,9 +1,9 @@
 <?php
 
-namespace Twelver313\Sheetmap\Validation;
+namespace Twelver313\SheetORM\Validation;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\SheetHeader;
+use Twelver313\SheetORM\SheetHeader;
 
 class SheetValidationContext
 {

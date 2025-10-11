@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
-use Twelver313\Sheetmap\Exceptions\MissingMetadataException;
+use Twelver313\SheetORM\Exceptions\MissingMetadataException;
 
 class MetadataRegistry
 {

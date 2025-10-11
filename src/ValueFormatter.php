@@ -1,13 +1,13 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 use DateTime;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use Twelver313\Sheetmap\Exceptions\InvalidValueFormatterTypeException;
-use Twelver313\Sheetmap\Exceptions\MissingValueFormatterException;
-use Twelver313\Sheetmap\Field\FieldMapping;
+use Twelver313\SheetORM\Exceptions\InvalidValueFormatterTypeException;
+use Twelver313\SheetORM\Exceptions\MissingValueFormatterException;
+use Twelver313\SheetORM\Field\FieldMapping;
 
 class ValueFormatter
 {

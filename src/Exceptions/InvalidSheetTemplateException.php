@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Exceptions;
+namespace Twelver313\SheetORM\Exceptions;
 
-use Twelver313\Sheetmap\Validation\SheetValidationContext;
+use Twelver313\SheetORM\Validation\SheetValidationContext;
 
 final class InvalidSheetTemplateException extends SheetmapException
 {

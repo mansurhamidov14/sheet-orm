@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Validation;
+namespace Twelver313\SheetORM\Validation;
 
-use Twelver313\Sheetmap\Exceptions\InvalidSheetTemplateException;
+use Twelver313\SheetORM\Exceptions\InvalidSheetTemplateException;
 
 abstract class SheetValidationStrategy
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
-use Twelver313\Sheetmap\Attributes\SheetHeaderRow;
-use Twelver313\Sheetmap\Mapping\ArrayMapping;
-use Twelver313\Sheetmap\Attributes\SheetValidation;
+use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\Mapping\ArrayMapping;
+use Twelver313\SheetORM\Attributes\SheetValidation;
 
 class ArraySchema implements MetadataResolver
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap\Attributes;
+namespace Twelver313\SheetORM\Attributes;
 
 /**
  * @Annotation

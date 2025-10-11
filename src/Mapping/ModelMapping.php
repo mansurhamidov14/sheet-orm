@@ -1,12 +1,12 @@
 <?php
 
-namespace Twelver313\Sheetmap\Mapping;
+namespace Twelver313\SheetORM\Mapping;
 
 use ReflectionProperty;
-use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
-use Twelver313\Sheetmap\Attributes\ColumnGroupList;
-use Twelver313\Sheetmap\Field\FieldMapping;
-use Twelver313\Sheetmap\SheetHeader;
+use Twelver313\SheetORM\Attributes\ColumnGroupItem;
+use Twelver313\SheetORM\Attributes\ColumnGroupList;
+use Twelver313\SheetORM\Field\FieldMapping;
+use Twelver313\SheetORM\SheetHeader;
 
 class ModelMapping extends MappingProvider
 {
@@ -25,10 +25,10 @@ class ModelMapping extends MappingProvider
       $fieldColumnCreated = $this->createColumnFromField($field, $header);
       if ($fieldColumnCreated) continue;
 
-      $fieldColumnGroupItemCreated = $this->createColumnGroupItemFromField($field, $header);
-      if ($fieldColumnGroupItemCreated) continue;
+      $fieldColumnGroupListCreated = $this->createColumnGroupListFromField($field, $header);
+      if ($fieldColumnGroupListCreated) continue;
 
-      $this->createColumnGroupListFromField($field, $header);
+      $this->createColumnGroupItemFromField($field, $header);
     }
 
     return $this;
@@ -49,7 +49,7 @@ class ModelMapping extends MappingProvider
 
     /**
      * If field mapping was already registered dynamically
-     * SheetColumn column title is defined, but letter wasn't
+     * Column column title is defined, but letter wasn't
      * We are assigning corresponding column letter from header by column title
      */
     if (

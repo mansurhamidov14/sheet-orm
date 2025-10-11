@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap\Validation;
+namespace Twelver313\SheetORM\Validation;
 
 class ValidateByHeaderTitles extends SheetValidationStrategy
 {

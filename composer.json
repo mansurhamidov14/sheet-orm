@@ -1,11 +1,11 @@
 {
-  "name": "twelver313/sheetmap",
-  "description": "Convert spreadsheets into PHP objects with simple annotations and mapping.",
+  "name": "twelver313/sheet-orm",
+  "description": "Convert spreadsheets into PHP objects and arrays with attributes, annotations and mapping methods",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Twelver313\\Sheetmap\\": "src/"
+      "Twelver313\\SheetORM\\": "src/"
     }
   },
   "authors": [

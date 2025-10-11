@@ -2,40 +2,37 @@
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-use Twelver313\Sheetmap\Attributes\ColumnGroupList;
-use Twelver313\Sheetmap\Attributes\Sheet;
-use Twelver313\Sheetmap\Attributes\SheetColumn;
-use Twelver313\Sheetmap\Attributes\SheetHeaderRow;
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\Attributes\ColumnGroupList;
+use Twelver313\SheetORM\Attributes\Column;
+use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\SpreadsheetMapper;
 
 class UserSchedule
 {
-    #[SheetColumn(title: 'Date', type: ValueFormatter::TYPE_DATE)]
+    /** @Column(title="Date", type="date") */
     public $date;
 
-    #[SheetColumn(title: 'Time', type: ValueFormatter::TYPE_DATE)]
+    /** @Column(title="Time", type="time") */
     public $time;
 }
 
 class UserScheduleMonth
 {
-    #[ColumnGroupList(target: UserSchedule::class, size: 2, step: 2)]
+    /** @ColumnGroupList(target="UserSchedule", size=2, step=2) */
     public $schedules;
 }
 
-#[Sheet(startRow: 5, endRow: 5)]
-#[SheetHeaderRow(row: 1)]
-#[SheetHeaderRow(scope: UserSchedule::class, row: 4)]
+/** @SheetHeaderRow() */
+/** @SheetHeaderRow(scope="UserSchedule", row=4) */
 class User
 {
-    #[SheetColumn(letter: 'A')]
+    /** @Column(title="Name") */
     public $firstName;
 
-    #[SheetColumn(letter: 'B')]
+    /** @Column(title="Last name") */
     public $lastName;
 
-    #[ColumnGroupList(target: UserScheduleMonth::class, size: 3, step: 4)]
+    /** @ColumnGroupList(target="UserScheduleMonth", size=3, step=4) */
     public $months;
 }
 

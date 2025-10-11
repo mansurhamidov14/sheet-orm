@@ -1,6 +1,6 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 class SheetHeader
 {

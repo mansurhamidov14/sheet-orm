@@ -1,20 +1,20 @@
 <?php
 
-namespace Twelver313\Sheetmap\Mapping;
+namespace Twelver313\SheetORM\Mapping;
 
-use Twelver313\Sheetmap\Field\FieldAddressItem;
-use Twelver313\Sheetmap\Field\FieldMapping;
-use Twelver313\Sheetmap\Field\FieldMetadata;
-use Twelver313\Sheetmap\Helpers\Calculations;
-use Twelver313\Sheetmap\MetadataResolver;
-use Twelver313\Sheetmap\SheetHeader;
+use Twelver313\SheetORM\Field\FieldAddressItem;
+use Twelver313\SheetORM\Field\FieldMapping;
+use Twelver313\SheetORM\Field\FieldMetadata;
+use Twelver313\SheetORM\Helpers\Calculations;
+use Twelver313\SheetORM\MetadataResolver;
+use Twelver313\SheetORM\SheetHeader;
 
 abstract class MappingProvider
 {
   /** @var FieldMapping[] */
   protected $mappings = [];
 
-  /** @var \Twelver313\Sheetmap\ModelMetadata */
+  /** @var \Twelver313\SheetORM\ModelMetadata */
   protected $metadataResolver;
 
   public function __construct(MetadataResolver $metadataResolver)

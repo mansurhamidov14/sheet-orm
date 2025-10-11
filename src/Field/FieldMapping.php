@@ -1,11 +1,11 @@
 <?php
 
-namespace Twelver313\Sheetmap\Field;
+namespace Twelver313\SheetORM\Field;
 
-use Twelver313\Sheetmap\ArraySchema;
-use Twelver313\Sheetmap\Mapping\MappingProvider;
-use Twelver313\Sheetmap\Mapping\ModelMapping;
-use Twelver313\Sheetmap\ModelMetadata;
+use Twelver313\SheetORM\ArraySchema;
+use Twelver313\SheetORM\Mapping\MappingProvider;
+use Twelver313\SheetORM\Mapping\ModelMapping;
+use Twelver313\SheetORM\ModelMetadata;
 
 class FieldMapping
 {

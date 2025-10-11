@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Exceptions;
+namespace Twelver313\SheetORM\Exceptions;
 
-use Twelver313\Sheetmap\Exceptions\SheetmapException;
+use Twelver313\SheetORM\Exceptions\SheetmapException;
 
 final class MissingValueFormatterException extends SheetmapException
 {

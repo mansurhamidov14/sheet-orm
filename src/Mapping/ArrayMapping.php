@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Mapping;
+namespace Twelver313\SheetORM\Mapping;
 
-use Twelver313\Sheetmap\SheetHeader;
+use Twelver313\SheetORM\SheetHeader;
 
 class ArrayMapping extends MappingProvider
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Twelver313\Sheetmap\Exceptions\DocumentWasNotLoadedException;
-use Twelver313\Sheetmap\Mapping\MappingRegistry;
-use Twelver313\Sheetmap\Mapping\ModelMapping;
+use Twelver313\SheetORM\Exceptions\DocumentWasNotLoadedException;
+use Twelver313\SheetORM\Mapping\MappingRegistry;
+use Twelver313\SheetORM\Mapping\ModelMapping;
 
 class SpreadsheetMapper
 {

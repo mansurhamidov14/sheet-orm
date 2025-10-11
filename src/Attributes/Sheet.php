@@ -1,8 +1,8 @@
 <?php
 
-namespace Twelver313\Sheetmap\Attributes;
+namespace Twelver313\SheetORM\Attributes;
 
-use Twelver313\Sheetmap\SheetConfig;
+use Twelver313\SheetORM\SheetConfig;
 
 /**
  * @Annotation

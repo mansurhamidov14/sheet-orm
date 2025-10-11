@@ -1,16 +1,16 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
-use Twelver313\Sheetmap\Attributes\ColumnGroupItem;
-use Twelver313\Sheetmap\Attributes\ColumnGroupList;
-use Twelver313\Sheetmap\Attributes\Sheet;
-use Twelver313\Sheetmap\Attributes\SheetColumn;
-use Twelver313\Sheetmap\Attributes\SheetHeaderRow;
-use Twelver313\Sheetmap\Attributes\SheetValidation;
-use Twelver313\Sheetmap\Helpers\Attributes;
+use Twelver313\SheetORM\Attributes\ColumnGroupItem;
+use Twelver313\SheetORM\Attributes\ColumnGroupList;
+use Twelver313\SheetORM\Attributes\Sheet;
+use Twelver313\SheetORM\Attributes\Column;
+use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\Attributes\SheetValidation;
+use Twelver313\SheetORM\Helpers\Attributes;
 
 class ModelMetadata implements MetadataResolver
 {
@@ -69,9 +69,9 @@ class ModelMetadata implements MetadataResolver
     return $this->annotationReader->getPropertyAnnotation($refProperty, $type);
   }
 
-  public function getColumnAttributes($property): ?SheetColumn
+  public function getColumnAttributes($property): ?Column
   {
-    return $this->getPropertyAttributesByType($property, SheetColumn::class);
+    return $this->getPropertyAttributesByType($property, Column::class);
   }
 
   public function getColumnGroupItemAttributes($property): ?ColumnGroupItem

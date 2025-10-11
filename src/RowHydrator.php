@@ -1,11 +1,11 @@
 <?php
 
-namespace Twelver313\Sheetmap;
+namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use ReflectionProperty;
-use Twelver313\Sheetmap\Field\FieldMetadata;
+use Twelver313\SheetORM\Field\FieldMetadata;
 
 class RowHydrator
 {

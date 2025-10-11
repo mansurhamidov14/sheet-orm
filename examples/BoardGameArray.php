@@ -2,11 +2,11 @@
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-use Twelver313\Sheetmap\ArrayMapping;
-use Twelver313\Sheetmap\ArraySchema;
-use Twelver313\Sheetmap\SpreadsheetMapper;
-use Twelver313\Sheetmap\Validation\ValidateByHeaderSize;
-use Twelver313\Sheetmap\ValueFormatter;
+use Twelver313\SheetORM\ArrayMapping;
+use Twelver313\SheetORM\ArraySchema;
+use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
+use Twelver313\SheetORM\ValueFormatter;
 
 $arraySchema = new ArraySchema('boardGames', [
   'endRow' => 4
