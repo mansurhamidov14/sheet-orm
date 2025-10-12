@@ -18,8 +18,8 @@ class SpreadsheetMapper
   /** @var Worksheet */
   private $sheet;
 
-  /** @var ValueFormatter */
-  public $valueFormatter;
+  /** @var Formatter */
+  public $formatter;
 
   private $currentModel;
 
@@ -27,7 +27,7 @@ class SpreadsheetMapper
   {
     $this->metadataRegistry = new MetadataRegistry();
     $this->mappingRegistry = new MappingRegistry();
-    $this->valueFormatter = new ValueFormatter();
+    $this->formatter = new Formatter();
   }
 
   public function load(string $modelName): self
@@ -67,7 +67,7 @@ class SpreadsheetMapper
     $sheetHandler = new SheetHandler(
       $filePath,
       $metadataResolver,
-      $this->valueFormatter,
+      $this->formatter,
       $this->mappingRegistry->get($this->currentModel),
       $config
     );

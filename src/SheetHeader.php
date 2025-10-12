@@ -36,9 +36,14 @@ class SheetHeader
     return [];
   }
 
-  public function getScopeRowNumber(?string $scope): int
+  public function getRowNumber(?string $scope): int
   {
     return $this->rowNumbers[$scope ?? $this->defaultScope] ?? 0;
+  }
+
+  public function getTitle(string $column, ?string $scope = null)
+  {
+    return array_search($column, $this->getScope($scope));
   }
 
   public function getAll(): array

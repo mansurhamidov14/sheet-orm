@@ -26,7 +26,7 @@ class ValidateByHeaderSize extends SheetValidationStrategy
   protected function message(array $params, SheetValidationContext $context): string
   {
     $headerSize = $context->getHeaderSize($params['scope'] ?? null);
-    $rowNumber = $context->getSheetHeader()->getScopeRowNumber($params['scope'] ?? null);
+    $rowNumber = $context->getSheetHeader()->getRowNumber($params['scope'] ?? null);
     if (isset($params['exact'])) {
       $message = self::DEFAULT_VALIDATION_MESSAGE_EXACT;
       $sprintfParams = [$rowNumber, $params['exact'], $headerSize];

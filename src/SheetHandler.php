@@ -15,8 +15,8 @@ class SheetHandler
   private $metadataResolver;
   /** @var Worksheet */
   private $sheet;
-  /** @var ValueFormatter */
-  private $valueFormatter;
+  /** @var Formatter */
+  private $formatter;
   /** @var MappingProvider */
   private $mapping;
   private $startRow = 2;
@@ -28,7 +28,7 @@ class SheetHandler
   public function __construct(
     string $filePath,
     MetadataResolver $metadataResolver,
-    ValueFormatter $valueFormatter,
+    Formatter $formatter,
     MappingProvider $mapping,
     ?SheetConfig $config = null
   )
@@ -36,7 +36,7 @@ class SheetHandler
     try {
       $document = IOFactory::load($filePath);
       $this->metadataResolver = $metadataResolver;
-      $this->valueFormatter = $valueFormatter;
+      $this->formatter = $formatter;
       $this->mapping = $mapping;
       $sheetConfig = $config ?? $metadataResolver->getSheetConfig();
 
@@ -140,8 +140,10 @@ class SheetHandler
     $groupedColumns = $this->mapping
       ->assembleFieldMappings($this->sheetHeader)
       ->getGroupedFields();
+    $formatterContext = new FormatterContext($this->sheet, $this->metadataResolver, $this->sheetHeader);
+    $this->formatter->setContext($formatterContext);
 
-    $rowHydrator = new RowHydrator($this->metadataResolver, $this->valueFormatter, $groupedColumns);
+    $rowHydrator = new RowHydrator($this->formatter, $groupedColumns);
     $result = [];
     foreach ($this->sheet->getRowIterator($this->startRow, $this->endRow) as $row) {
       if ($this->metadataResolver->getSheetConfig()->includeEmptyRows || !$rowHydrator->isEmptyRow($row)) {

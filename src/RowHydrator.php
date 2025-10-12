@@ -2,34 +2,31 @@
 
 namespace Twelver313\SheetORM;
 
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use ReflectionProperty;
 use Twelver313\SheetORM\Field\FieldMetadata;
 
 class RowHydrator
 {
-  /** @var MetadataResolver */
-  private $metadataResolver;
-
   /** @var FieldMapping[] */
   private $groupedColumns;
 
-  /** @var ValueFormatter */
-  private $valueFormatter;
+  /** @var Formatter */
+  private $formatter;
 
-  public function __construct(MetadataResolver $metadataResolver, ValueFormatter $valueFormatter, array $groupedColumns)
+  public function __construct(Formatter $formatter, array $groupedColumns)
   {
-    $this->metadataResolver = $metadataResolver;
-    $this->valueFormatter = $valueFormatter;
+    $this->formatter = $formatter;
     $this->groupedColumns = $groupedColumns;
   }
 
   public function rowToObject(Row $row)
   {
-    $class = $this->metadataResolver->getEntityName();
+    $class = $this->formatter->context->metadata->getEntityName();
+    $this->formatter->context->row = $row;
     $object = new $class;
     foreach ($row->getCellIterator() as $cell) {
+      $this->formatter->context->cell = $cell;
       $column = $cell->getColumn();
       if (!isset($this->groupedColumns[$column])) {
         continue;
@@ -37,14 +34,18 @@ class RowHydrator
 
       /** @var FieldMetadata */
       foreach ($this->groupedColumns[$column] as $fieldMetadata) {
-        $this->fillObject($object, $fieldMetadata, $cell);
+        $this->formatter->context->fieldMapping = $fieldMetadata->mapping;
+        $this->fillObject($object, $fieldMetadata);
       }
     }
 
     return $object;
   }
 
-  private function fillObject(object $rootObject, FieldMetadata $fieldMetadata, Cell $cell): void
+  private function fillObject(
+    object $rootObject,
+    FieldMetadata $fieldMetadata
+  ): void
   {
     $current = $rootObject;
     if (!$fieldMetadata->isRootField()) {
@@ -72,29 +73,36 @@ class RowHydrator
     }
     $refProperty = new ReflectionProperty($current, $fieldMetadata->mapping->field);
     $refProperty->setAccessible(true);
-    $refProperty->setValue($current, $this->valueFormatter->format($cell, $fieldMetadata->mapping));
+    $refProperty->setValue($current, $this->formatter->format(
+      $fieldMetadata->mapping->type,
+      $fieldMetadata->mapping->params
+    ));
   }
 
   public function rowToArray(Row $row) {
+    $this->formatter->context->row = $row;
     $result = [];
     foreach ($row->getCellIterator() as $cell) {
+      $this->formatter->context->cell = $cell;
       $column = $cell->getColumn();
       if (!isset($this->groupedColumns[$column])) {
         continue;
       }
 
-      foreach ($this->groupedColumns[$column] as $mapping) {
-        $this->fillArray($result, $mapping, $cell);
+      foreach ($this->groupedColumns[$column] as $fieldMetadata) {
+        $this->formatter->context->fieldMapping = $fieldMetadata->mapping;
+        $this->fillArray($result, $fieldMetadata, $cell);
       }
     }
 
     return $result;
   }
 
-  private function fillArray(&$rootArray, FieldMetadata $fieldMetadata, Cell $cell): void
+  private function fillArray(&$rootArray, FieldMetadata $fieldMetadata): void
   {
+    $current = &$rootArray;
     if (!$fieldMetadata->isRootField()) {
-      $current = &$rootArray;
+      
       foreach ($fieldMetadata->address as $step) {
         if ($step->isArrayItem()) {
           if (!isset($current[$step->fieldName])) {
@@ -111,10 +119,8 @@ class RowHydrator
           $current = &$current[$step->fieldName];
         }
       }
-      $current[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
-    } else {
-      $rootArray[$fieldMetadata->mapping->field] = $this->valueFormatter->format($cell, $fieldMetadata->mapping);
-    }
+    } 
+    $current[$fieldMetadata->mapping->field] = $this->formatter->format($fieldMetadata->mapping->type, $fieldMetadata->mapping->params);
   }
 
   public function isEmptyRow(Row $row, $startColumn = 'A', $endColumn = null): bool

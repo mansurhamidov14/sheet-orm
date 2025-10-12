@@ -50,7 +50,7 @@ class BoardGame {
 }
 
 $spreadsheetMapper = new SpreadsheetMapper();
-$spreadsheetMapper->valueFormatter->register("list", function (Cell $cell) {
+$spreadsheetMapper->formatter->register("list", function (Cell $cell) {
   $value = $cell->getValue();
   $list = explode(";", $value);
   return array_map('trim', $list);

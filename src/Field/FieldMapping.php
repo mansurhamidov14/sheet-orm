@@ -16,6 +16,7 @@ class FieldMapping
   public $type = null;
   /** @var ColumnGroup */
   public $columnGroup = null;
+  public $params = null;
 
   public function __construct(string $field, string $entityName)
   {
@@ -38,6 +39,11 @@ class FieldMapping
   public function type(string $type): self {
     $this->type = $type;
     return $this;
+  }
+
+  public function setParams(array $params)
+  {
+    $this->params = $params;
   }
 
   /**

@@ -7,9 +7,8 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Twelver313\SheetORM\Exceptions\InvalidValueFormatterTypeException;
 use Twelver313\SheetORM\Exceptions\MissingValueFormatterException;
-use Twelver313\SheetORM\Field\FieldMapping;
 
-class ValueFormatter
+class Formatter
 {
   const TYPE_AUTO = 'auto';
   const TYPE_STRING = 'string';
@@ -23,44 +22,45 @@ class ValueFormatter
   const TYPE_PERCENT = 'percent';
 
   public $formatters = [];
+  /** @var FormatterContext */
+  public $context;
   
   public function __construct()
   {
     $this->register(self::TYPE_INT, $this->getNumericValueFormatter(self::TYPE_INT));
     $this->register(self::TYPE_FLOAT, $this->getNumericValueFormatter(self::TYPE_FLOAT));
 
-    $this->register(self::TYPE_AUTO, function (Cell $cell) {
-      return $cell->getCalculatedValue();
+    $this->register(self::TYPE_AUTO, function (Formatter $formatter) {
+      return $formatter->context->cell->getCalculatedValue();
     });
 
-    $this->register(self::TYPE_STRING, function (Cell $cell) {
-      return $this->formatString($cell);
+    $this->register(self::TYPE_STRING, function (Formatter $formatter) {
+      return $this->formatString($formatter->context->cell);
     });
 
-    $this->register([self::TYPE_BOOL, self::TYPE_BOOLEAN], function (Cell $cell) {
-      return $this->formatBool($cell);
+    $this->register([self::TYPE_BOOL, self::TYPE_BOOLEAN], function (Formatter $formatter, array $params) {
+      return $this->formatBool($formatter->context->cell, $params);
     });
 
-    $this->register([self::TYPE_DATE, self::TYPE_DATETIME, self::TYPE_TIME], function (Cell $cell) {
-      return $this->formatDateTime($cell);
+    $this->register([self::TYPE_DATE, self::TYPE_DATETIME, self::TYPE_TIME], function (Formatter $formatter, array $params) {
+      return $this->formatDateTime($formatter->context->cell, $params);
     });
 
-    $this->register(self::TYPE_PERCENT, function (Cell $cell) {
-      return $this->formatPercent($cell);
+    $this->register(self::TYPE_PERCENT, function (Formatter $formatter) {
+      return $this->formatPercent($formatter->context->cell);
     });
   }
 
-  public function format(Cell $cell, FieldMapping $fieldMapping)
+  public function format(?string $type, $params = [])
   {
-    $type = $fieldMapping->type ?? self::TYPE_AUTO;
-    if (isset($this->formatters[$type])) {
-      return $this->formatters[$type]($cell, $this);
+    if (isset($this->formatters[$type ?? self::TYPE_AUTO])) {
+      return $this->formatters[$type ?? self::TYPE_AUTO]($this, $params);
     }
     
     throw new MissingValueFormatterException(
-      $fieldMapping->type,
-      $fieldMapping->field,
-      $fieldMapping->entityName
+      $this->context->fieldMapping->type,
+      $this->context->fieldMapping->field,
+      $this->context->fieldMapping->entityName
     );
   }
 
@@ -85,8 +85,8 @@ class ValueFormatter
 
   private function getNumericValueFormatter(string $type)
   {
-    return function (Cell $cell) use ($type) {
-      $value = $cell->getCalculatedValue();
+    return function (Formatter $formatter) use ($type) {
+      $value = $formatter->context->cell->getCalculatedValue();
       $formatterfunc = "{$type}val";
       if ($value == '#DIV/0!') {
         return null;
@@ -101,7 +101,10 @@ class ValueFormatter
     return $value == '' ? null : $value;
   }
 
-  public function formatDateTime(Cell $cell): ?DateTime
+  /**
+   * @return DateTime|string|null
+   */
+  public function formatDateTime(Cell $cell)
   {
     $value = $cell->getValue();
     if (!is_int($value) && !is_float($value) && empty($value)) {
@@ -112,12 +115,21 @@ class ValueFormatter
       return Date::excelToDateTimeObject($cell->getValue());
     }
 
-    $dateTime = new DateTime();
-    $timeStamp = strtotime($value);
+    if (isset($params['fromFormat'])) {
+      $dateTime = DateTime::createFromFormat($params['fromFormat'], $value);
+    } else {
+      $dateTime = new DateTime();
+      $timeStamp = strtotime($value);
 
-    if ($timeStamp === false) return null;
+      if ($timeStamp === false) return null;
 
-    $dateTime->setTimestamp($timeStamp);
+      $dateTime->setTimestamp($timeStamp);
+    }
+
+    if (isset($params['toFormat'])) {
+      return $dateTime->format($params['toFormat']);
+    }
+  
     return $dateTime;
   }
 
@@ -156,5 +168,10 @@ class ValueFormatter
   {
     $value = floatval($cell->getCalculatedValue()) * 100;
     return "{$value}%";
+  }
+
+  public function setContext(FormatterContext $context)
+  {
+    $this->context = $context;
   }
 }

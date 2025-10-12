@@ -38,7 +38,7 @@ Below is a single example demonstrating annotations, custom formatters, dynamic 
 use Twelver313\SheetORM\Attributes\Sheet;
 use Twelver313\SheetORM\Attributes\Column;
 use Twelver313\SheetORM\SpreadsheetMapper;
-use Twelver313\SheetORM\ValueFormatter;
+use Twelver313\SheetORM\Formatter;
 
 // Optional: describe the sheet (attribute is optional; defaults exist)
 #[Sheet(name: 'UsersWorksheet', startRow: 5, endRow: 76)]
@@ -46,17 +46,17 @@ use Twelver313\SheetORM\ValueFormatter;
 #[Sheet(index: 2, startRow: 5, endRow: 76)]
 class User
 {
-    #[Column(title: 'Fullname', type: ValueFormatter::TYPE_STRING)]
+    #[Column(title: 'Fullname', type: Formatter::TYPE_STRING)]
     protected $fullName;
 
     /** @var \DateTime */
-    #[Column(letter: 'B', type: ValueFormatter::TYPE_DATE)]
+    #[Column(letter: 'B', type: Formatter::TYPE_DATE)]
     protected $birthDate;
 
-    #[Column(letter: 'C', type: ValueFormatter::TYPE_BOOL)]
+    #[Column(letter: 'C', type: Formatter::TYPE_BOOL)]
     protected $isAdmin;
 
-    #[Column(title: 'Salary', type: ValueFormatter::TYPE_FLOAT)]
+    #[Column(title: 'Salary', type: Formatter::TYPE_FLOAT)]
     protected $salary;
 }
 
@@ -107,7 +107,7 @@ class User
 use Twelver313\SheetORM\ModelMapping;
 use Twelver313\SheetORM\SheetConfig;
 use Twelver313\SheetORM\SpreadsheetMapper;
-use Twelver313\SheetORM\ValueFormatter;
+use Twelver313\SheetORM\Formatter;
 
 class User
 {
@@ -123,10 +123,10 @@ $spreadsheetMapper = new SpreadsheetMapper();
 
 // map properties dynamically
 $spreadsheetMapper->map(User::class, function (ModelMapping $mapping) {
-    $mapping->field('fullName')->title('Fullname')->type(ValueFormatter::TYPE_STRING);
+    $mapping->field('fullName')->title('Fullname')->type(Formatter::TYPE_STRING);
     $mapping->field('birthDate')->column('B')->type(ValueFomatter::TYPE_DATE);
-    $mapping->field('isAdmin')->column('C')->type(ValueFormatter::TYPE_BOOL);
-    $mapping->field('salary')->title('Salary')->type(ValueFormatter::TYPE_FLOAT);
+    $mapping->field('isAdmin')->column('C')->type(Formatter::TYPE_BOOL);
+    $mapping->field('salary')->title('Salary')->type(Formatter::TYPE_FLOAT);
 });
 
 // Defining sheet config dynamically
@@ -148,14 +148,14 @@ $data = $spreadsheetMapper
 use Twelver313\SheetORM\ArrayMapping;
 use Twelver313\SheetORM\ArraySchema;
 use Twelver313\SheetORM\SpreadsheetMapper;
-use Twelver313\SheetORM\ValueFormatter;
+use Twelver313\SheetORM\Formatter;
 
 $arraySchema = new ArraySchema('boardGames', [
   'endRow' => 4
 ]);
 
 $arraySchema->mapKeys(function (ArrayMapping $mapping) {
-  $mapping->field('id')->title('row_id')->type(ValueFormatter::TYPE_INT);
+  $mapping->field('id')->title('row_id')->type(Formatter::TYPE_INT);
   $mapping->field('game')->title('boardgame');
 });
 
@@ -187,7 +187,7 @@ $sheetHeader = $spreadsheetMapper
 ```php
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use Twelver313\SheetORM\SpreadsheetMapper;
-use Twelver313\SheetORM\ValueFormatter;
+use Twelver313\SheetORM\Formatter;
 
 class User
 {
@@ -203,10 +203,10 @@ class User
 $spreadsheetMapper = new SpreadsheetMapper();
 
 // register a custom value formatter named "md5"
-$spreadsheetMapper->valueFormatter->register('md5', function (Cell $cell) {
+$spreadsheetMapper->formatter->register('md5', function (Cell $cell) {
     return md5($cell->getCalculatedValue());
 });
-$spreadsheetMapper->valueFormatter->register('formattedDate', function (Cell $cell, ValueFormatter $formatter) {
+$spreadsheetMapper->formatter->register('formattedDate', function (Cell $cell, Formatter $formatter) {
     $initialValue = $formatter->formatDateTime($cell);
     return $initialValue?->format('d.m.Y');
 })
@@ -370,7 +370,7 @@ try {
 # API (quick reference)
 
 - `SpreadsheetMapper` — main entry: register formatters, map classes, load files.
-- `ValueFormatter` — register and resolve formatters (`register(name, callable)`).
+- `Formatter` — register and resolve formatters (`register(name, callable)`).
 - `ModelMapping` — runtime mapping builder (`property()->column()->title()->type()`).
 - `SheetConfig` — runtime sheet selection and row bounds.
 - Attributes: `#[Sheet]`, `#[Column]`, and optional `#[SheetValidation]`.

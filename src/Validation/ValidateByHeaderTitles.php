@@ -89,7 +89,7 @@ class ValidateByHeaderTitles extends SheetValidationStrategy
   {
     return sprintf(
       "Provided sheet header doesn't match expected template at row #%u. Expected: %s. Provided: %s",
-      $context->getSheetHeader()->getScopeRowNumber($params['scope'] ?? null),
+      $context->getSheetHeader()->getRowNumber($params['scope'] ?? null),
       implode(', ', $params['titles']),
       implode(', ', $context->getHeaderTitles())
     );

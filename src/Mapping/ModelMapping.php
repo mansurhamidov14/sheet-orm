@@ -3,8 +3,6 @@
 namespace Twelver313\SheetORM\Mapping;
 
 use ReflectionProperty;
-use Twelver313\SheetORM\Attributes\ColumnGroup;
-use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Field\FieldMapping;
 use Twelver313\SheetORM\SheetHeader;
 
@@ -59,8 +57,13 @@ class ModelMapping extends MappingProvider
     ) {
       $fieldMapping->column($headerRow[$fieldMapping->title] ?? null);
     }
+   
+    /** Setting field mapping params from default attribute or empty array if it wasn't provided dynamically */
+    if (isset($fieldMapping) && !isset($fieldMapping->params)) {
+      $fieldMapping->setParams(isset($fieldColumnAttributes) ? $fieldColumnAttributes->params : []);
+    }
 
-    $defaultColumnAttrsProvided = isset($fieldColumnAttributes) && isset($fieldColumnAttributes->title) || isset($fieldColumnAttributes->letter);
+    $defaultColumnAttrsProvided = isset($fieldColumnAttributes) && (isset($fieldColumnAttributes->title) || isset($fieldColumnAttributes->letter)); 
     /**
      * If we didn't create field mapping dynamically
      * We create it from column annotator attributes if they are provided
@@ -69,7 +72,8 @@ class ModelMapping extends MappingProvider
       $fieldMapping = $this
         ->field($fieldName)
         ->column($fieldColumnAttributes->letter ?? $headerRow[$fieldColumnAttributes->title] ?? null)
-        ->type($fieldColumnAttributes->type);
+        ->type($fieldColumnAttributes->type)
+        ->setParams($fieldColumnAttributes->params);
       return true;
     }
 

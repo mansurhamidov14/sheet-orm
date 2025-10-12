@@ -6,23 +6,23 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use Twelver313\SheetORM\Attributes\Sheet;
 use Twelver313\SheetORM\Attributes\Column;
 use Twelver313\SheetORM\SpreadsheetMapper;
-use Twelver313\SheetORM\ValueFormatter;
+use Twelver313\SheetORM\Formatter;
 
 #[Sheet(endRow: 5)]
 class User {
-  #[Column(title: 'Id', type: ValueFormatter::TYPE_INT)]
+  #[Column(title: 'Id', type: Formatter::TYPE_INT)]
   public $id;
 
-  #[Column(title: 'First Name', type: ValueFormatter::TYPE_STRING)]
+  #[Column(title: 'First Name', type: Formatter::TYPE_STRING)]
   public $firstName;
 
-  #[Column(title: 'Last Name', type: ValueFormatter::TYPE_STRING)]
+  #[Column(title: 'Last Name', type: Formatter::TYPE_STRING)]
   public $lastName;
 
   #[Column(title: 'Gender', type: 'gender')]
   public $gender;
 
-  #[Column(title: 'Age', type: ValueFormatter::TYPE_INT)]
+  #[Column(title: 'Age', type: Formatter::TYPE_INT)]
   public $age;
 
   #[Column(title: 'Date', type: 'formattedDate')]
@@ -30,14 +30,14 @@ class User {
 }
 
 $spreadsheetMapper = new SpreadsheetMapper();
-$spreadsheetMapper->valueFormatter->register('gender', function (Cell $cell) {
+$spreadsheetMapper->formatter->register('gender', function (Cell $cell) {
   return match (strtolower($cell->getCalculatedValue())) {
     'male' => '♂',
     'female' => '♀',
     'default' => null
   };
 });
-$spreadsheetMapper->valueFormatter->register('formattedDate', function (Cell $cell, ValueFormatter $formatter) {
+$spreadsheetMapper->formatter->register('formattedDate', function (Cell $cell, Formatter $formatter) {
   return $formatter->formatDateTime($cell)?->format('d.m.Y');
 });
 

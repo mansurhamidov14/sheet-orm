@@ -7,9 +7,10 @@ use Twelver313\SheetORM\Attributes\Column;
 use Twelver313\SheetORM\Attributes\SheetHeaderRow;
 use Twelver313\SheetORM\Attributes\SheetHeaderRows;
 use Twelver313\SheetORM\Attributes\SheetValidation;
-use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
 use Twelver313\SheetORM\Attributes\SheetValidators;
+use Twelver313\SheetORM\Formatter;
 use Twelver313\SheetORM\SpreadsheetMapper;
+use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
 
 class UserSchedule
 {
@@ -30,12 +31,16 @@ class UserSchedule
 
 class UserScheduleMonth
 {
+    /** @Column(letter="C", type="monthName") */
+    public $monthName;
+
     /** @ColumnGroupList(target="UserSchedule", size=2, step=2) */
     public $schedules;
 
     public function toArray()
     {
         return [
+            'monthName' => $this->monthName,
             'schedules' => array_map(fn ($i) => $i->toArray(), $this->schedules ?? [])
         ];
     }
@@ -44,6 +49,7 @@ class UserScheduleMonth
 /**
  * @SheetHeaderRows({
  *  @SheetHeaderRow(row=1),
+ *  @SheetHeaderRow(scope="MonthNames", row=2),
  *  @SheetHeaderRow(scope="UserSchedule", row=4),
  * })
  * @SheetValidators({
@@ -73,6 +79,9 @@ class User
 }
 
 $mapper = new SpreadsheetMapper();
+$mapper->formatter->register('monthName', function (Formatter $formatter) {
+    return $formatter->context->getHeaderTitle('MonthNames');
+});
 $data = $mapper->load(User::class)->fromFile(__DIR__ . '/columngrouplist.xlsx')->getData();
 $output = json_encode(array_map(fn ($i) => $i->toArray(), $data), JSON_PRETTY_PRINT);
 // $output = str_replace('    ', ' ', $output);
