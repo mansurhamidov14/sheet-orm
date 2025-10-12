@@ -43,7 +43,7 @@ class FieldMapping
   /**
    * @param string|ArraySchema $target
    */
-  public function groupItem($target): MappingProvider
+  public function group($target): MappingProvider
   {
     if ($target instanceof ArraySchema) {
       $this->columnGroup = new ColumnGroup($target->getMapping());

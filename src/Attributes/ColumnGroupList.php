@@ -10,7 +10,7 @@ use Twelver313\SheetORM\Exceptions\SheetmapException;
  * @Target({"PROPERTY"})
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class ColumnGroupList extends ColumnGroupItem
+class ColumnGroupList extends ColumnGroup
 {
   /** @var int */
   public $size;

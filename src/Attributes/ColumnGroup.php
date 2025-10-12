@@ -8,7 +8,7 @@ namespace Twelver313\SheetORM\Attributes;
  * @Target({"PROPERTY"})
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class ColumnGroupItem
+class ColumnGroup
 {
   /** @var string $target */
   public $target;

@@ -4,7 +4,7 @@ namespace Twelver313\SheetORM;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
-use Twelver313\SheetORM\Attributes\ColumnGroupItem;
+use Twelver313\SheetORM\Attributes\ColumnGroup;
 use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Attributes\Sheet;
 use Twelver313\SheetORM\Attributes\Column;
@@ -76,9 +76,9 @@ class ModelMetadata implements MetadataResolver
     return $this->getPropertyAttributesByType($property, Column::class);
   }
 
-  public function getColumnGroupItemAttributes($property): ?ColumnGroupItem
+  public function getColumnGroupItemAttributes($property): ?ColumnGroup
   {
-    return $this->getPropertyAttributesByType($property, ColumnGroupItem::class);
+    return $this->getPropertyAttributesByType($property, ColumnGroup::class);
   }
 
   public function getColumnGroupListAttributes($property): ?ColumnGroupList

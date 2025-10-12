@@ -3,7 +3,7 @@
 namespace Twelver313\SheetORM\Mapping;
 
 use ReflectionProperty;
-use Twelver313\SheetORM\Attributes\ColumnGroupItem;
+use Twelver313\SheetORM\Attributes\ColumnGroup;
 use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Field\FieldMapping;
 use Twelver313\SheetORM\SheetHeader;
@@ -112,7 +112,7 @@ class ModelMapping extends MappingProvider
     }
 
     $this->field($fieldName)
-      ->groupItem($groupAttributes->target)
+      ->group($groupAttributes->target)
       ->assembleFieldMappings($header);
     return true;
   }

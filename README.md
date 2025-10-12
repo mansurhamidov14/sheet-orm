@@ -21,7 +21,7 @@
 # Quick install
 
 ```bash
-composer require twelver313/sheetmap
+composer require twelver313/sheet-orm
 ```
 
 ---
