@@ -2,9 +2,9 @@
   <img src="https://github.com/user-attachments/assets/c51c3a01-8a26-4f47-9046-83404509eb95" height="100px">
 </p>
 
-# Sheetmap
+# SheetORM
 
-**Sheetmap** is a PHP library that maps spreadsheet data (Excel, CSV, etc.) into PHP objects using PHP 8 attributes, doc annotations and flexible programmatic mappings. It aims to make converting tabular data into typed PHP models easy, testable and extensible.
+**SheetORM** is a PHP library that maps spreadsheet data (Excel, CSV, etc.) into PHP objects using PHP 8 attributes, doc annotations and flexible programmatic mappings. It aims to make converting tabular data into typed PHP models easy, testable and extensible.
 
 ---
 
@@ -26,10 +26,7 @@ composer require twelver313/sheet-orm
 
 ---
 
-# Usage overview
-
-Below is a single example demonstrating annotations, custom formatters, dynamic mappings and loading. After the code block you'll find a breakdown explaining each piece.
-
+# Get started
 
 ## Defining and mapping a model with attributes (PHP8+)
 ```php
@@ -363,28 +360,3 @@ try {
     // Handle your error
 }
 ```
-
-
----
-
-# API (quick reference)
-
-- `SpreadsheetMapper` — main entry: register formatters, map classes, load files.
-- `Formatter` — register and resolve formatters (`register(name, callable)`).
-- `ModelMapping` — runtime mapping builder (`property()->column()->title()->type()`).
-- `SheetConfig` — runtime sheet selection and row bounds.
-- Attributes: `#[Sheet]`, `#[Column]`, and optional `#[SheetValidation]`.
-
-(See phpdoc in code for full signatures.)
-
----
-
-# Contributing
-PRs welcome. Please include unit tests for new behaviors (formatters, validation flags, repeating groups).
-
----
-
-# License
-MIT
-
----
