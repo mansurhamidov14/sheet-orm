@@ -4,6 +4,7 @@ namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Twelver313\SheetORM\Exceptions\SpreadsheetReaderException;
 use Twelver313\SheetORM\Mapping\MappingProvider;
 use Twelver313\SheetORM\Mapping\ModelMapping;
 use Twelver313\SheetORM\Validation\SheetValidationContext;
@@ -51,7 +52,7 @@ class SheetHandler
       $this->startRow = $sheetConfig->startRow ?? $maxHeaderRow + 1;
       $this->endRow = $sheetConfig->endRow;
     } catch (\Exception $e) {
-      throw $e;
+      throw new SpreadsheetReaderException($e->getMessage(), $e->getCode(), $e->getPrevious());
     }
   }
 
