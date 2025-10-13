@@ -2,7 +2,7 @@
 
 namespace Twelver313\SheetORM;
 
-use Twelver313\SheetORM\Attributes\SheetHeaderRow;
+use Twelver313\SheetORM\Attributes\TitleRow;
 use Twelver313\SheetORM\Mapping\ArrayMapping;
 use Twelver313\SheetORM\Attributes\SheetValidation;
 
@@ -19,15 +19,15 @@ class ArraySchema implements MetadataResolver
   /** @var SheetConfig */
   protected $sheetConfig;
 
-  /** @var SheetHeaderRow[] */
-  protected $headerRows;
+  /** @var TitleRow[] */
+  protected $titleRows;
 
   public function __construct(string $name, $config = [])
   {
     $this->name = $name;
     $this->sheetConfig = new SheetConfig($config);
     $this->mapping = new ArrayMapping($this);
-    $this->headerRows = [];
+    $this->titleRows = [];
   }
 
   public function addSheetValidator(string $strategy, array $params, ?string $message = null): void
@@ -38,13 +38,13 @@ class ArraySchema implements MetadataResolver
 
   public function pickOutHeaderRow(int $rowNumber = 1, ?string $scope = null): void
   {
-    $this->headerRows[] = new SheetHeaderRow($scope ?? $this->getEntityName(), $rowNumber);
+    $this->titleRows[] = new TitleRow($scope ?? $this->getEntityName(), $rowNumber);
   }
 
-  /** @return SheetHeaderRow[] */
-  public function getHeaderRows(): array
+  /** @return TitleRow[] */
+  public function getTitleRows(): array
   {
-    return $this->headerRows;
+    return $this->titleRows;
   }
 
   public function map(callable $callback): void

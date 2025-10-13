@@ -37,7 +37,7 @@ class ModelMapping extends MappingProvider
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
     $fieldColumnAttributes = $this->metadataResolver->getColumnAttributes($fieldName);
-    $headerRow = $header->getScope($this->metadataResolver->getEntityName(), true);
+    $headerRow = $header->getTitleRow($this->metadataResolver->getEntityName(), true);
 
     /** If field was not decorated as column skipping column creation for the field */
     $columnWasNotSetDynamically = !isset($fieldMapping) || (!isset($fieldMapping->column) && !isset($fieldMapping->title));

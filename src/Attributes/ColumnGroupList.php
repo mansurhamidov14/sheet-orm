@@ -2,7 +2,7 @@
 
 namespace Twelver313\SheetORM\Attributes;
 
-use Twelver313\SheetORM\Exceptions\SheetmapException;
+use Twelver313\SheetORM\Exceptions\SheetORMException;
 
 /**
  * @Annotation
@@ -24,11 +24,11 @@ class ColumnGroupList extends ColumnGroup
   public function __construct(string $target, int $size, int $step)
   {
     if ($size < 1) {
-      throw new SheetmapException('"size" parameter must be a positive integer for column group list');
+      throw new SheetORMException('"size" parameter must be a positive integer for column group list');
     }
 
     if ($step < 1) {
-      throw new SheetmapException('"step" parameter must be a positive integer for column group list');
+      throw new SheetORMException('"step" parameter must be a positive integer for column group list');
     }
 
     parent::__construct($target);

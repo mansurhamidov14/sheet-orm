@@ -8,8 +8,8 @@ use Twelver313\SheetORM\Attributes\ColumnGroup;
 use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Attributes\Sheet;
 use Twelver313\SheetORM\Attributes\Column;
-use Twelver313\SheetORM\Attributes\SheetHeaderRow;
-use Twelver313\SheetORM\Attributes\SheetHeaderRows;
+use Twelver313\SheetORM\Attributes\TitleRow;
+use Twelver313\SheetORM\Attributes\TitleRows;
 use Twelver313\SheetORM\Attributes\SheetValidation;
 use Twelver313\SheetORM\Attributes\SheetValidators;
 use Twelver313\SheetORM\Helpers\Attributes;
@@ -125,11 +125,11 @@ class ModelMetadata implements MetadataResolver
   }
 
   /** 
-   * @return SheetHeaderRow[]
+   * @return TitleRow[]
    */
-  public function getHeaderRows(): array
+  public function getTitleRows(): array
   {
-    return $this->getRepeatableAttribute(SheetHeaderRow::class, SheetHeaderRows::class);
+    return $this->getRepeatableAttribute(TitleRow::class, TitleRows::class);
   }
 
   public function getEntityType(): string

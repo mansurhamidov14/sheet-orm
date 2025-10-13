@@ -4,7 +4,7 @@ namespace Twelver313\SheetORM\Exceptions;
 
 use Twelver313\SheetORM\Validation\SheetValidationContext;
 
-final class InvalidSheetTemplateException extends SheetmapException
+final class InvalidSheetTemplateException extends SheetORMException
 {
   /** @var array */
   protected $params;

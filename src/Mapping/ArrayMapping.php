@@ -9,7 +9,7 @@ class ArrayMapping extends MappingProvider
   public function assembleFieldMappings(SheetHeader $header): MappingProvider
   {
     foreach ($this->mappings as $mapping) {
-      $headerRow = $header->getScope($this->metadataResolver->getEntityName(), true);
+      $headerRow = $header->getTitleRow($this->metadataResolver->getEntityName(), true);
       if (empty($mapping->column) && $mapping->title) {
         $mapping->column = $headerRow[$mapping->title] ?? null;
       }

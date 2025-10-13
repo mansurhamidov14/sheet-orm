@@ -5,7 +5,7 @@ namespace Twelver313\SheetORM;
 class SheetHeader
 {
   /** @var array */
-  protected $headers = [];
+  protected $rows = [];
 
   /** @var array */
   protected $rowNumbers = [];
@@ -15,7 +15,7 @@ class SheetHeader
 
   public function addRow(int $rowNumber, string $scope, array $header, bool $isDefault = false): void
   {
-    $this->headers[$scope] = $header;
+    $this->rows[$scope] = $header;
     $this->rowNumbers[$scope] = $rowNumber;
 
     if ($isDefault) {
@@ -23,13 +23,13 @@ class SheetHeader
     }
   }
 
-  public function getScope(?string $scope = null, bool $fallbackToDefault = false): array
+  public function getTitleRow(?string $scope = null, bool $fallbackToDefault = false): array
   {
-    if (isset($scope) && $header = @$this->headers[$scope]) {
+    if (isset($scope) && $header = @$this->rows[$scope]) {
       return $header;
     }
 
-    if ((!isset($scope) || $fallbackToDefault) && $header = @$this->headers[$this->defaultScope]) {
+    if ((!isset($scope) || $fallbackToDefault) && $header = @$this->rows[$this->defaultScope]) {
       return $header;
     }
 
@@ -43,16 +43,16 @@ class SheetHeader
 
   public function getTitle(string $column, ?string $scope = null)
   {
-    return array_search($column, $this->getScope($scope));
+    return array_search($column, $this->getTitleRow($scope));
   }
 
-  public function getAll(): array
+  public function getAllRows(): array
   {
-    return $this->headers;
+    return $this->rows;
   }
 
   public function getDefault(): array
   {
-    return $this->headers[$this->defaultScope] ?? [];
+    return $this->rows[$this->defaultScope] ?? [];
   }
 }

@@ -8,7 +8,7 @@ namespace Twelver313\SheetORM\Attributes;
  * @Target({"ANNOTATION", "CLASS"})
  */
 #[\Attribute(\Attribute::TARGET_CLASS|\Attribute::IS_REPEATABLE)]
-class SheetHeaderRow
+class TitleRow
 {
   /** @var string|null */
   public $scope;

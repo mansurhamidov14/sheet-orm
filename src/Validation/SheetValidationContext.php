@@ -39,27 +39,27 @@ class SheetValidationContext
 
   public function getHeaderColumns(?string $scope = null): array
   {
-    return array_values($this->sheetHeader->getScope($scope));
+    return array_values($this->sheetHeader->getTitleRow($scope));
   }
 
   public function getHeaderTitles(?string $scope = null): array
   {
-    return array_keys($this->sheetHeader->getScope($scope));
+    return array_keys($this->sheetHeader->getTitleRow($scope));
   }
 
   public function getHeaderSize(?string $scope = null): int
   {
-    return count($this->sheetHeader->getScope($scope));
+    return count($this->sheetHeader->getTitleRow($scope));
   }
 
   public function getHeaderTitle(string $column, ?string $scope = null): ?string
   {
-    $title = array_search($column, $this->sheetHeader->getScope($scope));
+    $title = array_search($column, $this->sheetHeader->getTitleRow($scope));
     return $title === false ? null : $title;
   }
 
   public function getHeaderColumn(string $title, ?string $scope = null): ?string
   {
-    return $this->sheetHeader->getScope($scope)[$title] ?? null;
+    return $this->sheetHeader->getTitleRow($scope)[$title] ?? null;
   }
 }

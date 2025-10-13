@@ -2,4 +2,4 @@
 
 namespace Twelver313\SheetORM\Exceptions;
 
-class SpreadsheetReaderException extends SheetmapException {}
+class SpreadsheetReaderException extends SheetORMException {}

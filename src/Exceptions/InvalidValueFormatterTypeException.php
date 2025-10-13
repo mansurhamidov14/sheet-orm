@@ -2,7 +2,7 @@
 
 namespace Twelver313\SheetORM\Exceptions;
 
-final class InvalidValueFormatterTypeException extends SheetmapException
+final class InvalidValueFormatterTypeException extends SheetORMException
 {
   protected $providedType;
 

@@ -93,9 +93,9 @@ class SheetHandler
       return 0;
     }
 
-    $headerRows = array_keys($headerRowToScope);
-    $minHeaderRow = min($headerRows);
-    $maxHeaderRow = max($headerRows);
+    $titleRows = array_keys($headerRowToScope);
+    $minHeaderRow = min($titleRows);
+    $maxHeaderRow = max($titleRows);
 
     foreach ($this->sheet->getRowIterator($minHeaderRow, $maxHeaderRow) as $row) {
       $rowIndex = $row->getRowIndex();
@@ -122,7 +122,7 @@ class SheetHandler
   private function mapHeaderRowsToScopes(): array
   {
     $result = [];
-    $headerRowAttributes = $this->metadataResolver->getHeaderRows();
+    $headerRowAttributes = $this->metadataResolver->getTitleRows();
     foreach ($headerRowAttributes as $headerRow) {
       $result[$headerRow->row] = $headerRow->scope ?? $this->metadataResolver->getEntityName();
     }

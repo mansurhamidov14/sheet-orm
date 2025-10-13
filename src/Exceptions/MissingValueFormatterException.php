@@ -2,9 +2,9 @@
 
 namespace Twelver313\SheetORM\Exceptions;
 
-use Twelver313\SheetORM\Exceptions\SheetmapException;
+use Twelver313\SheetORM\Exceptions\SheetORMException;
 
-final class MissingValueFormatterException extends SheetmapException
+final class MissingValueFormatterException extends SheetORMException
 {
   protected $modelName;
   protected $property;

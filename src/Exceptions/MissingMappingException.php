@@ -2,7 +2,7 @@
 
 namespace Twelver313\SheetORM\Exceptions;
 
-final class MissingMappingException extends SheetmapException
+final class MissingMappingException extends SheetORMException
 {
   protected $entityName;
 

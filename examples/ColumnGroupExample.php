@@ -4,8 +4,8 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 use Twelver313\SheetORM\Attributes\ColumnGroupList;
 use Twelver313\SheetORM\Attributes\Column;
-use Twelver313\SheetORM\Attributes\SheetHeaderRow;
-use Twelver313\SheetORM\Attributes\SheetHeaderRows;
+use Twelver313\SheetORM\Attributes\TitleRow;
+use Twelver313\SheetORM\Attributes\TitleRows;
 use Twelver313\SheetORM\Attributes\SheetValidation;
 use Twelver313\SheetORM\Attributes\SheetValidators;
 use Twelver313\SheetORM\Formatter;
@@ -47,10 +47,10 @@ class UserScheduleMonth
 }
 
 /**
- * @SheetHeaderRows({
- *  @SheetHeaderRow(row=1),
- *  @SheetHeaderRow(scope="MonthNames", row=2),
- *  @SheetHeaderRow(scope="UserSchedule", row=4),
+ * @TitleRows({
+ *  @TitleRow(row=1),
+ *  @TitleRow(scope="MonthNames", row=2),
+ *  @TitleRow(scope="UserSchedule", row=4),
  * })
  * @SheetValidators({
  *  @SheetValidation(strategy=ValidateByHeaderSize::class, params={"exact"=3}),

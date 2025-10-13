@@ -2,7 +2,7 @@
 
 namespace Twelver313\SheetORM\Exceptions;
 
-final class MissingMetadataException extends SheetmapException
+final class MissingMetadataException extends SheetORMException
 {
   protected $entityName;
 

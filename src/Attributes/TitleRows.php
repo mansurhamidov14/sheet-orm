@@ -6,18 +6,18 @@ namespace Twelver313\SheetORM\Attributes;
  * @Annotation
  * @Target({"CLASS"})
  */
-class SheetHeaderRows
+class TitleRows
 {
   /**
-   * @var SheetHeaderRow[]
+   * @var TitleRow[]
    * @Annotation\Required()
    */
   public $value = [];
 
   public function __construct(array $data)
   {
-    // Normalize if a single @SheetHeaderRow was passed
-    if (isset($data['value']) && $data['value'] instanceof SheetHeaderRow) {
+    // Normalize if a single @TitleRow was passed
+    if (isset($data['value']) && $data['value'] instanceof TitleRow) {
       $data['value'] = [$data['value']];
     }
 
