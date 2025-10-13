@@ -48,6 +48,13 @@ class RowHydrator
   ): void
   {
     $current = $rootObject;
+    $finalValue = $this->formatter->format(
+      $fieldMetadata->mapping->type,
+      $fieldMetadata->mapping->params
+    );
+    if (!isset($finalValue)) {
+      return;
+    }
     if (!$fieldMetadata->isRootField()) {
       foreach ($fieldMetadata->address as $step) {
         $refProperty = new ReflectionProperty($current, $step->fieldName);

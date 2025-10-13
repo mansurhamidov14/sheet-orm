@@ -25,11 +25,11 @@ class SheetHeader
 
   public function getScope(?string $scope = null, bool $fallbackToDefault = false): array
   {
-    if (isset($scope) && $header = $this->headers[$scope]) {
+    if (isset($scope) && $header = @$this->headers[$scope]) {
       return $header;
     }
 
-    if ((!isset($scope) || $fallbackToDefault) && $header = $this->headers[$this->defaultScope]) {
+    if ((!isset($scope) || $fallbackToDefault) && $header = @$this->headers[$this->defaultScope]) {
       return $header;
     }
 
