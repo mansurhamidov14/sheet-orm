@@ -14,6 +14,10 @@ class ArrayMapping extends MappingProvider
         $mapping->column = $headerRow[$mapping->title] ?? null;
       }
 
+      if (!isset($mapping->params)) {
+        $mapping->setParams([]);
+      }
+
       if (isset($mapping->columnGroup)) {
         $mapping->columnGroup->getMappingProvider()->assembleFieldMappings($header);
       }

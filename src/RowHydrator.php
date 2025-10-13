@@ -108,8 +108,14 @@ class RowHydrator
   private function fillArray(&$rootArray, FieldMetadata $fieldMetadata): void
   {
     $current = &$rootArray;
+    $finalValue = $this->formatter->format(
+      $fieldMetadata->mapping->type,
+      $fieldMetadata->mapping->params
+    );
+    if (!isset($finalValue)) {
+      return;
+    }
     if (!$fieldMetadata->isRootField()) {
-      
       foreach ($fieldMetadata->address as $step) {
         if ($step->isArrayItem()) {
           if (!isset($current[$step->fieldName])) {

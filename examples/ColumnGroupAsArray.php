@@ -7,10 +7,10 @@ use Twelver313\SheetORM\Mapping\ArrayMapping;
 use Twelver313\SheetORM\Validation\ValidateByHeaderSize;
 use Twelver313\SheetORM\Formatter;
 
-$userSchema = new ArraySchema('userSchema', ['endRow' => 5]);
+$userSchema = new ArraySchema('userSchema');
 $userSchema->pickOutHeaderRow();
 $userSchema->pickOutHeaderRow(4, 'daySchema');
-$userSchema->addSheetValidator(ValidateByHeaderSize::class, ['exact' => 2]);
+$userSchema->addSheetValidator(ValidateByHeaderSize::class, ['exact' => 3]);
 
 $userSchema->map(function (ArrayMapping $mapping) {
   $mapping->field('firstName')->title('Name')->type(Formatter::TYPE_STRING);
