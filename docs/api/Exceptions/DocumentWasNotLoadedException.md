@@ -1,0 +1,5 @@
+# DocumentWasNotLoadedException
+
+## Methods
+
+- `__construct()`
