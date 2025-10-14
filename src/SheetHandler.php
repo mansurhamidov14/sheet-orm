@@ -109,6 +109,7 @@ class SheetHandler
       foreach ($row->getCellIterator() as $cell) {
         $column = $cell->getColumn();
         $value = $cell->getCalculatedValue();
+        $value = is_string($value) ? trim($value) : $value;
         
         if (!empty($value) && empty($header[$value])) {
           $header[$value] = $column;
