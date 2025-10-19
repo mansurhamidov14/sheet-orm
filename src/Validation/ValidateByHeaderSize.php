@@ -5,9 +5,9 @@ namespace Twelver313\SheetORM\Validation;
 class ValidateByHeaderSize extends SheetValidationStrategy
 {
   const DEFAULT_VALIDATION_MESSAGE_EXACT = "Spreadsheet header row #%u was expected to have exactly %u columns but the provided sheet has %u";
-  const DEFAULT_VALIDATION_MESSAGE_MIN = "Spreadsheett header row #%u was expected to have at least %u columns but the provided sheet has %u";
-  const DEFAULT_VALIDATION_MESSAGE_MAX = "Spreadsheett header row #%u was expected to have a maximum of %u columns but the provided sheet has %u";
-  const DEFAULT_VALIDATION_MESSAGE_RANGE = "Spreadsheett header row #%u was expected to have a minimum of %u and a maximum of %u columns but the provided sheet has %u";
+  const DEFAULT_VALIDATION_MESSAGE_MIN = "Spreadsheet header row #%u was expected to have at least %u columns but the provided sheet has %u";
+  const DEFAULT_VALIDATION_MESSAGE_MAX = "Spreadsheet header row #%u was expected to have a maximum of %u columns but the provided sheet has %u";
+  const DEFAULT_VALIDATION_MESSAGE_RANGE = "Spreadsheet header row #%u was expected to have a minimum of %u and a maximum of %u columns but the provided sheet has %u";
 
   protected function validate(array $params, SheetValidationContext $context): bool
   {

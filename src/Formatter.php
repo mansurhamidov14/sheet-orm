@@ -64,15 +64,18 @@ class Formatter
     );
   }
 
-  /**
-   * @param string|array $typeOrTypes
-   * @param callable $callback
-   */
+    /**
+     * @param string|array $typeOrTypes
+     * @param callable $callback
+     * @return void
+     * @throws InvalidValueFormatterTypeException
+     */
   public function register($typeOrTypes, callable $callback)
   {
     if (is_string($typeOrTypes)) {
-      return $this->formatters[$typeOrTypes] = $callback;
-    } 
+      $this->formatters[$typeOrTypes] = $callback;
+      return;
+    }
     
     foreach ($typeOrTypes as $type) {
       if (is_string($type)) {
@@ -83,15 +86,15 @@ class Formatter
     }
   }
 
-  private function getNumericValueFormatter(string $type)
+  private function getNumericValueFormatter(string $type): callable
   {
     return function (Formatter $formatter) use ($type) {
       $value = $formatter->context->cell->getCalculatedValue();
-      $formatterfunc = "{$type}val";
+      $formatterFunc = "{$type}val";
       if ($value == '#DIV/0!') {
         return null;
       }
-      return call_user_func($formatterfunc, $value);
+      return call_user_func($formatterFunc, $value);
     };
   }
 

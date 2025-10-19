@@ -3,6 +3,7 @@
 namespace Twelver313\SheetORM\Helpers;
 
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Exception;
 
 class Calculations
 {
@@ -10,7 +11,10 @@ class Calculations
     'nextColumn' => []
   ];
 
-  public static function getShiftedColumn(string $letter, int $offset)
+  /**
+   * @throws Exception
+   */
+  public static function getShiftedColumn(string $letter, int $offset): string
   {
     if (empty($offset)) {
       return $letter;

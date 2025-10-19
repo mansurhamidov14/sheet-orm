@@ -47,14 +47,10 @@ class ModelMapping extends MappingProvider
 
     /**
      * If field mapping was already registered dynamically
-     * Column column title is defined, but letter wasn't
+     * Column title is defined, but letter wasn't
      * We are assigning corresponding column letter from header by column title
      */
-    if (
-      isset($fieldMapping) &&
-      !isset($fieldMapping->column) &&
-      isset($fieldMapping->title)
-    ) {
+    if (!isset($fieldMapping->column) && isset($fieldMapping->title)) {
       $fieldMapping->column($headerRow[$fieldMapping->title] ?? null);
     }
    
@@ -69,7 +65,7 @@ class ModelMapping extends MappingProvider
      * We create it from column annotator attributes if they are provided
      */
     if (!isset($fieldMapping) && $defaultColumnAttrsProvided) {
-      $fieldMapping = $this
+      $this
         ->field($fieldName)
         ->column($fieldColumnAttributes->letter ?? $headerRow[$fieldColumnAttributes->title] ?? null)
         ->type($fieldColumnAttributes->type)
@@ -98,7 +94,7 @@ class ModelMapping extends MappingProvider
     return false;
   }
 
-  public function createColumnGroupItemFromField(ReflectionProperty $field, SheetHeader $header)
+  public function createColumnGroupItemFromField(ReflectionProperty $field, SheetHeader $header): bool
   {
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
@@ -121,7 +117,7 @@ class ModelMapping extends MappingProvider
     return true;
   }
 
-  public function createColumnGroupListFromField(ReflectionProperty $field, SheetHeader $header)
+  public function createColumnGroupListFromField(ReflectionProperty $field, SheetHeader $header): bool
   {
     $fieldName = $field->getName();
     $fieldMapping = $this->resolve($fieldName);
@@ -148,8 +144,7 @@ class ModelMapping extends MappingProvider
 
   private function wasGroupSetDynamically(?FieldMapping $fieldMapping, bool $isList = false): bool
   {
-    return isset($fieldMapping)
-      && isset($fieldMapping->columnGroup)
+    return isset($fieldMapping->columnGroup)
       && $fieldMapping->columnGroup->isList() === $isList;
   }
 }

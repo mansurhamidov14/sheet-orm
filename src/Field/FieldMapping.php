@@ -70,6 +70,8 @@ class FieldMapping
 
   /**
    * @param string|ArraySchema $target
+   * @param array $params
+   * @return MappingProvider
    */
   public function groupList($target, array $params): MappingProvider
   {

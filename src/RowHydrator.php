@@ -4,11 +4,12 @@ namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use ReflectionProperty;
+use Twelver313\SheetORM\Exceptions\MissingValueFormatterException;
 use Twelver313\SheetORM\Field\FieldMetadata;
 
 class RowHydrator
 {
-  /** @var FieldMapping[] */
+  /** @var Field\FieldMapping[] */
   private $groupedColumns;
 
   /** @var Formatter */
@@ -24,7 +25,7 @@ class RowHydrator
   {
     $class = $this->formatter->context->metadata->getEntityName();
     $this->formatter->context->row = $row;
-    $object = new $class;
+    $object = new $class();
     foreach ($row->getCellIterator() as $cell) {
       $this->formatter->context->cell = $cell;
       $column = $cell->getColumn();
@@ -34,7 +35,8 @@ class RowHydrator
 
       /** @var FieldMetadata */
       foreach ($this->groupedColumns[$column] as $fieldMetadata) {
-        $this->formatter->context->fieldMapping = $fieldMetadata->mapping;
+        $this->formatter->context->fieldMapping =
+          $fieldMetadata->mapping;
         $this->fillObject($object, $fieldMetadata);
       }
     }
@@ -42,10 +44,11 @@ class RowHydrator
     return $object;
   }
 
-  private function fillObject(
-    object $rootObject,
-    FieldMetadata $fieldMetadata
-  ): void
+  /**
+   * @throws \ReflectionException
+   * @throws MissingValueFormatterException
+   */
+  private function fillObject(object $rootObject, FieldMetadata $fieldMetadata): void
   {
     $current = $rootObject;
     $finalValue = $this->formatter->format(
@@ -57,10 +60,13 @@ class RowHydrator
     }
     if (!$fieldMetadata->isRootField()) {
       foreach ($fieldMetadata->address as $step) {
-        $refProperty = new ReflectionProperty($current, $step->fieldName);
+        $refProperty = new ReflectionProperty(
+          $current,
+          $step->fieldName
+        );
         $refProperty->setAccessible(true);
         $value = $refProperty->getValue($current);
-  
+
         if ($step->isArrayItem()) {
           $value = $value ?? [];
           // Ensure array element exists
@@ -86,7 +92,8 @@ class RowHydrator
     ));
   }
 
-  public function rowToArray(Row $row) {
+  public function rowToArray(Row $row): array
+  {
     $this->formatter->context->row = $row;
     $result = [];
     foreach ($row->getCellIterator() as $cell) {
@@ -98,7 +105,7 @@ class RowHydrator
 
       foreach ($this->groupedColumns[$column] as $fieldMetadata) {
         $this->formatter->context->fieldMapping = $fieldMetadata->mapping;
-        $this->fillArray($result, $fieldMetadata, $cell);
+        $this->fillArray($result, $fieldMetadata);
       }
     }
 
@@ -132,11 +139,14 @@ class RowHydrator
           $current = &$current[$step->fieldName];
         }
       }
-    } 
-    $current[$fieldMetadata->mapping->field] = $this->formatter->format($fieldMetadata->mapping->type, $fieldMetadata->mapping->params);
+    }
+    $current[$fieldMetadata->mapping->field] = $this->formatter->format(
+      $fieldMetadata->mapping->type,
+      $fieldMetadata->mapping->params
+    );
   }
 
-  public function isEmptyRow(Row $row, $startColumn = 'A', $endColumn = null): bool
+  public function isEmptyRow(Row $row, $startColumn = "A", $endColumn = null): bool
   {
     foreach ($row->getCellIterator($startColumn, $endColumn) as $cell) {
       $value = $cell->getCalculatedValue();

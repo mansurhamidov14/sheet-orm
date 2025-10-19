@@ -13,7 +13,7 @@ abstract class SheetValidationStrategy
     return "Provided sheet doesn't match correct template";
   }
 
-  protected function formatProvidedMessage(string $message, array $params, SheetValidationContext $context)
+  protected function formatProvidedMessage(string $message, array $params, SheetValidationContext $context): string
   {
     $templateParams['{context.headerSize}'] = $context->getHeaderSize();
     $templateParams['{context.model'] = $context->getModel();
@@ -26,6 +26,9 @@ abstract class SheetValidationStrategy
     return strtr($message, $templateParams);
   }
 
+  /**
+   * @throws InvalidSheetTemplateException
+   */
   public function handleValidation(array $params, SheetValidationContext $context, ?string $message = null): void
   {
     $isValid = $this->validate($params, $context, $message);

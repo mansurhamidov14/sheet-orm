@@ -4,6 +4,9 @@ namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Twelver313\SheetORM\Exceptions\DocumentWasNotLoadedException;
+use Twelver313\SheetORM\Exceptions\MissingMappingException;
+use Twelver313\SheetORM\Exceptions\MissingMetadataException;
+use Twelver313\SheetORM\Exceptions\SpreadsheetReaderException;
 use Twelver313\SheetORM\Mapping\MappingRegistry;
 use Twelver313\SheetORM\Mapping\ModelMapping;
 
@@ -14,9 +17,6 @@ class SpreadsheetMapper
 
   /** @var MetadataRegistry */
   private $metadataRegistry;
-
-  /** @var Worksheet */
-  private $sheet;
 
   /** @var Formatter */
   public $formatter;
@@ -61,17 +61,21 @@ class SpreadsheetMapper
     return $this;
   }
 
+  /**
+   * @throws MissingMetadataException
+   * @throws SpreadsheetReaderException
+   * @throws MissingMappingException
+   */
   public function fromFile(string $filePath, ?SheetConfig $config = null): SheetHandler
   {
     $metadataResolver = $this->metadataRegistry->get($this->currentModel);
-    $sheetHandler = new SheetHandler(
+    return new SheetHandler(
       $filePath,
       $metadataResolver,
       $this->formatter,
       $this->mappingRegistry->get($this->currentModel),
       $config
     );
-    return $sheetHandler;
   }
 
   public function map($model, callable $callback): self
@@ -82,14 +86,5 @@ class SpreadsheetMapper
     $this->mappingRegistry->register($model, $modelMapping);
     $callback($modelMapping);
     return $this;
-  }
-
-  public function getSheet(): Worksheet
-  {
-    if (!isset($this->sheet)) {
-      throw new DocumentWasNotLoadedException();
-    }
-
-    return $this->sheet;
   }
 }

@@ -4,6 +4,7 @@ namespace Twelver313\SheetORM;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Twelver313\SheetORM\Exceptions\InvalidSheetTemplateException;
 use Twelver313\SheetORM\Exceptions\SpreadsheetReaderException;
 use Twelver313\SheetORM\Mapping\MappingProvider;
 use Twelver313\SheetORM\Mapping\ModelMapping;
@@ -26,7 +27,10 @@ class SheetHandler
   private $sheetHeader = [];
   private $errors = null;
 
-  public function __construct(
+    /**
+     * @throws SpreadsheetReaderException
+     */
+    public function __construct(
     string $filePath,
     MetadataResolver $metadataResolver,
     Formatter $formatter,
@@ -70,6 +74,9 @@ class SheetHandler
     return empty($this->errors);
   }
 
+  /**
+   * @throws InvalidSheetTemplateException
+   */
   private function initValidation($silent = false) {
     $validationContext = new SheetValidationContext(
       $this->metadataResolver->getEntityName(),
@@ -88,19 +95,19 @@ class SheetHandler
   private function initSheetHeader(): int
   {
     $this->sheetHeader = new SheetHeader();
-    $headerRowToScope = $this->mapHeaderRowsToScopes();
+    $titleRowsScopes = $this->getTitleRowsScopes();
 
-    if (empty($headerRowToScope)) {
+    if (empty($titleRowsScopes)) {
       return 0;
     }
 
-    $titleRows = array_keys($headerRowToScope);
+    $titleRows = array_keys($titleRowsScopes);
     $minHeaderRow = min($titleRows);
     $maxHeaderRow = max($titleRows);
 
     foreach ($this->sheet->getRowIterator($minHeaderRow, $maxHeaderRow) as $row) {
       $rowIndex = $row->getRowIndex();
-      $scope = $headerRowToScope[$rowIndex] ?? null;
+      $scope = $titleRowsScopes[$rowIndex] ?? null;
 
       if (!isset($scope)) {
         continue;
@@ -115,13 +122,13 @@ class SheetHandler
           $header[$value] = $column;
         }
       }
-      $this->sheetHeader->addRow($rowIndex, $scope, $header, $scope === $this->metadataResolver->getEntityName());
+      $this->sheetHeader->addTitleRow($rowIndex, $scope, $header, $scope === $this->metadataResolver->getEntityName());
     }
 
     return $maxHeaderRow;
   }
 
-  private function mapHeaderRowsToScopes(): array
+  private function getTitleRowsScopes(): array
   {
     $result = [];
     $headerRowAttributes = $this->metadataResolver->getTitleRows();
@@ -129,10 +136,12 @@ class SheetHandler
       $result[$headerRow->row] = $headerRow->scope ?? $this->metadataResolver->getEntityName();
     }
 
-
     return $result;
   }
 
+  /**
+   * @throws InvalidSheetTemplateException
+   */
   public function getData(): array
   {
     if (!isset($this->errors)) {

@@ -13,7 +13,7 @@ class SheetHeader
   /** @var string */
   protected $defaultScope = 'default';
 
-  public function addRow(int $rowNumber, string $scope, array $header, bool $isDefault = false): void
+  public function addTitleRow(int $rowNumber, string $scope, array $header, bool $isDefault = false): void
   {
     $this->rows[$scope] = $header;
     $this->rowNumbers[$scope] = $rowNumber;

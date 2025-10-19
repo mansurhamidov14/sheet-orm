@@ -9,7 +9,7 @@ class MetadataRegistry
   /** @var MetadataResolver[] */
   private $registry = [];
 
-  public function exists(string $entityName)
+  public function exists(string $entityName): bool
   {
     return isset($this->registry[$entityName]);
   }

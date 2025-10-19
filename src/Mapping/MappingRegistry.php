@@ -26,7 +26,7 @@ class MappingRegistry
     }
   }
 
-  public function exists(string $entityName)
+  public function exists(string $entityName): bool
   {
     return isset($this->mappings[$entityName]);
   }

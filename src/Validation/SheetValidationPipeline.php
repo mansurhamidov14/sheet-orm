@@ -26,9 +26,9 @@ class SheetValidationPipeline
    * @return string[]
    * @throws InvalidSheetTemplateException
    */
-  public function validateAll(SheetValidationContext $context, $silent = false) {
+  public function validateAll(SheetValidationContext $context, $silent = false): array
+  {
     $errors = [];
-    /** @var Validation */
     foreach ($this->validators as $validator) {
       try {
         $validator->getStrategyInstance()->handleValidation($validator->params, $context, $validator->message);

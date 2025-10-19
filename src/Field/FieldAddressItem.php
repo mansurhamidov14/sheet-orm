@@ -13,8 +13,8 @@ class FieldAddressItem
   public $index;
 
   /**
-   * @param string $fieldType One of TYPE_* constants
-   * @param string|int $value Field name or index value
+   * @param string $assignmentType One of TYPE_* constants
+   * @param string|int $fieldName Field name or index value
    * @param string $target Target class name for object property, empty for array index
    */
   public function __construct(string $assignmentType, string $fieldName, string $target, ?int $index = null)
@@ -25,7 +25,7 @@ class FieldAddressItem
     $this->index = $index;
   }
 
-  public function isArrayItem()
+  public function isArrayItem(): bool
   {
     return $this->assignmentType === self::ASSIGNMENT_MULTIPLE;
   }
