@@ -2,6 +2,7 @@
 
 namespace Twelver313\SheetORM\Attributes;
 
+use Twelver313\SheetORM\Validation\SheetValidationContext;
 use Twelver313\SheetORM\Validation\SheetValidationStrategy;
 
 /**
@@ -16,15 +17,15 @@ class SheetValidation
   public $params;
   public $message;
 
-  public function __construct(string $strategy, ?array $params = null, ?string $message = null)
+  public function __construct(string $strategy, array $params = [], array $message = [])
   {
     $this->strategy = $strategy;
     $this->params = $params;
     $this->message = $message;
   }
 
-  public function getStrategyInstance(): SheetValidationStrategy
+  public function getStrategyInstance(SheetValidationContext $context): SheetValidationStrategy
   {
-    return new $this->strategy();
+    return new $this->strategy($context, $this->params, $this->message);
   }
 }

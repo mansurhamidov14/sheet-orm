@@ -6,21 +6,46 @@ use Twelver313\SheetORM\Exceptions\InvalidSheetTemplateException;
 
 abstract class SheetValidationStrategy
 {
-  abstract protected function validate(array $params, SheetValidationContext $context): bool;
+  /** @var SheetValidationContext */
+  protected $context;
 
-  protected function message(array $params, SheetValidationContext $context): string
+  /** @var array */
+  protected $message;
+
+  /** @var array */
+  protected $params;
+
+  protected $validationErrors = [];
+
+  public function __construct(SheetValidationContext $context, array $params = [], array $message = [])
   {
-    return "Provided sheet doesn't match correct template";
+    $this->context = $context;
+    $this->params = $params;
+    $this->message = $message;
   }
 
-  protected function formatProvidedMessage(string $message, array $params, SheetValidationContext $context): string
+  abstract protected function validate();
+
+  protected function getError(): string
   {
-    $templateParams['{context.headerSize}'] = $context->getHeaderSize();
-    $templateParams['{context.model'] = $context->getModel();
-    $templateParams['{context.headerTitles'] = implode(', ', $context->getHeaderTitles());
-    $templateParams['{context.headerColumns'] = implode(', ', $context->getHeaderColumns());
-    foreach ($params as $key => $param) {
-      $templateParams["{params.{$key}}"] = is_array($param) ? implode(', ', $param) : strval($param); 
+    $message = implode(" ", $this->validationErrors);
+    return $this->formatMessage($message, $this->params, $this->context);
+  }
+
+  protected function addValidationError(string $message): void
+  {
+    $this->validationErrors[] = $message;
+  }
+
+  protected function formatMessage(string $message): string
+  {
+    $templateParams['{context.headerSize}'] = $this->context->getHeaderSize();
+    $templateParams['{context.model'] = $this->context->getModel();
+    $templateParams['{context.headerTitles'] = implode(', ', $this->context->getHeaderTitles());
+    $templateParams['{context.headerColumns'] = implode(', ', $this->context->getHeaderColumns());
+    $templateParams['{context.headerRow}'] = $this->context->getSheetHeader()->getRowNumber(@$this->params['scope']);
+    foreach ($this->params as $key => $param) {
+      $templateParams["{{$key}}"] = is_array($param) ? implode(', ', $param) : strval($param); 
     }
 
     return strtr($message, $templateParams);
@@ -29,16 +54,13 @@ abstract class SheetValidationStrategy
   /**
    * @throws InvalidSheetTemplateException
    */
-  public function handleValidation(array $params, SheetValidationContext $context, ?string $message = null): void
+  public function handleValidation(): void
   {
-    $isValid = $this->validate($params, $context, $message);
+    $this->validationErrors = [];
+    $this->validate();
 
-    if ($isValid) return;
+    if (empty($this->validationErrors)) return;
 
-    $errorMessage = isset($message)
-      ? $this->formatProvidedMessage($message, $params, $context)
-      : $this->message($params, $context);
-
-    throw new InvalidSheetTemplateException($errorMessage, $params, $context);
+    throw new InvalidSheetTemplateException($this->getError(), $this->params, $this->context);
   }
 }

@@ -4,45 +4,37 @@ namespace Twelver313\SheetORM\Validation;
 
 class ValidateByHeaderSize extends SheetValidationStrategy
 {
-  const DEFAULT_VALIDATION_MESSAGE_EXACT = "Spreadsheet header row #%u was expected to have exactly %u columns but the provided sheet has %u";
-  const DEFAULT_VALIDATION_MESSAGE_MIN = "Spreadsheet header row #%u was expected to have at least %u columns but the provided sheet has %u";
-  const DEFAULT_VALIDATION_MESSAGE_MAX = "Spreadsheet header row #%u was expected to have a maximum of %u columns but the provided sheet has %u";
-  const DEFAULT_VALIDATION_MESSAGE_RANGE = "Spreadsheet header row #%u was expected to have a minimum of %u and a maximum of %u columns but the provided sheet has %u";
+  const DEFAULT_VALIDATION_MESSAGE_EXACT = "Spreadsheet header row #{context.headerRow} was expected to have exactly {exact} columns";
+  const DEFAULT_VALIDATION_MESSAGE_MIN = "Spreadsheet header row #{context.headerRow} was expected to have at least {min} columns but the provided sheet has %u";
+  const DEFAULT_VALIDATION_MESSAGE_MAX = "Spreadsheet header row #{context.headerRow} was expected to have a maximum of %u columns but the provided sheet has %u";
 
-  protected function validate(array $params, SheetValidationContext $context): bool
+  public function __construct(SheetValidationContext $context, array $params = [], array $message = [])
   {
-    $headerSize = $context->getHeaderSize($params['scope'] ?? null);
-
-    /** Validating ranges only if exact param wasn't provided */
-    if (!isset($params['exact'])) {
-      $validMin = !isset($params['min']) || $headerSize >= intval($params['min']);
-      $validMax = !isset($params['max']) || $headerSize <= intval($params['max']);
-      return $validMin && $validMax;
-    }
-
-    return intval($params['exact']) === $headerSize;
+    parent::__construct($context, $params, array_merge(
+      [
+        'exact' => self::DEFAULT_VALIDATION_MESSAGE_EXACT,
+        'min' => self::DEFAULT_VALIDATION_MESSAGE_MIN,
+        'max' => self::DEFAULT_VALIDATION_MESSAGE_MAX
+      ],
+      $message
+    ));
   }
 
-  protected function message(array $params, SheetValidationContext $context): string
+  protected function validate()
   {
-    $headerSize = $context->getHeaderSize($params['scope'] ?? null);
-    $rowNumber = $context->getSheetHeader()->getRowNumber($params['scope'] ?? null);
-    if (isset($params['exact'])) {
-      $message = self::DEFAULT_VALIDATION_MESSAGE_EXACT;
-      $sprintfParams = [$rowNumber, $params['exact'], $headerSize];
-    } else if (isset($params['min']) && isset($params['max'])) {
-      $message = self::DEFAULT_VALIDATION_MESSAGE_RANGE;
-      $sprintfParams = [$rowNumber, $params['min'], $params['max'], $headerSize];
-    } else if (isset($params['min'])) {
-      $message = self::DEFAULT_VALIDATION_MESSAGE_MIN;
-      $sprintfParams = [$rowNumber, $params['min'], $headerSize];
-    } else if (isset($params['max'])) {
-      $message = self::DEFAULT_VALIDATION_MESSAGE_MAX;
-      $sprintfParams = [$rowNumber, $params['max'], $headerSize];
-    } else {
-      return '';
+    $headerSize = $this->context->getHeaderSize($this->params['scope'] ?? null);
+
+    if (isset($this->params['exact']) && intval($this->params['exact']) !== $headerSize) {
+      $this->addValidationError($this->message['exact']);
+      return;
     }
 
-    return sprintf($message, ...$sprintfParams);
+    if (isset($params['min']) && $headerSize < intval($params['min'])) {
+      $this->addValidationError($this->message['min']);
+    }
+
+    if (isset($params['max']) && $headerSize > intval($params['max'])) {
+      $this->addValidationError($this->message['max']);
+    }
   }
 }

@@ -31,7 +31,7 @@ class SheetValidationPipeline
     $errors = [];
     foreach ($this->validators as $validator) {
       try {
-        $validator->getStrategyInstance()->handleValidation($validator->params, $context, $validator->message);
+        $validator->getStrategyInstance($context)->handleValidation();
       } catch (InvalidSheetTemplateException $e) {
         $errors[] = $e->getMessage();
         if (!$silent) throw $e;

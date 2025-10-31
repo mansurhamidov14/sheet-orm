@@ -30,7 +30,7 @@ class ArraySchema implements MetadataResolver
     $this->titleRows = [];
   }
 
-  public function addSheetValidator(string $strategy, array $params, ?string $message = null): void
+  public function addSheetValidator(string $strategy, array $params, array $message = []): void
   {
     $validator = new SheetValidation($strategy, $params, $message);
     $this->validators[] = ($validator);
